@@ -11,6 +11,10 @@ repositories {
 }
 
 dependencies {
+    constraints {
+        api(project(":measure"))
+    }
+
     implementation(kotlin("stdlib"))
     implementation(KotlinxCoroutines.core)
 
