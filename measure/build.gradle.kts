@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    api(platform(project(":util")))
+
     implementation(kotlin("stdlib"))
     implementation(KotlinxCoroutines.core)
     implementation(Measured.measured)

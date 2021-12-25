@@ -1,7 +1,8 @@
 package altline.things.substances
 
-import altline.things.common.isNegligible
-import altline.things.measure.*
+import altline.things.measure.Volume
+import altline.things.measure.isNegligible
+import altline.things.measure.sumOf
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.div
 
