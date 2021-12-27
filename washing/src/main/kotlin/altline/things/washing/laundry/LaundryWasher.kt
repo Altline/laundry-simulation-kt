@@ -3,7 +3,9 @@ package altline.things.washing.laundry
 import altline.things.common.Body
 import altline.things.electricity.ElectricalConduit
 import altline.things.electricity.ElectricalDevice
+import altline.things.measure.Volume
 import altline.things.washing.Washer
+import io.nacular.measured.units.Measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -56,6 +58,12 @@ abstract class LaundryWasher(
 
     override fun start() = selectedWashCycleImpl.start(machineScope)
     override fun stop() = selectedWashCycleImpl.stop()
+
+    internal abstract suspend fun fillThroughDetergent(amount: Measure<Volume>)
+    internal abstract suspend fun fillThroughSoftener(amount: Measure<Volume>)
+    internal abstract suspend fun drain()
+    internal abstract suspend fun wash(params: WashParams)
+    internal abstract suspend fun spin(params: CentrifugeParams)
 
     interface WashCycle {
         val name: String
