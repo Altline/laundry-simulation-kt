@@ -7,13 +7,20 @@ import io.nacular.measured.units.UnitsRatio
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
 
-interface SubstanceConduit {
+interface SubstanceSource {
     val maxFlowRate: Measure<UnitsRatio<Volume, Time>>
 
-    suspend fun emit(amount: MutableSubstance)
     fun collect(
         amount: Measure<Volume>,
         flowRate: Measure<UnitsRatio<Volume, Time>> = maxFlowRate,
         scope: CoroutineScope
     ): ReceiveChannel<MutableSubstance>
 }
+
+interface SubstanceDrain {
+    val maxFlowRate: Measure<UnitsRatio<Volume, Time>>
+
+    suspend fun emit(amount: MutableSubstance)
+}
+
+interface SubstanceConduit : SubstanceSource, SubstanceDrain
