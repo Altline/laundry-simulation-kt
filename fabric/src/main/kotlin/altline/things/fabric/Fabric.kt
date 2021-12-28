@@ -36,6 +36,10 @@ abstract class Fabric(
         _soakedSubstance.add(soakableSubstance)
     }
 
+    override fun resoakWith(substance: MutableSubstance, amount: Measure<Volume>) {
+        _soakedSubstance.remixWith(substance, amount)
+    }
+
     override fun dry(amount: Measure<Volume>): MutableSubstance {
         return _soakedSubstance.separate(amount)
     }

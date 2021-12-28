@@ -8,5 +8,6 @@ interface Soakable {
     var freshness: Double
 
     fun soak(substance: MutableSubstance)
+    fun resoakWith(substance: MutableSubstance, amount: Measure<Volume>)
     fun dry(amount: Measure<Volume>): MutableSubstance
 }

@@ -78,6 +78,13 @@ class MutableSubstance(
         return MutableSubstance(newParts)
     }
 
+    fun remixWith(other: MutableSubstance, amount: Measure<Volume>) {
+        val thisPart = this.separate(amount)
+        val otherPart = other.separate(amount)
+        this.add(otherPart)
+        other.add(thisPart)
+    }
+
     private fun Substance.Part.asMutable() = MutablePart(type, amount)
     private fun Set<Substance.Part>.asMutableParts() = map { it.asMutable() }.toSet()
 
