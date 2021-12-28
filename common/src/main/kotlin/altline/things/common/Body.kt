@@ -8,6 +8,7 @@ import io.nacular.measured.units.Measure
 
 interface Body {
     val volume: Measure<Volume>
+    val stainSubstance: Substance
 
     fun stain(substance: Substance)
     fun clearStain(amount: Measure<Volume>): MutableSubstance

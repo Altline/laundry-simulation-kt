@@ -11,27 +11,32 @@ abstract class Fabric(
     override val volume: Measure<Volume>
 ) : Body, Soakable {
 
-    private val stain = MutableSubstance()
-    private val soakedSubstance = MutableSubstance()
+    override var freshness: Double = 0.0
+
+    private val _stainSubstance = MutableSubstance()
+    override val stainSubstance = _stainSubstance as Substance
+
+    private val _soakedSubstance = MutableSubstance()
+    override val soakedSubstance = _soakedSubstance as Substance
 
     val totalVolume: Measure<Volume>
-        get() = volume + stain.totalAmount + soakedSubstance.totalAmount
+        get() = volume + stainSubstance.totalAmount + soakedSubstance.totalAmount
 
     override fun stain(substance: Substance) {
-        stain.add(substance)
+        _stainSubstance.add(substance)
     }
 
     override fun clearStain(amount: Measure<Volume>): MutableSubstance {
-        return stain.separate(amount)
+        return _stainSubstance.separate(amount)
     }
 
     override fun soak(substance: MutableSubstance) {
         val soakableAmount = volume - soakedSubstance.totalAmount
         val soakableSubstance = substance.separate(soakableAmount)
-        soakedSubstance.add(soakableSubstance)
+        _soakedSubstance.add(soakableSubstance)
     }
 
     override fun dry(amount: Measure<Volume>): MutableSubstance {
-        return soakedSubstance.separate(amount)
+        return _soakedSubstance.separate(amount)
     }
 }
