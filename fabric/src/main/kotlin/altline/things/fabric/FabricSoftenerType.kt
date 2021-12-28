@@ -1,13 +1,13 @@
-package altline.things.washing.laundry
+package altline.things.fabric
 
 import altline.things.substances.SubstanceType
 
 interface FabricSoftenerType : SubstanceType {
-    val freshness: Double
+    val fresheningPotential: Double
 }
 
 enum class CommonFabricSofteners(
-    override val freshness: Double
+    override val fresheningPotential: Double
 ) : FabricSoftenerType {
 
     USELESS_SOFTENER(0.0),
