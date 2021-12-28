@@ -4,13 +4,15 @@ import altline.things.common.Body
 import altline.things.electricity.ElectricalConduit
 import altline.things.electricity.ElectricalDevice
 import altline.things.measure.Volume
+import altline.things.washing.WashDispenser
 import altline.things.washing.Washer
 import io.nacular.measured.units.Measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 abstract class LaundryWasher(
-
+    open val dispenser: WashDispenser,
+    protected open val drum: Drum
 ) : Washer, ElectricalDevice {
 
     private val machineScope = CoroutineScope(Dispatchers.Default)
@@ -36,26 +38,11 @@ abstract class LaundryWasher(
         TODO("Not yet implemented")
     }
 
-    override fun load(item: Body) {
-        TODO("Not yet implemented")
-    }
-
-    override fun load(items: Collection<Body>) {
-        TODO("Not yet implemented")
-    }
-
-    override fun unload(item: Body) {
-        TODO("Not yet implemented")
-    }
-
-    override fun unload(items: Collection<Body>) {
-        TODO("Not yet implemented")
-    }
-
-    override fun unload(): List<Body> {
-        TODO("Not yet implemented")
-    }
-
+    override fun load(item: Body) = drum.load(item)
+    override fun load(items: Collection<Body>) = drum.load(items)
+    override fun unload(item: Body) = drum.unload(item)
+    override fun unload(items: Collection<Body>) = drum.unload(items)
+    override fun unload(): List<Body> = drum.unload()
     override fun start() = selectedWashCycleImpl.start(machineScope)
     override fun stop() = selectedWashCycleImpl.stop()
 
