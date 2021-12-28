@@ -1,7 +1,5 @@
-package altline.things.fabric
+package altline.things.substances
 
-import altline.things.substances.Substance
-import altline.things.substances.SubstanceType
 import io.nacular.measured.units.div
 
 val Substance.fresheningPotential: Double
