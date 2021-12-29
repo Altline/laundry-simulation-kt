@@ -11,7 +11,6 @@ repositories {
 }
 
 dependencies {
-    api(platform(project(":common")))
     api(platform(project(":electricity")))
 
     implementation(kotlin("stdlib"))

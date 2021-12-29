@@ -20,7 +20,7 @@ abstract class Fabric(
     override val soakedSubstance = _soakedSubstance as Substance
 
     val totalVolume: Measure<Volume>
-        get() = volume + stainSubstance.totalAmount + soakedSubstance.totalAmount
+        get() = volume + stainSubstance.amount + soakedSubstance.amount
 
     override fun stain(substance: Substance) {
         _stainSubstance.add(substance)
@@ -31,7 +31,7 @@ abstract class Fabric(
     }
 
     override fun soak(substance: MutableSubstance) {
-        val soakableAmount = volume - soakedSubstance.totalAmount
+        val soakableAmount = volume - soakedSubstance.amount
         val soakableSubstance = substance.separate(soakableAmount)
         _soakedSubstance.add(soakableSubstance)
     }

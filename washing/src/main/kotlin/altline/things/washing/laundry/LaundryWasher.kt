@@ -1,8 +1,8 @@
 package altline.things.washing.laundry
 
 import altline.things.common.Body
-import altline.things.electricity.ElectricalConduit
 import altline.things.electricity.ElectricalDevice
+import altline.things.electricity.transit.ElectricalSource
 import altline.things.measure.Volume
 import altline.things.washing.WashDispenser
 import altline.things.washing.Washer
@@ -30,7 +30,7 @@ abstract class LaundryWasher(
         TODO("Not yet implemented")
     }
 
-    override fun connectPowerSource(source: ElectricalConduit) {
+    override fun connectPowerSource(source: ElectricalSource) {
         TODO("Not yet implemented")
     }
 

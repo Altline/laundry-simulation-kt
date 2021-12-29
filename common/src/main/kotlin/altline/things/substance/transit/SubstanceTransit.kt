@@ -1,0 +1,13 @@
+package altline.things.substance.transit
+
+import altline.things.measure.Volume
+import altline.things.substance.MutableSubstance
+import altline.things.transit.BasicConduit
+import altline.things.transit.Conduit
+import altline.things.transit.FlowDrain
+import altline.things.transit.FlowSource
+
+typealias SubstanceSource = FlowSource<Volume, MutableSubstance>
+typealias SubstanceDrain = FlowDrain<Volume, MutableSubstance>
+typealias SubstanceConduit = Conduit<Volume, MutableSubstance>
+typealias BasicSubstanceConduit = BasicConduit<Volume, MutableSubstance>

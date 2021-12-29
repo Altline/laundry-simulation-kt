@@ -3,13 +3,14 @@ package altline.things.substance
 import altline.things.measure.Volume
 import altline.things.measure.isNegligible
 import altline.things.measure.sumOf
+import altline.things.transit.*
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.div
 
-interface Substance {
+interface Substance : Flowable<Volume> {
     val parts: Set<Part>
 
-    val totalAmount: Measure<Volume>
+    override val amount: Measure<Volume>
         get() = parts.sumOf { it.amount }
 
     val isEmpty: Boolean
@@ -67,7 +68,7 @@ class MutableSubstance(
     }
 
     fun separate(amount: Measure<Volume>): MutableSubstance {
-        val ratio = (amount / totalAmount).coerceAtMost(1.0)
+        val ratio = (amount / this.amount).coerceAtMost(1.0)
         val newParts = mutableSetOf<Substance.Part>()
         _parts.forEach { part ->
             val separatedAmount = part.amount * ratio

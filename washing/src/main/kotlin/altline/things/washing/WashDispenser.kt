@@ -2,7 +2,7 @@ package altline.things.washing
 
 import altline.things.measure.Volume
 import altline.things.substance.MutableSubstance
-import altline.things.substance.dynamics.SubstanceSource
+import altline.things.substance.transit.SubstanceSource
 import io.nacular.measured.units.Measure
 import kotlinx.coroutines.CoroutineScope
 
