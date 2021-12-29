@@ -4,8 +4,8 @@ import altline.things.common.Body
 import altline.things.measure.Spin
 import altline.things.measure.Spin.Companion.rpm
 import altline.things.measure.Volume
-import altline.things.substances.MutableSubstance
-import altline.things.substances.Substance
+import altline.things.substance.MutableSubstance
+import altline.things.substance.Substance
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.Time
 import io.nacular.measured.units.times

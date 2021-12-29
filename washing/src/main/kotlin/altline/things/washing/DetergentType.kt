@@ -1,9 +1,9 @@
 package altline.things.washing
 
 import altline.things.measure.Volume
-import altline.things.substances.CommonSubstanceTypes
-import altline.things.substances.SubstanceType
-import altline.things.substances.calcNominal
+import altline.things.substance.CommonSubstanceTypes
+import altline.things.substance.SubstanceType
+import altline.things.substance.calcNominal
 import io.nacular.measured.units.times
 
 interface DetergentType : SubstanceType {

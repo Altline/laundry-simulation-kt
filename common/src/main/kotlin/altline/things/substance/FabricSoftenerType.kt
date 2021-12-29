@@ -1,4 +1,4 @@
-package altline.things.substances
+package altline.things.substance
 
 interface FabricSoftenerType : SubstanceType {
     val fresheningPotential: Double

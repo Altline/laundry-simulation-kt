@@ -1,10 +1,10 @@
 package altline.things.fabric
 
 import altline.things.common.Body
-import altline.things.substances.Soakable
-import altline.things.measure.*
-import altline.things.substances.MutableSubstance
-import altline.things.substances.Substance
+import altline.things.measure.Volume
+import altline.things.substance.MutableSubstance
+import altline.things.substance.Soakable
+import altline.things.substance.Substance
 import io.nacular.measured.units.Measure
 
 abstract class Fabric(

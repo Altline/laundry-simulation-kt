@@ -2,11 +2,7 @@ package altline.things.washing
 
 import altline.things.measure.Volume.Companion.liters
 import altline.things.measure.Volume.Companion.milliliters
-import altline.things.substances.CommonSubstanceTypes
-import altline.things.substances.Substance
-import altline.things.substances.SubstanceType
-import altline.things.substances.calcNominal
-import altline.things.washing.laundry.CommonFabricSofteners
+import altline.things.substance.*
 import io.nacular.measured.units.div
 import io.nacular.measured.units.times
 

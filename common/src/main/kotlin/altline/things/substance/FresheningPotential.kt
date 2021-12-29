@@ -1,4 +1,4 @@
-package altline.things.substances
+package altline.things.substance
 
 import io.nacular.measured.units.div
 
