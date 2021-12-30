@@ -67,7 +67,7 @@ class MutableSubstance(
         }
     }
 
-    fun separate(amount: Measure<Volume>): MutableSubstance {
+    fun extract(amount: Measure<Volume>): MutableSubstance {
         val ratio = (amount / this.amount).coerceAtMost(1.0)
         val newParts = mutableSetOf<Substance.Part>()
         _parts.forEach { part ->
@@ -80,8 +80,8 @@ class MutableSubstance(
     }
 
     fun remixWith(other: MutableSubstance, amount: Measure<Volume>) {
-        val thisPart = this.separate(amount)
-        val otherPart = other.separate(amount)
+        val thisPart = this.extract(amount)
+        val otherPart = other.extract(amount)
         this.add(otherPart)
         other.add(thisPart)
     }
