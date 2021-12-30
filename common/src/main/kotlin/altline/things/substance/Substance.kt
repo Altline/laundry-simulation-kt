@@ -79,6 +79,10 @@ class MutableSubstance(
         return MutableSubstance(newParts)
     }
 
+    fun extractAll(): MutableSubstance {
+        return MutableSubstance(parts).also { _parts.clear() }
+    }
+
     fun remixWith(other: MutableSubstance, amount: Measure<Volume>) {
         val thisPart = this.extract(amount)
         val otherPart = other.extract(amount)
