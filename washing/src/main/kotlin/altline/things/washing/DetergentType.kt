@@ -1,6 +1,7 @@
 package altline.things.washing
 
-import altline.things.measure.Volume
+import altline.things.measure.Volume.Companion.liters
+import altline.things.measure.Volume.Companion.milliliters
 import altline.things.substance.CommonSubstanceTypes
 import altline.things.substance.SubstanceType
 import altline.things.substance.calcNominal
@@ -29,6 +30,6 @@ enum class CommonDetergents(
 private fun convertDiluted(desiredValue: Double) = calcNominal(
     desiredValue,
     solventValue = CommonSubstanceTypes.WATER.cleaningPower,
-    solventAmount = 15.0 * Volume.liters,
-    soluteAmount = 100.0 * Volume.milliliters
+    solventAmount = 15.0 * liters,
+    soluteAmount = 100.0 * milliliters
 )

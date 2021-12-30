@@ -6,15 +6,16 @@ import altline.things.substance.*
 import io.nacular.measured.units.div
 import io.nacular.measured.units.times
 
+/** The part of a basic stain substance able to be removed in one second of washing. */
 val Substance.cleaningPower: Double
     get() {
-        var powerSum = 0.0
+        var power = 0.0
         parts.forEach { part ->
-            val ratio = part.amount / totalAmount
+            val ratio = part.amount / amount
             val effectivePower = part.type.cleaningPower * ratio
-            powerSum += effectivePower
+            power += effectivePower
         }
-        return powerSum
+        return power
     }
 
 val SubstanceType.cleaningPower: Double
