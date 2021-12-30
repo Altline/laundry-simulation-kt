@@ -53,7 +53,7 @@ class MutableSubstance(
 
     constructor() : this(emptySet())
 
-    private val _parts = mutableSetOf(*parts.asMutableParts().toTypedArray())
+    private val _parts = mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
     override val parts = _parts as Set<Substance.Part>
 
     fun add(other: Substance) {
@@ -87,7 +87,7 @@ class MutableSubstance(
     }
 
     private fun Substance.Part.asMutable() = MutablePart(type, amount)
-    private fun Set<Substance.Part>.asMutableParts() = map { it.asMutable() }.toSet()
+    private fun Set<Substance.Part>.asMutableParts() = mapTo(mutableSetOf()) { it.asMutable() }
 
     private class MutablePart(
         override var type: SubstanceType,
@@ -96,9 +96,12 @@ class MutableSubstance(
 }
 
 fun substanceOf(parts: Set<Substance.Part>) = object : Substance {
-    override val parts = setOf(*parts.toTypedArray())
+    override val parts = setOf(*parts.filterEmpty().toTypedArray())
 }
 
-fun substanceOf(type: SubstanceType, amount: Measure<Volume>) = object : Substance {
-    override val parts = setOf(Substance.Part(type, amount))
+fun substanceOf(type: SubstanceType, amount: Measure<Volume>)
+    = substanceOf(setOf(Substance.Part(type, amount)))
+
+private fun Set<Substance.Part>.filterEmpty(): Set<Substance.Part> {
+    return filterTo(mutableSetOf()) { it.amount.amount >= 0.0 }
 }
