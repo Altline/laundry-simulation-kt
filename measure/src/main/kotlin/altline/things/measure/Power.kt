@@ -3,10 +3,10 @@ package altline.things.measure
 import io.nacular.measured.units.Units
 
 class Power(suffix: String, ratio: Double = 1.0): Units(suffix, ratio) {
-    operator fun div(other: Volume) = ratio / other.ratio
+    operator fun div(other: Power) = ratio / other.ratio
 
     companion object {
-        val watt = Volume("W")
-        val kilowatt = Volume("kW", 1000.0)
+        val watts = Power("W")
+        val kilowatts = Power("kW", 1000.0)
     }
 }
