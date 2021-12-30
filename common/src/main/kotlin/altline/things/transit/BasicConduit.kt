@@ -16,6 +16,7 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
 
     override fun connectFlowSource(source: FlowSource<QuantityType, FlowableType>) {
         if (this.flowSource == source) return
+        if (this.flowSource != null) disconnectFlowSource()
         this.flowSource = source
         source.connectFlowDrain(this)
     }
@@ -29,6 +30,7 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
 
     override fun connectFlowDrain(drain: FlowDrain<QuantityType, FlowableType>) {
         if (this.flowDrain == drain) return
+        if (this.flowDrain != null) disconnectFlowDrain()
         this.flowDrain = drain
         drain.connectFlowSource(this)
     }
