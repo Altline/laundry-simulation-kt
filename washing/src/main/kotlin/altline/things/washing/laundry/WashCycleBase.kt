@@ -4,8 +4,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 abstract class WashCycleBase(
-    override val machine: LaundryWasher
-) : LaundryWasher.WashCycle {
+    override val machine: StandardLaundryWasherBase
+) : StandardLaundryWasherBase.WashCycle {
 
     override fun start(coroutineScope: CoroutineScope) {
         coroutineScope.launch {
