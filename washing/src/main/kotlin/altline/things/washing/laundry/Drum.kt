@@ -2,12 +2,9 @@ package altline.things.washing.laundry
 
 import altline.things.common.Body
 import altline.things.measure.Spin
-import altline.things.measure.Spin.Companion.rpm
 import altline.things.measure.Volume
 import altline.things.substance.Substance
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 import kotlinx.coroutines.channels.ReceiveChannel
 
 interface Drum {

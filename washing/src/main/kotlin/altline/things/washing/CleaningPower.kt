@@ -3,8 +3,7 @@ package altline.things.washing
 import altline.things.measure.Volume.Companion.liters
 import altline.things.measure.Volume.Companion.milliliters
 import altline.things.substance.*
-import io.nacular.measured.units.div
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 
 /** The part of a basic stain substance able to be removed in one second of washing. */
 val Substance.cleaningPower: Double

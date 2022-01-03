@@ -1,8 +1,7 @@
 package altline.things.substance
 
 import altline.things.measure.Volume
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.div
+import io.nacular.measured.units.*
 
 /** Calculates a nominal value of one part from the desired value of the mix */
 fun calcNominal(

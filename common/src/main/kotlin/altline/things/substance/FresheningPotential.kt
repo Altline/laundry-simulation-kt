@@ -1,6 +1,6 @@
 package altline.things.substance
 
-import io.nacular.measured.units.div
+import io.nacular.measured.units.*
 
 val Substance.fresheningPotential: Double
     get() {

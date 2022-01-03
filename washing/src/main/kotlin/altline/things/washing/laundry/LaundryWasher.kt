@@ -6,7 +6,7 @@ import altline.things.electricity.transit.ElectricalSource
 import altline.things.measure.Volume
 import altline.things.washing.WashDispenser
 import altline.things.washing.Washer
-import io.nacular.measured.units.Measure
+import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 

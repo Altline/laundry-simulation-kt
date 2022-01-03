@@ -1,7 +1,7 @@
 package altline.things.fabric
 
 import altline.things.measure.Volume
-import io.nacular.measured.units.Measure
+import io.nacular.measured.units.*
 
 class Shirt(
     size: Size,

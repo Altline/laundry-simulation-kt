@@ -2,12 +2,9 @@ package altline.things.measure
 
 import altline.things.measure.Frequency.Companion.hertz
 import altline.things.util.isNegligible
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
+import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.milliseconds
 import io.nacular.measured.units.Time.Companion.seconds
-import io.nacular.measured.units.Units
-import io.nacular.measured.units.times
 
 fun Measure<Frequency>.toPeriod() = (1 / (this `in` hertz)) * seconds
 fun Measure<Time>.toFrequency() = (1 / (this `in` seconds)) * hertz

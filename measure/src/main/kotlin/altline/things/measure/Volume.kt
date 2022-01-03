@@ -1,9 +1,7 @@
 package altline.things.measure
 
 import altline.things.measure.Volume.Companion.liters
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Units
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 
 class Volume(suffix: String, ratio: Double = 1.0): Units(suffix, ratio) {
     operator fun div(other: Volume) = ratio / other.ratio

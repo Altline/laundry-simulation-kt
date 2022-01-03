@@ -4,7 +4,7 @@ import altline.things.common.Body
 import altline.things.measure.Volume
 import altline.things.substance.Soakable
 import altline.things.substance.Substance
-import io.nacular.measured.units.Measure
+import io.nacular.measured.units.*
 
 abstract class Fabric(
     override val volume: Measure<Volume>

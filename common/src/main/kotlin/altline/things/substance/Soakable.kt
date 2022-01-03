@@ -1,7 +1,7 @@
 package altline.things.substance
 
 import altline.things.measure.Volume
-import io.nacular.measured.units.Measure
+import io.nacular.measured.units.*
 
 interface Soakable {
     val soakedSubstance: Substance

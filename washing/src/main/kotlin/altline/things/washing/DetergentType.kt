@@ -5,7 +5,7 @@ import altline.things.measure.Volume.Companion.milliliters
 import altline.things.substance.CommonSubstanceTypes
 import altline.things.substance.SubstanceType
 import altline.things.substance.calcNominal
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 
 interface DetergentType : SubstanceType {
     /** The part of a basic stain substance able to be removed in one second of washing. */

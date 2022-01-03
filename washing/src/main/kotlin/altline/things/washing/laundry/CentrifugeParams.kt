@@ -1,8 +1,7 @@
 package altline.things.washing.laundry
 
 import altline.things.measure.Spin
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
+import io.nacular.measured.units.*
 
 data class CentrifugeParams(
     val duration: Measure<Time>,
