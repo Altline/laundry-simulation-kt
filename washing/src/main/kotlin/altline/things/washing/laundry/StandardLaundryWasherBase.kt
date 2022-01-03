@@ -4,15 +4,15 @@ import altline.things.common.Body
 import altline.things.electricity.ElectricalDevice
 import altline.things.electricity.transit.ElectricalSource
 import altline.things.measure.Volume
-import altline.things.washing.WashDispenser
 import altline.things.washing.Washer
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
-abstract class LaundryWasher(
-    open val dispenser: WashDispenser,
-    protected open val drum: Drum
+abstract class StandardLaundryWasherBase(
+    protected open val dispenser: LaundryWashDispenser,
+    protected open val drum: Drum,
+    protected open val config: LaundryWasherConfig
 ) : Washer, ElectricalDevice {
 
     private val machineScope = CoroutineScope(Dispatchers.Default)
@@ -54,7 +54,7 @@ abstract class LaundryWasher(
 
     interface WashCycle {
         val name: String
-        val machine: LaundryWasher
+        val machine: StandardLaundryWasherBase
         fun start(coroutineScope: CoroutineScope)
         fun stop()
     }
