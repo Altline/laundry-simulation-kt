@@ -1,19 +1,20 @@
 package altline.things.washing
 
-import altline.things.measure.Volume
-import altline.things.substance.MutableSubstance
-import altline.things.substance.transit.SubstanceSource
-import io.nacular.measured.units.Measure
-import kotlinx.coroutines.CoroutineScope
+import altline.things.substance.transit.SubstanceDrainPort
+import altline.things.substance.transit.SubstanceSourcePort
 
 interface WashDispenser {
-    fun connectSolventSource(conduit: SubstanceSource)
+    fun connectSolventSource(source: SubstanceSourcePort)
+    fun disconnectSolventSource()
 
-    fun dispenseMainDetergent(solventAmount: Measure<Volume>, scope: CoroutineScope)
-            : kotlinx.coroutines.channels.ReceiveChannel<MutableSubstance>
+    fun connectDrain(drain: SubstanceDrainPort)
+    fun disconnectDrain()
+
+    fun dispenseMainDetergent()
+    fun haltMainDetergent()
 
     interface Channel {
-        fun dispense(solventAmount: Measure<Volume>, scope: CoroutineScope)
-                : kotlinx.coroutines.channels.ReceiveChannel<MutableSubstance>
+        fun dispense()
+        fun halt()
     }
 }
