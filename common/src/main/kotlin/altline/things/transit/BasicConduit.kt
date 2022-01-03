@@ -13,8 +13,6 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
         require(outputCount > 0)
     }
 
-    private val seenIDs = mutableListOf<Long>()
-
     override val inputs = Array(inputCount) { FlowDrain.Port(this) }
     override val outputs = Array(outputCount) { FlowSource.Port(this) }
 
@@ -24,6 +22,10 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
     private val connectedDrains: List<FlowDrain<QuantityType, FlowableType>>
         get() = outputs.mapNotNull { port -> port.connectedPort?.owner }
 
+    protected var realFlowRate = maxFlowRate
+
+    private val seenIDs = mutableListOf<Long>()
+
     fun getSource(index: Int) = inputs[index].connectedPort?.owner
     fun getDrain(index: Int) = outputs[index].connectedPort?.owner
 
@@ -32,11 +34,14 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
         var leftoverAmount = (0.0 * flowable.amount)
         if (checkId(flowId)) {
             val connectedDrains = connectedDrains
-            val splitAmount = flowable.amount / connectedDrains.size
+            val pushableAmount = realFlowRate * timeFrame
+            val amountToPush = flowable.amount.coerceAtMost(pushableAmount)
+            val splitAmount = amountToPush / connectedDrains.size
             connectedDrains.forEach {
                 val chunk = flowable.extract(splitAmount) as FlowableType
                 leftoverAmount += it.pushFlow(chunk, timeFrame, flowId)
             }
+            leftoverAmount += flowable.amount
         }
         return leftoverAmount
     }
@@ -45,7 +50,9 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
         var pulled: FlowableType? = null
         if (checkId(flowId)) {
             val connectedSources = connectedSources
-            val splitAmount = amount / connectedSources.size
+            val pushableAmount = realFlowRate * timeFrame
+            val amountToPush = amount.coerceAtMost(pushableAmount)
+            val splitAmount = amountToPush / connectedSources.size
             connectedSources.forEach {
                 it.pullFlow(splitAmount, timeFrame, flowId)?.let { chunk ->
                     if (pulled == null) pulled = chunk
