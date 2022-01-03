@@ -3,12 +3,19 @@ package altline.things.substance
 import altline.things.measure.Volume
 import altline.things.measure.isNegligible
 import altline.things.measure.sumOf
-import altline.things.transit.*
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.div
+import altline.things.transit.Flowable
+import io.nacular.measured.units.*
 
-interface Substance : Flowable<Volume> {
-    val parts: Set<Part>
+class Substance(
+    parts: Set<Part>
+) : Flowable<Volume> {
+    constructor(type: SubstanceType, amount: Measure<Volume>)
+            : this(setOf(Part(type, amount)))
+
+    constructor() : this(emptySet())
+
+    private val _parts = mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
+    val parts = _parts as Set<Part>
 
     override val amount: Measure<Volume>
         get() = parts.sumOf { it.amount }
@@ -16,6 +23,48 @@ interface Substance : Flowable<Volume> {
     val isEmpty: Boolean
         get() = parts.isEmpty()
 
+    override fun add(other: Flowable<Volume>) {
+        require(other is Substance)
+        other.parts.forEach { part ->
+            val existingPart = _parts.find { it.type == part.type }
+            if (existingPart != null) {
+                existingPart.amount += part.amount
+            } else {
+                _parts += MutablePart(part.type, part.amount)
+            }
+        }
+    }
+
+    override fun extract(amount: Measure<Volume>): Substance {
+        val ratio = (amount / this.amount).coerceAtMost(1.0)
+        val newParts = mutableSetOf<Part>()
+        _parts.forEach { part ->
+            val separatedAmount = part.amount * ratio
+            part.amount -= separatedAmount
+            newParts += Part(part.type, separatedAmount)
+        }
+        _parts.removeAll { it.amount.isNegligible() }
+        return Substance(newParts)
+    }
+
+    fun extractAll(): Substance {
+        return Substance(parts).also { _parts.clear() }
+    }
+
+    fun remixWith(other: Substance, amount: Measure<Volume>) {
+        val thisPart = this.extract(amount)
+        val otherPart = other.extract(amount)
+        this.add(otherPart)
+        other.add(thisPart)
+    }
+
+    private fun Part.asMutable() = MutablePart(type, amount)
+    private fun Set<Part>.asMutableParts() = mapTo(mutableSetOf()) { it.asMutable() }
+
+    private class MutablePart(
+        override var type: SubstanceType,
+        override var amount: Measure<Volume>
+    ) : Part
 
     interface Part {
         val type: SubstanceType
@@ -44,67 +93,6 @@ interface Substance : Flowable<Volume> {
         }
     }
 }
-
-class MutableSubstance(
-    parts: Set<Substance.Part>
-) : Substance {
-    constructor(type: SubstanceType, amount: Measure<Volume>)
-            : this(setOf(Substance.Part(type, amount)))
-
-    constructor() : this(emptySet())
-
-    private val _parts = mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
-    override val parts = _parts as Set<Substance.Part>
-
-    fun add(other: Substance) {
-        other.parts.forEach { part ->
-            val existingPart = _parts.find { it.type == part.type }
-            if (existingPart != null) {
-                existingPart.amount += part.amount
-            } else {
-                _parts += MutablePart(part.type, part.amount)
-            }
-        }
-    }
-
-    fun extract(amount: Measure<Volume>): MutableSubstance {
-        val ratio = (amount / this.amount).coerceAtMost(1.0)
-        val newParts = mutableSetOf<Substance.Part>()
-        _parts.forEach { part ->
-            val separatedAmount = part.amount * ratio
-            part.amount -= separatedAmount
-            newParts += Substance.Part(part.type, separatedAmount)
-        }
-        _parts.removeAll { it.amount.isNegligible() }
-        return MutableSubstance(newParts)
-    }
-
-    fun extractAll(): MutableSubstance {
-        return MutableSubstance(parts).also { _parts.clear() }
-    }
-
-    fun remixWith(other: MutableSubstance, amount: Measure<Volume>) {
-        val thisPart = this.extract(amount)
-        val otherPart = other.extract(amount)
-        this.add(otherPart)
-        other.add(thisPart)
-    }
-
-    private fun Substance.Part.asMutable() = MutablePart(type, amount)
-    private fun Set<Substance.Part>.asMutableParts() = mapTo(mutableSetOf()) { it.asMutable() }
-
-    private class MutablePart(
-        override var type: SubstanceType,
-        override var amount: Measure<Volume>
-    ) : Substance.Part
-}
-
-fun substanceOf(parts: Set<Substance.Part>) = object : Substance {
-    override val parts = setOf(*parts.filterEmpty().toTypedArray())
-}
-
-fun substanceOf(type: SubstanceType, amount: Measure<Volume>)
-    = substanceOf(setOf(Substance.Part(type, amount)))
 
 private fun Set<Substance.Part>.filterEmpty(): Set<Substance.Part> {
     return filterTo(mutableSetOf()) { it.amount.amount >= 0.0 }
