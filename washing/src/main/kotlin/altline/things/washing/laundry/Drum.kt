@@ -22,14 +22,4 @@ interface Drum {
     suspend fun fill(washLiquidFlow: ReceiveChannel<Substance>)
     fun drain(): ReceiveChannel<Substance>
     suspend fun spin(speed: Measure<Spin>, duration: Measure<Time>)
-
-    companion object {
-        internal val CentrifugeThreshold = 80 * rpm
-
-        /** The lower soak ratio limit where washing can take place */
-        internal const val LowerSoakRatio = 0.75
-
-        /** The upper soak ratio limit where washing effectiveness no longer depends on soakness. */
-        internal const val UpperSoakRatio = 1.25
-    }
 }
