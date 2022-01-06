@@ -41,6 +41,14 @@ fun <T : Units> Measure<T>.closeEquals(other: Measure<T>, threshold: Double = 0.
     return a.closeEquals(b, threshold)
 }
 
+fun <T, U : Units> Collection<T>.sumOf(selector: (T) -> Measure<U>): Measure<U> {
+    lateinit var sum: Measure<U> // not sure if lateinit will work here
+    for (element in this) {
+        sum += selector(element)
+    }
+    return sum
+}
+
 /** Redefinition of an existing div function from [Units] to avoid overload ambiguity. */
 fun <T : Units> Measure<T>.divSameUnit(other: Measure<T>): Double =
     amount / other.amount * (units.ratio / other.units.ratio)

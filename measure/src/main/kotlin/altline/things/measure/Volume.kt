@@ -12,11 +12,3 @@ class Volume(suffix: String, ratio: Double = 1.0): Units(suffix, ratio) {
         val deciliters = Volume("dL", 0.01)
     }
 }
-
-fun <T> Collection<T>.sumOf(selector: (T) -> Measure<Volume>): Measure<Volume> {
-    var sum: Measure<Volume> = 0 * liters
-    for (element in this) {
-        sum += selector(element)
-    }
-    return sum
-}
