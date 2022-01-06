@@ -20,9 +20,6 @@ class Substance(
     override val amount: Measure<Volume>
         get() = parts.sumOf { it.amount }
 
-    val isEmpty: Boolean
-        get() = parts.isEmpty()
-
     override fun add(other: Flowable<Volume>) {
         require(other is Substance)
         other.parts.forEach { part ->
