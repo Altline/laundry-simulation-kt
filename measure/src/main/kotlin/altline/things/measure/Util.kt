@@ -1,7 +1,9 @@
 package altline.things.measure
 
 import altline.things.measure.Frequency.Companion.hertz
+import altline.things.util.closeEquals
 import altline.things.util.isNegligible
+import altline.things.util.isNotNegligible
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.milliseconds
 import io.nacular.measured.units.Time.Companion.seconds
@@ -30,5 +32,15 @@ suspend fun repeatPeriodically(period: Measure<Time>, times: Int = -1, action: (
     }
 }
 
-fun <T : Units> Measure<T>.isNegligible(threshold: Double = 0.00001): Boolean
-        = amount.isNegligible(threshold)
+fun <T : Units> Measure<T>.isNegligible(threshold: Double = 0.00001) = amount.isNegligible(threshold)
+fun <T : Units> Measure<T>.isNotNegligible(threshold: Double = 0.00001) = amount.isNotNegligible(threshold)
+fun <T : Units> Measure<T>.closeEquals(other: Measure<T>, threshold: Double = 0.00001): Boolean {
+    val resultUnit = minOf(units, other.units)
+    val a = this  `in` resultUnit
+    val b = other `in` resultUnit
+    return a.closeEquals(b, threshold)
+}
+
+/** Redefinition of an existing div function from [Units] to avoid overload ambiguity. */
+fun <T : Units> Measure<T>.divSameUnit(other: Measure<T>): Double =
+    amount / other.amount * (units.ratio / other.units.ratio)
