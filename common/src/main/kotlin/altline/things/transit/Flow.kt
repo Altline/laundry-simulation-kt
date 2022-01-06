@@ -11,8 +11,9 @@ interface Flowable<QuantityType : Units> {
 
 interface FlowSource<QuantityType : Units, FlowableType : Flowable<QuantityType>> {
     val maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>
-    val outputCount: Int
+    val realFlowRate: Measure<UnitsRatio<QuantityType, Time>>
 
+    val outputCount: Int
     val outputs: Array<Port<QuantityType, FlowableType>>
 
     fun disconnectOutputs() {
@@ -47,8 +48,9 @@ interface FlowSource<QuantityType : Units, FlowableType : Flowable<QuantityType>
 
 interface FlowDrain<QuantityType : Units, FlowableType : Flowable<QuantityType>> {
     val maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>
-    val inputCount: Int
+    val realFlowRate: Measure<UnitsRatio<QuantityType, Time>>
 
+    val inputCount: Int
     val inputs: Array<Port<QuantityType, FlowableType>>
 
     fun disconnectInputs() {

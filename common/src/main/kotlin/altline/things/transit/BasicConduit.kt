@@ -3,7 +3,7 @@ package altline.things.transit
 import io.nacular.measured.units.*
 
 open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityType>>(
-    override val maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>,
+    final override val maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>,
     final override val inputCount: Int = 1,
     final override val outputCount: Int = 1
 ) : Conduit<QuantityType, FlowableType> {
@@ -13,6 +13,9 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
         require(outputCount > 0)
     }
 
+    override var realFlowRate = maxFlowRate
+        protected set
+
     override val inputs = Array(inputCount) { FlowDrain.Port(this) }
     override val outputs = Array(outputCount) { FlowSource.Port(this) }
 
@@ -21,8 +24,6 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
 
     private val connectedDrains: List<FlowDrain<QuantityType, FlowableType>>
         get() = outputs.mapNotNull { port -> port.connectedPort?.owner }
-
-    protected var realFlowRate = maxFlowRate
 
     private val seenIDs = mutableListOf<Long>()
 
