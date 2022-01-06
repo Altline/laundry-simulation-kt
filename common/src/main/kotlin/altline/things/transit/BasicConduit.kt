@@ -1,5 +1,7 @@
 package altline.things.transit
 
+import altline.things.measure.*
+import altline.things.substance.isNotEmpty
 import io.nacular.measured.units.*
 
 open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityType>>(
@@ -32,35 +34,78 @@ open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityTy
 
     @Suppress("UNCHECKED_CAST")
     override fun pushFlow(flowable: FlowableType, timeFrame: Measure<Time>, flowId: Long): Measure<QuantityType> {
-        var leftoverAmount = (0.0 * flowable.amount)
         if (checkId(flowId)) {
-            val connectedDrains = connectedDrains
             val pushableAmount = realFlowRate * timeFrame
             val amountToPush = flowable.amount.coerceAtMost(pushableAmount)
-            val splitAmount = amountToPush / connectedDrains.size
-            connectedDrains.forEach {
-                val chunk = flowable.extract(splitAmount) as FlowableType
-                leftoverAmount += it.pushFlow(chunk, timeFrame, flowId)
-            }
-            leftoverAmount += flowable.amount
+            val chunk = flowable.extract(amountToPush) as FlowableType
+            tryPush(connectedDrains, chunk, timeFrame, flowId)
+            flowable.add(chunk)
         }
-        return leftoverAmount
+        return flowable.amount
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun tryPush(
+        drains: List<FlowDrain<QuantityType, FlowableType>>,
+        toPush: FlowableType,
+        timeFrame: Measure<Time>,
+        flowId: Long
+    ) {
+        val nonSpillingDrains = mutableListOf<FlowDrain<QuantityType, FlowableType>>()
+        val totalOutputFlowRate = drains.sumOf { it.realFlowRate }
+        drains.forEach { drain ->
+            val ratio = drain.realFlowRate.divSameUnit(totalOutputFlowRate)
+            val splitAmount = toPush.amount * ratio
+            val chunk = toPush.extract(splitAmount) as FlowableType
+            val leftoverAmount = drain.pushFlow(chunk, timeFrame, flowId)
+            toPush.add(chunk)
+
+            if (leftoverAmount.isNegligible())
+                nonSpillingDrains += drain
+        }
+
+        if (toPush.isNotEmpty() && nonSpillingDrains.isNotEmpty())
+            tryPush(nonSpillingDrains, toPush, timeFrame, flowId)
     }
 
     override fun pullFlow(amount: Measure<QuantityType>, timeFrame: Measure<Time>, flowId: Long): FlowableType? {
-        var pulled: FlowableType? = null
         if (checkId(flowId)) {
-            val connectedSources = connectedSources
-            val pushableAmount = realFlowRate * timeFrame
-            val amountToPush = amount.coerceAtMost(pushableAmount)
-            val splitAmount = amountToPush / connectedSources.size
-            connectedSources.forEach {
-                it.pullFlow(splitAmount, timeFrame, flowId)?.let { chunk ->
-                    if (pulled == null) pulled = chunk
-                    else pulled!!.add(chunk)
+            val pullableAmount = realFlowRate * timeFrame
+            val amountToPull = amount.coerceAtMost(pullableAmount)
+            return tryPull(connectedSources, amountToPull, timeFrame, flowId)
+        }
+        return null
+    }
+
+    private fun tryPull(
+        sources: List<FlowSource<QuantityType, FlowableType>>,
+        amount: Measure<QuantityType>,
+        timeFrame: Measure<Time>,
+        flowId: Long
+    ): FlowableType? {
+        val unexhaustedSources = mutableListOf<FlowSource<QuantityType, FlowableType>>()
+        var pulled: FlowableType? = null
+        val totalInputFlowRate = sources.sumOf { it.realFlowRate }
+        sources.forEach { source ->
+            val ratio = source.realFlowRate.divSameUnit(totalInputFlowRate)
+            val splitAmount = amount * ratio
+            source.pullFlow(splitAmount, timeFrame, flowId)?.let { chunk ->
+                if (pulled == null) pulled = chunk
+                else pulled!!.add(chunk)
+
+                if (chunk.amount.closeEquals(splitAmount)) {
+                    unexhaustedSources += source
                 }
             }
         }
+
+        val leftToPull = if (pulled == null) amount else amount - pulled!!.amount
+        if (leftToPull.isNotNegligible() && unexhaustedSources.isNotEmpty()){
+            tryPull(unexhaustedSources, leftToPull, timeFrame, flowId)?.let { chunk ->
+                pulled!!.add(chunk)
+            }
+        }
+
         return pulled
     }
 
