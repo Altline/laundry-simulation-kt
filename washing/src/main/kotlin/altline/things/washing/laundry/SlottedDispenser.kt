@@ -14,6 +14,9 @@ abstract class SlottedDispenser(
     protected abstract val solventInputJunction: SubstanceConduit
     protected abstract val solventOutputJunction: SubstanceConduit
 
+    override val inputPort by lazy { solventInputJunction.inputs[0] }
+    override val outputPort by lazy { solventOutputJunction.outputs[0] }
+
     private var isTrayClosed = true
 
     fun openTray() {
@@ -27,22 +30,6 @@ abstract class SlottedDispenser(
     }
 
     protected abstract fun refreshTrayConnections()
-
-    override fun connectSolventSource(source: SubstanceSourcePort) {
-        source connectTo solventInputJunction.inputs[0]
-    }
-
-    override fun disconnectSolventSource() {
-        solventInputJunction.disconnectInputs()
-    }
-
-    override fun connectDrain(drain: SubstanceDrainPort) {
-        drain connectTo solventOutputJunction.outputs[0]
-    }
-
-    override fun disconnectDrain() {
-        solventOutputJunction.disconnectOutputs()
-    }
 
     protected inner class Channel(
         private val index: Int

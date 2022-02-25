@@ -4,11 +4,8 @@ import altline.things.substance.transit.SubstanceDrainPort
 import altline.things.substance.transit.SubstanceSourcePort
 
 interface WashDispenser {
-    fun connectSolventSource(source: SubstanceSourcePort)
-    fun disconnectSolventSource()
-
-    fun connectDrain(drain: SubstanceDrainPort)
-    fun disconnectDrain()
+    val inputPort: SubstanceDrainPort
+    val outputPort: SubstanceSourcePort
 
     fun dispenseMainDetergent()
     fun haltMainDetergent()
