@@ -12,8 +12,8 @@ interface MutableFlowable<QuantityType : Units> : Flowable<QuantityType> {
 }
 
 interface FlowSource<QuantityType : Units, FlowableType : Flowable<QuantityType>> {
-    val maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>
-    val realFlowRate: Measure<UnitsRatio<QuantityType, Time>>
+    val maxOutputFlowRate: Measure<UnitsRatio<QuantityType, Time>>
+    val realOutputFlowRate: Measure<UnitsRatio<QuantityType, Time>>
 
     val outputCount: Int
     val outputs: Array<Port<QuantityType, FlowableType>>
@@ -49,8 +49,8 @@ interface FlowSource<QuantityType : Units, FlowableType : Flowable<QuantityType>
 }
 
 interface FlowDrain<QuantityType : Units, FlowableType : Flowable<QuantityType>> {
-    val maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>
-    val realFlowRate: Measure<UnitsRatio<QuantityType, Time>>
+    val maxInputFlowRate: Measure<UnitsRatio<QuantityType, Time>>
+    val realInputFlowRate: Measure<UnitsRatio<QuantityType, Time>>
 
     val inputCount: Int
     val inputs: Array<Port<QuantityType, FlowableType>>

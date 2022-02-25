@@ -5,17 +5,27 @@ import altline.things.substance.isNotEmpty
 import io.nacular.measured.units.*
 
 open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<QuantityType>>(
-    final override val maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>,
+    final override val maxInputFlowRate: Measure<UnitsRatio<QuantityType, Time>>,
+    final override val maxOutputFlowRate: Measure<UnitsRatio<QuantityType, Time>>,
     final override val inputCount: Int = 1,
     final override val outputCount: Int = 1
 ) : Conduit<QuantityType, FlowableType> {
+
+    constructor(
+        maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>,
+        inputCount: Int = 1,
+        outputCount: Int = 1
+    ) : this(maxFlowRate, maxFlowRate, inputCount, outputCount)
 
     init {
         require(inputCount > 0)
         require(outputCount > 0)
     }
 
-    override var realFlowRate = maxFlowRate
+    override var realInputFlowRate = maxInputFlowRate
+        protected set
+
+    override var realOutputFlowRate = maxOutputFlowRate
         protected set
 
     override val inputs = Array(inputCount) { FlowDrain.Port(this) }
@@ -35,9 +45,8 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
     @Suppress("UNCHECKED_CAST")
     override fun pushFlow(flowable: FlowableType, timeFrame: Measure<Time>, flowId: Long): Measure<QuantityType> {
         if (checkId(flowId)) {
-            val pushableAmount = realFlowRate * timeFrame
-            val amountToPush = flowable.amount.coerceAtMost(pushableAmount)
-            val chunk = flowable.extract(amountToPush) as FlowableType
+            val flowableAmount = minOf(realInputFlowRate, realOutputFlowRate) * timeFrame
+            val chunk = flowable.extract(flowableAmount) as FlowableType
             tryPush(connectedDrains, chunk, timeFrame, flowId)
             flowable.add(chunk)
         }
@@ -52,9 +61,9 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
         flowId: Long
     ) {
         val nonSpillingDrains = mutableListOf<FlowDrain<QuantityType, FlowableType>>()
-        val totalOutputFlowRate = drains.sumOf { it.realFlowRate }
+        val totalOutputFlowRate = drains.sumOf { it.realInputFlowRate }
         drains.forEach { drain ->
-            val ratio = drain.realFlowRate.divSameUnit(totalOutputFlowRate)
+            val ratio = drain.realInputFlowRate.divSameUnit(totalOutputFlowRate)
             val splitAmount = toPush.amount * ratio
             val chunk = toPush.extract(splitAmount) as FlowableType
             val leftoverAmount = drain.pushFlow(chunk, timeFrame, flowId)
@@ -70,9 +79,8 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
 
     override fun pullFlow(amount: Measure<QuantityType>, timeFrame: Measure<Time>, flowId: Long): FlowableType? {
         if (checkId(flowId)) {
-            val pullableAmount = realFlowRate * timeFrame
-            val amountToPull = amount.coerceAtMost(pullableAmount)
-            return tryPull(connectedSources, amountToPull, timeFrame, flowId)
+            val flowableAmount = minOf(realInputFlowRate, realOutputFlowRate) * timeFrame
+            return tryPull(connectedSources, flowableAmount, timeFrame, flowId)
         }
         return null
     }
@@ -85,9 +93,9 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
     ): FlowableType? {
         val unexhaustedSources = mutableListOf<FlowSource<QuantityType, FlowableType>>()
         var pulled: FlowableType? = null
-        val totalInputFlowRate = sources.sumOf { it.realFlowRate }
+        val totalInputFlowRate = sources.sumOf { it.realOutputFlowRate }
         sources.forEach { source ->
-            val ratio = source.realFlowRate.divSameUnit(totalInputFlowRate)
+            val ratio = source.realOutputFlowRate.divSameUnit(totalInputFlowRate)
             val splitAmount = amount * ratio
             source.pullFlow(splitAmount, timeFrame, flowId)?.let { chunk ->
                 if (pulled == null) pulled = chunk
@@ -100,7 +108,7 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
         }
 
         val leftToPull = if (pulled == null) amount else amount - pulled!!.amount
-        if (leftToPull.isNotNegligible() && unexhaustedSources.isNotEmpty()){
+        if (leftToPull.isNotNegligible() && unexhaustedSources.isNotEmpty()) {
             tryPull(unexhaustedSources, leftToPull, timeFrame, flowId)?.let { chunk ->
                 pulled!!.add(chunk)
             }

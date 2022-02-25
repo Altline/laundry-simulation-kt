@@ -9,11 +9,11 @@ class Valve(
     maxFlowRate: Measure<UnitsRatio<Volume, Time>>
 ) : BasicSubstanceConduit(maxFlowRate) {
 
-    fun open(flowRate: Measure<UnitsRatio<Volume, Time>> = maxFlowRate) {
-        realFlowRate = flowRate.coerceIn(0.0 * liters / seconds, maxFlowRate)
+    fun open(flowRate: Measure<UnitsRatio<Volume, Time>> = maxOutputFlowRate) {
+        realOutputFlowRate = flowRate.coerceIn(0.0 * liters / seconds, maxOutputFlowRate)
     }
 
     fun close() {
-        realFlowRate = 0.0 * liters / seconds
+        realOutputFlowRate = 0.0 * liters / seconds
     }
 }
