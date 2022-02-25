@@ -1,7 +1,7 @@
 package altline.things.washing.laundry
 
 import altline.things.measure.Volume
-import altline.things.substance.Substance
+import altline.things.substance.MutableSubstance
 import altline.things.substance.transit.*
 import altline.things.washing.WashDispenser
 import io.nacular.measured.units.*
@@ -75,31 +75,31 @@ abstract class SlottedDispenser(
 
     interface Tray {
         fun getSlot(index: Int): Slot
-        fun empty(): Substance
+        fun empty(): MutableSubstance
 
         class Slot(
             val capacity: Measure<Volume>,
             maxFlowRate: Measure<UnitsRatio<Volume, Time>>
         ) : BasicSubstanceConduit(maxFlowRate) {
 
-            private val additive = Substance()
+            private val additive = MutableSubstance()
 
-            fun fill(additive: Substance) {
+            fun fill(additive: MutableSubstance) {
                 val amountToAdd = capacity - this.additive.amount
                 val toAdd = additive.extract(amountToAdd)
                 this.additive.add(toAdd)
             }
 
-            fun empty(): Substance {
+            fun empty(): MutableSubstance {
                 return this.additive.extractAll()
             }
 
-            override fun pushFlow(flowable: Substance, timeFrame: Measure<Time>, flowId: Long): Measure<Volume> {
+            override fun pushFlow(flowable: MutableSubstance, timeFrame: Measure<Time>, flowId: Long): Measure<Volume> {
                 flowable.add(additive.extractAll())
                 return super.pushFlow(flowable, timeFrame, flowId)
             }
 
-            override fun pullFlow(amount: Measure<Volume>, timeFrame: Measure<Time>, flowId: Long): Substance? {
+            override fun pullFlow(amount: Measure<Volume>, timeFrame: Measure<Time>, flowId: Long): MutableSubstance? {
                 return null
             }
         }

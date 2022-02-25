@@ -4,9 +4,11 @@ import io.nacular.measured.units.*
 
 interface Flowable<QuantityType : Units> {
     val amount: Measure<QuantityType>
+}
 
-    fun add(other: Flowable<QuantityType>)
-    fun extract(amount: Measure<QuantityType>): Flowable<QuantityType>
+interface MutableFlowable<QuantityType : Units> : Flowable<QuantityType> {
+    fun add(other: MutableFlowable<QuantityType>)
+    fun extract(amount: Measure<QuantityType>): MutableFlowable<QuantityType>
 }
 
 interface FlowSource<QuantityType : Units, FlowableType : Flowable<QuantityType>> {

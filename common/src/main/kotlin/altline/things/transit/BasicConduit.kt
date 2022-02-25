@@ -4,7 +4,7 @@ import altline.things.measure.*
 import altline.things.substance.isNotEmpty
 import io.nacular.measured.units.*
 
-open class BasicConduit<QuantityType : Units, FlowableType : Flowable<QuantityType>>(
+open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<QuantityType>>(
     final override val maxFlowRate: Measure<UnitsRatio<QuantityType, Time>>,
     final override val inputCount: Int = 1,
     final override val outputCount: Int = 1

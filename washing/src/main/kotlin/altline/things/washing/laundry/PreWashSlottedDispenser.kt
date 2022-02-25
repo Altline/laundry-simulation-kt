@@ -1,9 +1,8 @@
 package altline.things.washing.laundry
 
 import altline.things.measure.Volume
-import altline.things.substance.Substance
+import altline.things.substance.MutableSubstance
 import altline.things.substance.transit.BasicSubstanceConduit
-import altline.things.substance.transit.SubstanceConduit
 import io.nacular.measured.units.*
 
 class PreWashSlottedDispenser(
@@ -63,7 +62,7 @@ class PreWashSlottedDispenser(
         val mainSoftenerSlot = SlottedDispenser.Tray.Slot(mainSoftenerCapacity, config.intakeFlowRate)
 
         override fun getSlot(index: Int): SlottedDispenser.Tray.Slot {
-            return when(index) {
+            return when (index) {
                 0 -> preWashDetergentSlot
                 1 -> mainDetergentSlot
                 2 -> mainSoftenerSlot
@@ -71,8 +70,8 @@ class PreWashSlottedDispenser(
             }
         }
 
-        override fun empty(): Substance {
-            return Substance().apply {
+        override fun empty(): MutableSubstance {
+            return MutableSubstance().apply {
                 add(preWashDetergentSlot.empty())
                 add(mainDetergentSlot.empty())
                 add(mainSoftenerSlot.empty())
