@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api(platform(project(":electricity")))
+    api(platform(project(":common")))
 
     implementation(kotlin("stdlib"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
