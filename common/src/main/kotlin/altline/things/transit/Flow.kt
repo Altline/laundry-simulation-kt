@@ -1,6 +1,9 @@
 package altline.things.transit
 
 import io.nacular.measured.units.*
+import io.nacular.measured.units.Time.Companion.seconds
+
+val DefaultFlowTimeFrame = 0.5 * seconds
 
 interface Flowable<QuantityType : Units> {
     val amount: Measure<QuantityType>
