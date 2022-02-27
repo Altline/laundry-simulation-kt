@@ -42,7 +42,7 @@ class MutableSubstance(
     override val parts = _parts as Set<Substance.Part>
 
     override fun add(other: MutableFlowable<Volume>) {
-        require(other is Substance)
+        require(other is MutableSubstance)
         other.parts.forEach { part ->
             val existingPart = _parts.find { it.type == part.type }
             if (existingPart != null) {
@@ -51,6 +51,7 @@ class MutableSubstance(
                 _parts += MutablePart(part.type, part.amount)
             }
         }
+        other._parts.clear()
     }
 
     override fun extract(amount: Measure<Volume>): MutableSubstance {
