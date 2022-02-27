@@ -2,7 +2,6 @@ package altline.things.measure
 
 import altline.things.measure.Energy.Companion.joules
 import altline.things.measure.Frequency.Companion.hertz
-import altline.things.measure.Power.Companion.watts
 import altline.things.measure.Spin.Companion.rpm
 import altline.things.measure.Volume.Companion.liters
 import altline.things.util.closeEquals
@@ -16,7 +15,6 @@ val SUnits: Units? = null
 inline fun <reified T : Units> Units?.zero(): Measure<T> {
     return when (T::class) {
         Energy::class -> 0.0 * (joules as T)
-        Power::class -> 0.0 * (watts as T)
         Frequency::class -> 0.0 * (hertz as T)
         Time::class -> 0.0 * (seconds as T)
         Spin::class -> 0.0 * (rpm as T)

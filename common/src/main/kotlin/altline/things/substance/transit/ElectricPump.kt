@@ -6,6 +6,7 @@ import altline.things.electricity.transit.ElectricalDrain
 import altline.things.electricity.transit.ElectricalDrainPort
 import altline.things.electricity.transit.ElectricalSource
 import altline.things.measure.Energy
+import altline.things.measure.Power
 import altline.things.measure.Volume
 import altline.things.measure.divSameUnit
 import altline.things.transit.DefaultFlowTimeFrame
@@ -16,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlin.random.Random
 
 class ElectricPump(
-    override val power: Measure<UnitsRatio<Energy, Time>>,
+    override val power: Measure<Power>,
     maxFlowRate: Measure<UnitsRatio<Volume, Time>>,
     inputCount: Int = 1,
     outputCount: Int = 1
