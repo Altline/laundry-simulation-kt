@@ -1,8 +1,10 @@
 package altline.things.electricity
 
-import altline.things.electricity.transit.ElectricalSource
+import altline.things.electricity.transit.ElectricalDrainPort
+import altline.things.measure.Energy
+import io.nacular.measured.units.*
 
 interface ElectricalDevice {
-    fun connectPowerSource(source: ElectricalSource)
-    fun disconnectPowerSource()
+    val power: Measure<UnitsRatio<Energy, Time>>
+    val powerInlet: ElectricalDrainPort
 }
