@@ -1,6 +1,7 @@
 package altline.things.substance.transit
 
 import altline.things.measure.Volume
+import altline.things.measure.VolumetricFlow
 import altline.things.measure.repeatPeriodically
 import altline.things.substance.MutableSubstance
 import altline.things.substance.isNotEmpty
@@ -15,8 +16,8 @@ open class Reservoir(
     val capacity: Measure<Volume>,
     val outflowThreshold: Measure<Volume>,
     shouldSpontaneouslyPush: Boolean,
-    inputFlowRate: Measure<UnitsRatio<Volume, Time>>,
-    outputFlowRate: Measure<UnitsRatio<Volume, Time>>
+    inputFlowRate: Measure<VolumetricFlow>,
+    outputFlowRate: Measure<VolumetricFlow>
 ) : BasicSubstanceConduit(inputFlowRate, outputFlowRate) {
 
     protected open val storedSubstance = MutableSubstance()

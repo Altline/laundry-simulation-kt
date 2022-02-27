@@ -1,8 +1,11 @@
 package altline.things.washing.laundry
 
 import altline.things.measure.Volume
+import altline.things.measure.VolumetricFlow
 import altline.things.substance.MutableSubstance
-import altline.things.substance.transit.*
+import altline.things.substance.transit.BasicSubstanceConduit
+import altline.things.substance.transit.SubstanceConduit
+import altline.things.substance.transit.Valve
 import altline.things.washing.WashDispenser
 import io.nacular.measured.units.*
 
@@ -66,7 +69,7 @@ abstract class SlottedDispenser(
 
         class Slot(
             val capacity: Measure<Volume>,
-            maxFlowRate: Measure<UnitsRatio<Volume, Time>>
+            maxFlowRate: Measure<VolumetricFlow>
         ) : BasicSubstanceConduit(maxFlowRate) {
 
             private val additive = MutableSubstance()

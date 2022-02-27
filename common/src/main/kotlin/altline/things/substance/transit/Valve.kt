@@ -1,15 +1,15 @@
 package altline.things.substance.transit
 
-import altline.things.measure.Volume
 import altline.things.measure.Volume.Companion.liters
+import altline.things.measure.VolumetricFlow
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
 class Valve(
-    maxFlowRate: Measure<UnitsRatio<Volume, Time>>
+    maxFlowRate: Measure<VolumetricFlow>
 ) : BasicSubstanceConduit(maxFlowRate) {
 
-    fun open(flowRate: Measure<UnitsRatio<Volume, Time>> = maxOutputFlowRate) {
+    fun open(flowRate: Measure<VolumetricFlow> = maxOutputFlowRate) {
         realOutputFlowRate = flowRate.coerceIn(0.0 * liters / seconds, maxOutputFlowRate)
     }
 
