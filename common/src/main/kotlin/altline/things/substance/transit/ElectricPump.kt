@@ -1,45 +1,42 @@
 package altline.things.substance.transit
 
-import altline.things.electricity.ElectricalDevice
-import altline.things.electricity.MutableElectricalEnergy
-import altline.things.electricity.transit.ElectricalDrain
-import altline.things.electricity.transit.ElectricalDrainPort
-import altline.things.electricity.transit.ElectricalSource
-import altline.things.measure.Energy
+import altline.things.electricity.BasicElectricalDevice
 import altline.things.measure.Power
 import altline.things.measure.Volume
 import altline.things.measure.divSameUnit
 import altline.things.transit.DefaultFlowTimeFrame
-import altline.things.util.CoroutineManager
 import io.nacular.measured.units.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlin.random.Random
 
 class ElectricPump(
-    override val power: Measure<Power>,
+    power: Measure<Power>,
     maxFlowRate: Measure<UnitsRatio<Volume, Time>>,
     inputCount: Int = 1,
     outputCount: Int = 1
-) : Pump(maxFlowRate, inputCount, outputCount), ElectricalDevice {
+) : BasicElectricalDevice(power) {
 
-    private val electricalDrain = object : ElectricalDrain {
-        override val maxInputFlowRate = power
-        override val realInputFlowRate = power
-        override val inputs = arrayOf(ElectricalDrainPort(this))
-        override val inputCount = inputs.size
+    private val pipe = object : BasicSubstanceConduit(maxFlowRate, inputCount, outputCount) {
+        override var realInputFlowRate: Measure<UnitsRatio<Volume, Time>>
+            get() = super.realInputFlowRate
+            public set(value) { super.realInputFlowRate = value }
 
-        override fun pushFlow(
-            flowable: MutableElectricalEnergy,
-            timeFrame: Measure<Time>,
-            flowId: Long
-        ): Measure<Energy> {
-            return flowable.amount
-        }
+        override var realOutputFlowRate: Measure<UnitsRatio<Volume, Time>>
+            get() = super.realOutputFlowRate
+            public set(value) { super.realOutputFlowRate = value }
     }
 
-    override val powerInlet = electricalDrain.inputs[0]
-    private val powerSource: ElectricalSource? = powerInlet.connectedPort?.owner
+    val substanceInputs = pipe.inputs
+    val substanceOutputs = pipe.outputs
+
+    val maxFlowRate: Measure<UnitsRatio<Volume, Time>>
+        get() = minOf(pipe.maxInputFlowRate, pipe.maxOutputFlowRate)
+
+    var realFlowRate: Measure<UnitsRatio<Volume, Time>>
+        get() = minOf(pipe.realInputFlowRate, pipe.realOutputFlowRate)
+        private set(value) {
+            pipe.realInputFlowRate = value
+            pipe.realOutputFlowRate = value
+        }
 
     var powerSetting: Double
         get() = realFlowRate.divSameUnit(maxFlowRate)
@@ -48,14 +45,14 @@ class ElectricPump(
             realFlowRate = value * maxFlowRate
         }
 
-    val running: Boolean
-        get() = coroutineManager.active
-
-    private val coroutineManager = CoroutineManager(CoroutineScope(Dispatchers.Default)) {
-        tryPump()
+    private fun pump(amount: Measure<Volume>, timeFrame: Measure<Time>) {
+        val chunk = pipe.pullFlow(amount, timeFrame, Random.nextLong())
+        if (chunk != null) {
+            pipe.pushFlow(chunk, timeFrame, Random.nextLong())
+        }
     }
 
-    private fun tryPump() {
+    override fun operate() {
         val timeFrame = DefaultFlowTimeFrame
         val requiredEnergy = (power * timeFrame) * powerSetting
         val availableEnergy = powerSource?.pullFlow(requiredEnergy, timeFrame, Random.nextLong())?.amount
@@ -64,13 +61,5 @@ class ElectricPump(
             val pumpAmount = (realFlowRate * timeFrame) * energyRatio
             pump(pumpAmount, timeFrame)
         }
-    }
-
-    fun start() {
-        coroutineManager.active = true
-    }
-
-    fun stop() {
-        coroutineManager.active = false
     }
 }
