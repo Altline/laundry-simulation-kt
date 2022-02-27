@@ -45,7 +45,7 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
     @Suppress("UNCHECKED_CAST")
     override fun pushFlow(flowable: FlowableType, timeFrame: Measure<Time>, flowId: Long): Measure<QuantityType> {
         if (checkId(flowId)) {
-            val flowableAmount = minOf(realInputFlowRate, realOutputFlowRate) * timeFrame
+            val flowableAmount = realOutputFlowRate * timeFrame
             val chunk = flowable.extract(flowableAmount) as FlowableType
             tryPush(connectedDrains, chunk, timeFrame, flowId)
             flowable.add(chunk)
@@ -79,7 +79,7 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
 
     override fun pullFlow(amount: Measure<QuantityType>, timeFrame: Measure<Time>, flowId: Long): FlowableType? {
         if (checkId(flowId)) {
-            val flowableAmount = minOf(realInputFlowRate, realOutputFlowRate) * timeFrame
+            val flowableAmount = realInputFlowRate * timeFrame
             return tryPull(connectedSources, flowableAmount, timeFrame, flowId)
         }
         return null
