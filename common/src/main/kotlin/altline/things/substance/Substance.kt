@@ -65,7 +65,7 @@ class MutableSubstance(
         return MutableSubstance(newParts)
     }
 
-    fun extractAll(): MutableSubstance {
+    override fun extractAll(): MutableSubstance {
         return MutableSubstance(parts).also { _parts.clear() }
     }
 

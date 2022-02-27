@@ -12,6 +12,7 @@ interface Flowable<QuantityType : Units> {
 interface MutableFlowable<QuantityType : Units> : Flowable<QuantityType> {
     fun add(other: MutableFlowable<QuantityType>)
     fun extract(amount: Measure<QuantityType>): MutableFlowable<QuantityType>
+    fun extractAll(): MutableFlowable<QuantityType>
 }
 
 interface FlowSource<QuantityType : Units, FlowableType : Flowable<QuantityType>> {
