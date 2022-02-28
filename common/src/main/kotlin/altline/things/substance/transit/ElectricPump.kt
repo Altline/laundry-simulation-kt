@@ -16,34 +16,16 @@ class ElectricPump(
     outputCount: Int = 1
 ) : BasicElectricalDevice(power) {
 
-    private val pipe = object : BasicSubstanceConduit(maxFlowRate, inputCount, outputCount) {
-        override var realInputFlowRate: Measure<VolumetricFlow>
-            get() = super.realInputFlowRate
-            public set(value) { super.realInputFlowRate = value }
-
-        override var realOutputFlowRate: Measure<VolumetricFlow>
-            get() = super.realOutputFlowRate
-            public set(value) { super.realOutputFlowRate = value }
-    }
+    private val pipe = Valve(maxFlowRate, inputCount, outputCount)
 
     val substanceInputs = pipe.inputs
     val substanceOutputs = pipe.outputs
 
-    val maxFlowRate: Measure<VolumetricFlow>
-        get() = minOf(pipe.maxInputFlowRate, pipe.maxOutputFlowRate)
-
-    var realFlowRate: Measure<VolumetricFlow>
-        get() = minOf(pipe.realInputFlowRate, pipe.realOutputFlowRate)
-        private set(value) {
-            pipe.realInputFlowRate = value
-            pipe.realOutputFlowRate = value
-        }
-
     var powerSetting: Double
-        get() = realFlowRate.divSameUnit(maxFlowRate)
+        get() = pipe.realFlowRate.divSameUnit(pipe.maxFlowRate)
         set(value) {
             require(value in 0.0..1.0)
-            realFlowRate = value * maxFlowRate
+            pipe.open(value * pipe.maxFlowRate)
         }
 
     private fun pump(amount: Measure<Volume>, timeFrame: Measure<Time>) {
@@ -59,7 +41,7 @@ class ElectricPump(
         val availableEnergy = powerSource?.pullFlow(requiredEnergy, timeFrame, Random.nextLong())?.amount
         if (availableEnergy != null) {
             val energyRatio = availableEnergy / requiredEnergy
-            val pumpAmount = (realFlowRate * timeFrame) * energyRatio
+            val pumpAmount = (pipe.realFlowRate * timeFrame) * energyRatio
             pump(pumpAmount, timeFrame)
         }
     }
