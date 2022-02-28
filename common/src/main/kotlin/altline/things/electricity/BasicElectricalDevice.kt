@@ -32,14 +32,12 @@ abstract class BasicElectricalDevice(
     final override val powerInlet = inletDrain.inputs[0]
     protected val powerSource: ElectricalSource? = powerInlet.connectedPort?.owner
 
-    val running: Boolean
-        get() = coroutineManager.active
-
     private val coroutineManager = CoroutineManager(CoroutineScope(Dispatchers.Default)) {
         operate()
     }
 
-    protected abstract fun operate()
+    val running: Boolean
+        get() = coroutineManager.active
 
     fun start() {
         coroutineManager.active = true
@@ -48,4 +46,6 @@ abstract class BasicElectricalDevice(
     fun stop() {
         coroutineManager.active = false
     }
+
+    protected abstract fun operate()
 }

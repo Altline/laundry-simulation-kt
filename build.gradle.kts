@@ -12,8 +12,15 @@ repositories {
 
 dependencies {
     constraints {
+        api(project(":util"))
         api(project(":measure"))
+        api(project(":common"))
+        api(project(":fabric"))
+        api(project(":washing"))
     }
+
+    api(platform(project(":fabric")))
+    api(platform(project(":washing")))
 
     implementation(kotlin("stdlib"))
     implementation(KotlinxCoroutines.core)

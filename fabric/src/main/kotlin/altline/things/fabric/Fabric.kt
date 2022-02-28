@@ -2,8 +2,8 @@ package altline.things.fabric
 
 import altline.things.common.Body
 import altline.things.measure.Volume
-import altline.things.substance.Soakable
 import altline.things.substance.MutableSubstance
+import altline.things.substance.Soakable
 import altline.things.substance.Substance
 import io.nacular.measured.units.*
 

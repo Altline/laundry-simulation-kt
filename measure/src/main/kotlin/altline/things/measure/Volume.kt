@@ -1,6 +1,5 @@
 package altline.things.measure
 
-import altline.things.measure.Volume.Companion.liters
 import io.nacular.measured.units.*
 
 class Volume(suffix: String, ratio: Double = 1.0): Units(suffix, ratio) {

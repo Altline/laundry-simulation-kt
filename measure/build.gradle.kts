@@ -14,7 +14,6 @@ dependencies {
     api(platform(project(":util")))
 
     implementation(kotlin("stdlib"))
-    implementation(KotlinxCoroutines.core)
     implementation(Measured.measured)
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
