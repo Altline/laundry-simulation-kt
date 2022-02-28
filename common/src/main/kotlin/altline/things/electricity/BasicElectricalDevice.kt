@@ -5,8 +5,10 @@ import altline.things.electricity.transit.ElectricalDrainPort
 import altline.things.electricity.transit.ElectricalSource
 import altline.things.measure.Energy
 import altline.things.measure.Power
+import altline.things.measure.repeatPeriodically
 import altline.things.util.CoroutineManager
 import io.nacular.measured.units.*
+import io.nacular.measured.units.Time.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -32,8 +34,12 @@ abstract class BasicElectricalDevice(
     final override val powerInlet = inletDrain.inputs[0]
     protected val powerSource: ElectricalSource? = powerInlet.connectedPort?.owner
 
+    protected val tickPeriod = 0.5 * seconds
+
     private val coroutineManager = CoroutineManager(CoroutineScope(Dispatchers.Default)) {
-        operate()
+        repeatPeriodically(tickPeriod) {
+            operate()
+        }
     }
 
     val running: Boolean

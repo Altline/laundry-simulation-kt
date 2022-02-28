@@ -5,7 +5,6 @@ import altline.things.measure.Power
 import altline.things.measure.Volume
 import altline.things.measure.VolumetricFlow
 import altline.things.measure.divSameUnit
-import altline.things.transit.DefaultFlowTimeFrame
 import io.nacular.measured.units.*
 import kotlin.random.Random
 
@@ -36,13 +35,12 @@ class ElectricPump(
     }
 
     override fun operate() {
-        val timeFrame = DefaultFlowTimeFrame
-        val requiredEnergy = (power * timeFrame) * powerSetting
-        val availableEnergy = powerSource?.pullFlow(requiredEnergy, timeFrame, Random.nextLong())?.amount
+        val requiredEnergy = (power * tickPeriod) * powerSetting
+        val availableEnergy = powerSource?.pullFlow(requiredEnergy, tickPeriod, Random.nextLong())?.amount
         if (availableEnergy != null) {
             val energyRatio = availableEnergy / requiredEnergy
-            val pumpAmount = (pipe.realFlowRate * timeFrame) * energyRatio
-            pump(pumpAmount, timeFrame)
+            val pumpAmount = (pipe.realFlowRate * tickPeriod) * energyRatio
+            pump(pumpAmount, tickPeriod)
         }
     }
 }
