@@ -1,13 +1,13 @@
 package altline.things.washing.laundry
 
 import altline.things.common.Body
-import altline.things.measure.Spin
 import altline.things.measure.Volume
+import altline.things.spin.Spinnable
 import altline.things.substance.transit.SubstanceDrainPort
 import altline.things.substance.transit.SubstanceSourcePort
 import io.nacular.measured.units.*
 
-interface Drum {
+interface Drum : Spinnable {
     val capacity: Measure<Volume>
     val excessLiquidAmount: Measure<Volume>
 
@@ -19,6 +19,4 @@ interface Drum {
     fun unload(item: Body)
     fun unload(items: Collection<Body>)
     fun unload(): List<Body>
-
-    suspend fun spin(speed: Measure<Spin>, duration: Measure<Time>)
 }

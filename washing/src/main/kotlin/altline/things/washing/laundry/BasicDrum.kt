@@ -5,7 +5,6 @@ import altline.things.common.volume
 import altline.things.measure.Spin
 import altline.things.measure.Volume
 import altline.things.measure.Volume.Companion.liters
-import altline.things.measure.delay
 import altline.things.measure.sumOf
 import altline.things.substance.MutableSubstance
 import altline.things.substance.Soakable
@@ -14,7 +13,6 @@ import altline.things.substance.transit.Reservoir
 import altline.things.washing.cleaningPower
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
-import kotlinx.coroutines.delay
 
 class BasicDrum(
     capacity: Measure<Volume>,
@@ -94,28 +92,21 @@ class BasicDrum(
         }
     }
 
-    override suspend fun spin(speed: Measure<Spin>, duration: Measure<Time>) {
-        if (effectiveCleaningPower == 0.0 || laundry.isEmpty()) {
-            delay(duration)
-            return
-        }
+    override fun spin(speed: Measure<Spin>, duration: Measure<Time>) {
+        if (effectiveCleaningPower == 0.0 || laundry.isEmpty()) return
 
-        val seconds = (duration `in` seconds).toInt()
-        repeat(seconds) {
-            delay(1000)
-            for (piece in laundry) {
-                wash(piece, speed)
-            }
+        for (piece in laundry) {
+            wash(piece, speed, duration `in` seconds)
         }
     }
 
-    private fun wash(body: Body, spinSpeed: Measure<Spin>) {
+    private fun wash(body: Body, spinSpeed: Measure<Spin>, seconds: Double) {
         if (spinSpeed > config.centrifugeThreshold) return
 
         val spinEffectiveness = spinSpeed / config.centrifugeThreshold
         val finalCleaningPower = effectiveCleaningPower * spinEffectiveness
 
-        val stainAmountToClear = body.stainSubstance.amount * finalCleaningPower
+        val stainAmountToClear = body.stainSubstance.amount * finalCleaningPower * seconds
         val clearedStain = body.clearStain(stainAmountToClear)
         storedSubstance.add(clearedStain)
 
@@ -125,7 +116,7 @@ class BasicDrum(
             body.resoakWith(storedSubstance, resoakAmount)
 
             val diff = body.soakedSubstance.fresheningPotential - body.freshness
-            val step = diff / 10 * spinEffectiveness
+            val step = diff / 10 * spinEffectiveness * seconds
             body.freshness += step
         }
     }
