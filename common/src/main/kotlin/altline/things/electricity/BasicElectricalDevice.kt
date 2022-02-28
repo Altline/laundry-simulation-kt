@@ -11,6 +11,7 @@ import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlin.random.Random
 
 abstract class BasicElectricalDevice(
     final override val power: Measure<Power>
@@ -54,4 +55,8 @@ abstract class BasicElectricalDevice(
     }
 
     protected abstract fun operate()
+
+    protected fun pullEnergy(amount: Measure<Energy>, timeFrame: Measure<Time>): MutableElectricalEnergy? {
+        return powerSource?.pullFlow(amount, timeFrame, Random.nextLong())
+    }
 }
