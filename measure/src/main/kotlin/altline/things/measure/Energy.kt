@@ -7,5 +7,6 @@ class Energy(suffix: String, ratio: Double = 1.0): Units(suffix, ratio) {
 
     companion object {
         val joules = Energy("J")
+        val calories = Energy("cal", 4.184)
     }
 }
