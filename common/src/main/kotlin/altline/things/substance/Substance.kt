@@ -1,5 +1,7 @@
 package altline.things.substance
 
+import altline.things.measure.Temperature
+import altline.things.measure.Temperature.Companion.celsius
 import altline.things.measure.Volume
 import altline.things.measure.isNegligible
 import altline.things.measure.sumOf
@@ -9,6 +11,7 @@ import io.nacular.measured.units.*
 
 interface Substance : Flowable<Volume> {
     val parts: Set<Part>
+    val temperature: Measure<Temperature>
 
     override val amount: Measure<Volume>
         get() = parts.sumOf { it.amount }
@@ -30,19 +33,24 @@ interface Substance : Flowable<Volume> {
 }
 
 class MutableSubstance(
-    parts: Set<Substance.Part>
+    parts: Set<Substance.Part>,
+    override var temperature: Measure<Temperature>
 ) : Substance, MutableFlowable<Volume> {
 
-    constructor(type: SubstanceType, amount: Measure<Volume>)
-            : this(setOf(Substance.Part(type, amount)))
+    constructor(
+        type: SubstanceType,
+        amount: Measure<Volume>,
+        temperature: Measure<Temperature>
+    ) : this(setOf(Substance.Part(type, amount)), temperature)
 
-    constructor() : this(emptySet())
+    constructor() : this(emptySet(), 0.0 * celsius)
 
     private val _parts = mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
     override val parts = _parts as Set<Substance.Part>
 
     override fun add(other: MutableFlowable<Volume>) {
         require(other is MutableSubstance)
+        val newTemperature = mergeTemperature(other)
         other.parts.forEach { part ->
             val existingPart = _parts.find { it.type == part.type }
             if (existingPart != null) {
@@ -52,6 +60,14 @@ class MutableSubstance(
             }
         }
         other._parts.clear()
+        this.temperature = newTemperature
+    }
+
+    private fun mergeTemperature(other: Substance): Measure<Temperature> {
+        val totalAmount = this.amount + other.amount
+        val thisRatio = this.amount / totalAmount
+        val otherRatio = other.amount / totalAmount
+        return (this.temperature * thisRatio) + (other.temperature * otherRatio)
     }
 
     override fun extract(amount: Measure<Volume>): MutableSubstance {
@@ -63,11 +79,11 @@ class MutableSubstance(
             newParts += Substance.Part(part.type, separatedAmount)
         }
         _parts.removeAll { it.amount.isNegligible() }
-        return MutableSubstance(newParts)
+        return MutableSubstance(newParts, temperature)
     }
 
     override fun extractAll(): MutableSubstance {
-        return MutableSubstance(parts).also { _parts.clear() }
+        return MutableSubstance(parts, temperature).also { _parts.clear() }
     }
 
     fun remixWith(other: MutableSubstance, amount: Measure<Volume>) {
