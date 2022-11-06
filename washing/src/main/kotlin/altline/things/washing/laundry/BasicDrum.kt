@@ -3,9 +3,9 @@ package altline.things.washing.laundry
 import altline.things.common.Body
 import altline.things.common.volume
 import altline.things.measure.Spin
+import altline.things.measure.Temperature.Companion.celsius
 import altline.things.measure.Volume
 import altline.things.measure.Volume.Companion.liters
-import altline.things.measure.sumOf
 import altline.things.substance.MutableSubstance
 import altline.things.substance.Soakable
 import altline.things.substance.fresheningPotential
@@ -34,22 +34,6 @@ class BasicDrum(
 
     override val excessLiquidAmount: Measure<Volume>
         get() = storedSubstanceAmount
-
-    private val totalLiquid: Measure<Volume>
-        get() {
-            val soakables = laundry.filterIsInstance<Soakable>()
-            val soakedAmount = soakables.sumOf { it.soakedSubstance.amount }
-            return soakedAmount + excessLiquidAmount
-        }
-
-    private val soakRatio: Double
-        get() = totalLiquid / laundry.volume
-
-    private val effectiveCleaningPower: Double
-        get() {
-            val soakCoefficient = (soakRatio - config.lowerSoakRatio) / config.upperSoakRatio - config.lowerSoakRatio
-            return storedSubstance.cleaningPower * soakCoefficient.coerceIn(0.0, 1.0)
-        }
 
     override fun load(item: Body) {
         if (doesFit(item)) {
@@ -93,8 +77,6 @@ class BasicDrum(
     }
 
     override fun spin(speed: Measure<Spin>, duration: Measure<Time>) {
-        if (effectiveCleaningPower == 0.0 || laundry.isEmpty()) return
-
         for (piece in laundry) {
             wash(piece, speed, duration `in` seconds)
         }
@@ -104,20 +86,39 @@ class BasicDrum(
         if (spinSpeed > config.centrifugeThreshold) return
 
         val spinEffectiveness = spinSpeed / config.centrifugeThreshold
-        val finalCleaningPower = effectiveCleaningPower * spinEffectiveness
-
-        val stainAmountToClear = body.stainSubstance.amount * finalCleaningPower * seconds
-        val clearedStain = body.clearStain(stainAmountToClear)
-        storedSubstance.add(clearedStain)
 
         if (body is Soakable) {
+            // resoak
             val resoakAmount = minOf(body.soakedSubstance.amount, excessLiquidAmount) *
                     config.nominalResoakFactor * spinEffectiveness
             body.resoakWith(storedSubstance, resoakAmount)
 
+            // freshen
             val diff = body.soakedSubstance.fresheningPotential - body.freshness
             val step = diff / 10 * spinEffectiveness * seconds
             body.freshness += step
+        }
+
+        // clean
+        val effectiveCleaningPower = calcCleaningPower(body) * spinEffectiveness
+        val stainAmountToClear = body.stainSubstance.amount * effectiveCleaningPower * seconds
+        val clearedStain = body.clearStain(stainAmountToClear)
+        storedSubstance.add(clearedStain)
+    }
+
+    private fun calcCleaningPower(body: Body): Double {
+        return if (body is Soakable) {
+            val soakRatio = body.soakedSubstance.amount / body.volume
+            val soakCoefficient = ((soakRatio - config.lowerSoakRatio) / config.upperSoakRatio - config.lowerSoakRatio)
+                .coerceIn(0.0, 1.0)
+            val temperatureCoefficient = (body.soakedSubstance.temperature / (100 * celsius))
+                .coerceIn(0.0, 1.0)
+            body.soakedSubstance.cleaningPower * soakCoefficient * temperatureCoefficient
+
+        } else {
+            val temperatureCoefficient = (storedSubstance.temperature / (100 * celsius))
+                .coerceIn(0.0, 1.0)
+            storedSubstance.cleaningPower * temperatureCoefficient
         }
     }
 }
