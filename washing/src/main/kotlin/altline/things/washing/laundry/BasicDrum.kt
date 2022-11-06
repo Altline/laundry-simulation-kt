@@ -2,6 +2,7 @@ package altline.things.washing.laundry
 
 import altline.things.common.Body
 import altline.things.common.volume
+import altline.things.electricity.ElectricHeater
 import altline.things.measure.Spin
 import altline.things.measure.Temperature.Companion.celsius
 import altline.things.measure.Volume
@@ -16,6 +17,7 @@ import io.nacular.measured.units.Time.Companion.seconds
 
 class BasicDrum(
     capacity: Measure<Volume>,
+    override val heater: ElectricHeater,
     private val config: LaundryWasherConfig
 ) : Drum,
     Reservoir(
@@ -34,6 +36,10 @@ class BasicDrum(
 
     override val excessLiquidAmount: Measure<Volume>
         get() = storedSubstanceAmount
+
+    init {
+        heater.heatedSubstance = storedSubstance
+    }
 
     override fun load(item: Body) {
         if (doesFit(item)) {
