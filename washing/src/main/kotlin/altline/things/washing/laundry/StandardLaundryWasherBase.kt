@@ -4,8 +4,7 @@ import altline.things.common.Body
 import altline.things.electricity.ElectricalDevice
 import altline.things.electricity.transit.BasicElectricalConduit
 import altline.things.electricity.transit.ElectricalDrainPort
-import altline.things.measure.Power
-import altline.things.measure.Volume
+import altline.things.measure.*
 import altline.things.spin.ElectricMotor
 import altline.things.substance.transit.BasicSubstanceConduit
 import altline.things.substance.transit.ElectricPump
@@ -62,9 +61,40 @@ abstract class StandardLaundryWasherBase(
     override fun start() = controller.start(this, machineScope)
     override fun stop() = controller.stop()
 
-    internal abstract suspend fun fillThroughDetergent(amount: Measure<Volume>)
-    internal abstract suspend fun fillThroughSoftener(amount: Measure<Volume>)
-    internal abstract suspend fun drain()
-    internal abstract suspend fun wash(params: WashParams)
-    internal abstract suspend fun spin(params: CentrifugeParams)
+    internal open suspend fun fillThroughDetergent(amount: Measure<Volume>) {
+        dispenser.dispenseMainDetergent()
+        trackLiquidUntil { it >= amount }
+        dispenser.haltMainDetergent()
+    }
+
+    internal open suspend fun fillThroughSoftener(amount: Measure<Volume>) {
+        dispenser.dispenseMainSoftener()
+        trackLiquidUntil { it >= amount }
+        dispenser.haltMainSoftener()
+    }
+
+    internal open suspend fun drain() {
+        pump.start()
+        trackLiquidUntil { it.isNegligible() }
+        pump.stop()
+    }
+
+    protected suspend fun trackLiquidUntil(
+        measureRate: Measure<Frequency> = config.waterMeasureRate,
+        condition: (liquidVolume: Measure<Volume>) -> Boolean
+    ) {
+        repeatPeriodically(measureRate) {
+            if (condition(drum.excessLiquidAmount)) {
+                return@repeatPeriodically
+            }
+        }
+    }
+
+    internal open suspend fun wash(params: WashParams) {
+
+    }
+
+    internal open suspend fun spin(params: CentrifugeParams) {
+
+    }
 }
