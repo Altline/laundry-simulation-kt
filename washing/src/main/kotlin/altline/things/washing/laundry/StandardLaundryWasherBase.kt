@@ -13,6 +13,7 @@ import altline.things.washing.Washer
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlin.math.roundToInt
 
 abstract class StandardLaundryWasherBase(
     protected open val controller: LaundryWasherController,
@@ -79,6 +80,31 @@ abstract class StandardLaundryWasherBase(
         pump.stop()
     }
 
+    internal open suspend fun wash(params: WashParams) {
+        with(params) {
+            val cycleCount = (washDuration / (spinDuration + restDuration)).roundToInt()
+            repeat(cycleCount) {
+                spin(spinSpeed, spinDuration)
+                delay(restDuration)
+            }
+        }
+    }
+
+    internal open suspend fun centrifuge(params: CentrifugeParams) {
+        with(params) {
+            pump.start()
+            spin(spinSpeed, duration)
+            pump.stop()
+        }
+    }
+
+    private suspend fun spin(speed: Measure<Spin>, duration: Measure<Time>) {
+        drumMotor.speedSetting = speed
+        drumMotor.start()
+        delay(duration)
+        drumMotor.stop()
+    }
+
     protected suspend fun trackLiquidUntil(
         measureRate: Measure<Frequency> = config.waterMeasureRate,
         condition: (liquidVolume: Measure<Volume>) -> Boolean
@@ -88,13 +114,5 @@ abstract class StandardLaundryWasherBase(
                 return@repeatPeriodically
             }
         }
-    }
-
-    internal open suspend fun wash(params: WashParams) {
-
-    }
-
-    internal open suspend fun spin(params: CentrifugeParams) {
-
     }
 }
