@@ -56,11 +56,9 @@ abstract class StandardLaundryWasherBase(
     override val running: Boolean
         get() = controller.running
 
-    override fun load(item: Body) = drum.load(item)
-    override fun load(items: Collection<Body>) = drum.load(items)
-    override fun unload(item: Body) = drum.unload(item)
-    override fun unload(items: Collection<Body>) = drum.unload(items)
-    override fun unload(): List<Body> = drum.unload()
+    override fun load(vararg items: Body) = drum.load(*items)
+    override fun unload(vararg items: Body) = drum.unload(*items)
+    override fun unloadAll(): List<Body> = drum.unloadAll()
     override fun start() = controller.start(this, machineScope)
     override fun stop() = controller.stop()
 

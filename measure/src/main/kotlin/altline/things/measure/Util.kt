@@ -64,6 +64,14 @@ inline fun <T, reified U : Units> Collection<T>.sumOf(selector: (T) -> Measure<U
     return sum
 }
 
+inline fun <T, reified U : Units> Array<T>.sumOf(selector: (T) -> Measure<U>): Measure<U> {
+    var sum: Measure<U> = SUnits.zero()
+    for (element in this) {
+        sum += selector(element)
+    }
+    return sum
+}
+
 /** Redefinition of an existing div function from [Units] to avoid overload ambiguity. */
 fun <T : Units> Measure<T>.divSameUnit(other: Measure<T>): Double =
     amount / other.amount * (units.ratio / other.units.ratio)

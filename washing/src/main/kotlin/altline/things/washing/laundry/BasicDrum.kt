@@ -41,30 +41,17 @@ class BasicDrum(
         heater.heatedSubstance = storedSubstance
     }
 
-    override fun load(item: Body) {
-        if (doesFit(item)) {
-            _laundry += item
-        }
-    }
-
-    override fun load(items: Collection<Body>) {
-        if (doesFit(items)) {
+    override fun load(vararg items: Body) {
+        if (laundry.volume + items.volume <= capacity) {
             _laundry += items
         }
     }
 
-    private fun doesFit(item: Body) = laundry.volume + item.volume <= capacity
-    private fun doesFit(items: Collection<Body>) = laundry.volume + items.volume <= capacity
-
-    override fun unload(item: Body) {
-        _laundry -= item
-    }
-
-    override fun unload(items: Collection<Body>) {
+    override fun unload(vararg items: Body) {
         _laundry -= items.toSet()
     }
 
-    override fun unload(): List<Body> {
+    override fun unloadAll(): List<Body> {
         return ArrayList(laundry).also { _laundry.clear() }
     }
 

@@ -16,3 +16,6 @@ interface Body {
 
 val <T : Body> Collection<T>.volume: Measure<Volume>
     get() = sumOf { it.volume }
+
+val <T : Body> Array<T>.volume: Measure<Volume>
+    get() = sumOf { it.volume }
