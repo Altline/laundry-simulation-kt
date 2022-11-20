@@ -12,5 +12,7 @@ repositories {
 dependencies {
     api(platform(project(":platform")))
 
-    api(Libs.KotlinxCoroutines.core)
+    api(project(":util"))
+
+    api(Libs.Measured.measured)
 }

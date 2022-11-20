@@ -1,6 +1,6 @@
-rootProject.name = "things"
-include("measure")
-include("common")
-include("fabric")
+rootProject.name = "appliance-simulation"
+include("platform")
 include("util")
+include("core")
+include("fabric")
 include("washing")

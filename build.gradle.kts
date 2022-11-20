@@ -1,38 +1,35 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
-    kotlin("jvm") version Kotlin.version
-    application
+    kotlin("jvm") version Libs.Kotlin.version
+    id("org.jetbrains.compose") version Libs.Compose.version
 }
 
-group = "altline.things"
+group = "altline.appliance"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    google()
     mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 dependencies {
-    constraints {
-        api(project(":util"))
-        api(project(":measure"))
-        api(project(":common"))
-        api(project(":fabric"))
-        api(project(":washing"))
+    api(platform(project(":platform")))
+
+    api(project(":fabric"))
+    api(project(":washing"))
+
+    implementation(compose.desktop.currentOs)
+}
+
+compose.desktop {
+    application {
+        mainClass = "altline.appliance.MainKt"
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "appliance-simulation"
+            packageVersion = "1.0.0"
+        }
     }
-
-    api(platform(project(":fabric")))
-    api(platform(project(":washing")))
-
-    implementation(kotlin("stdlib"))
-    implementation(KotlinxCoroutines.core)
-
-    testImplementation(kotlin("test"))
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-}
-
-application {
-    mainClass.set("altline.things.MainKt")
-}
-
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
 }

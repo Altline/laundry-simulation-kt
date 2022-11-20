@@ -1,9 +1,8 @@
 plugins {
     kotlin("jvm")
-    java
 }
 
-group = "altline.things"
+group = "altline.appliance"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -11,13 +10,7 @@ repositories {
 }
 
 dependencies {
-    api(platform(project(":common")))
+    api(platform(project(":platform")))
 
-    implementation(kotlin("stdlib"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-}
-
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+    api(project(":core"))
 }
