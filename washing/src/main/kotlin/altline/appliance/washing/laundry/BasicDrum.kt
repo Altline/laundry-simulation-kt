@@ -31,8 +31,8 @@ class BasicDrum(
     override val inputPort = inputs[0]
     override val outputPort = outputs[0]
 
-    private val _laundry = mutableListOf<Body>()
-    val laundry = _laundry as List<Body>
+    private val _load = mutableSetOf<Body>()
+    override val load= _load as Set<Body>
 
     override val excessLiquidAmount: Measure<Volume>
         get() = storedSubstanceAmount
@@ -42,17 +42,17 @@ class BasicDrum(
     }
 
     override fun load(vararg items: Body) {
-        if (laundry.volume + items.volume <= capacity) {
-            _laundry += items
+        if (load.volume + items.volume <= capacity) {
+            _load += items
         }
     }
 
     override fun unload(vararg items: Body) {
-        _laundry -= items.toSet()
+        _load -= items.toSet()
     }
 
     override fun unloadAll(): List<Body> {
-        return ArrayList(laundry).also { _laundry.clear() }
+        return ArrayList(load).also { _load.clear() }
     }
 
     override fun pushFlow(flowable: MutableSubstance, timeFrame: Measure<Time>, flowId: Long): Measure<Volume> {
@@ -62,7 +62,7 @@ class BasicDrum(
     }
 
     private fun soakLaundry() {
-        laundry.forEach { piece ->
+        load.forEach { piece ->
             if (piece is Soakable) {
                 piece.soak(storedSubstance)
             }
@@ -70,7 +70,7 @@ class BasicDrum(
     }
 
     override fun spin(speed: Measure<Spin>, duration: Measure<Time>) {
-        for (piece in laundry) {
+        for (piece in load) {
             wash(piece, speed, duration `in` seconds)
         }
     }

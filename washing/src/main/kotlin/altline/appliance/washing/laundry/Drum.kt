@@ -11,6 +11,7 @@ import io.nacular.measured.units.*
 interface Drum : Spinnable {
     val capacity: Measure<Volume>
     val excessLiquidAmount: Measure<Volume>
+    val load: Set<Body>
     val heater: ElectricHeater
 
     val inputPort: SubstanceDrainPort
