@@ -19,6 +19,12 @@ abstract class Fabric(
     private val _soakedSubstance = MutableSubstance()
     override val soakedSubstance = _soakedSubstance as Substance
 
+    override val stainRatio: Double
+        get() = stainSubstance.amount / volume
+
+    override val soakRatio: Double
+        get() = soakedSubstance.amount / volume
+
     val totalVolume: Measure<Volume>
         get() = volume + stainSubstance.amount + soakedSubstance.amount
 
