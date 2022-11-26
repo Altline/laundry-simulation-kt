@@ -21,6 +21,7 @@ dependencies {
     api(project(":washing"))
 
     implementation(compose.desktop.currentOs)
+    implementation(Libs.Koin.core)
 }
 
 compose.desktop {
