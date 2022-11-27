@@ -2,11 +2,16 @@ package altline.appliance.ui.component
 
 import altline.appliance.ui.resources.AppIcons
 import altline.appliance.ui.resources.appicons.Stain
+import altline.appliance.ui.resources.get
+import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.theme.onSurfaceTinted
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.runtime.Composable
@@ -54,14 +59,14 @@ fun LaundryListItem(data: LaundryListItemUi) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconStat(
                     icon = AppIcons.Stain,
-                    contentDescription = "Stain percentage",
+                    contentDescription = strings["stainPercentage"],
                     text = "${data.stainRatio * 100}%"
                 )
                 if (data.soakRatio != null) {
                     Spacer(Modifier.width(16.dp))
                     IconStat(
                         icon = Icons.Default.WaterDrop,
-                        contentDescription = "Soak percentage", // TODO resource
+                        contentDescription = strings["soakPercentage"],
                         text = "${data.soakRatio * 100}%"
                     )
                 }
