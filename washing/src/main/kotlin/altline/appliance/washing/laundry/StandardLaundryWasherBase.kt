@@ -10,6 +10,7 @@ import altline.appliance.substance.transit.BasicSubstanceConduit
 import altline.appliance.substance.transit.ElectricPump
 import altline.appliance.substance.transit.SubstanceConduit
 import altline.appliance.washing.Washer
+import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,6 +59,13 @@ abstract class StandardLaundryWasherBase(
 
     override val load: Set<Body>
         get() = drum.load
+
+    val washCycles: List<LaundryWashCycle>
+        get() = controller.washCycles
+
+    var selectedWashCycle: LaundryWashCycle
+        get() = controller.selectedWashCycle
+        set(value) { controller.selectedWashCycle = value }
 
     override fun load(vararg items: Body) = drum.load(*items)
     override fun unload(vararg items: Body) = drum.unload(*items)
