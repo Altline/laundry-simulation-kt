@@ -1,10 +1,20 @@
 package altline.appliance.ui.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 @Composable
-fun InfoPanel(data: InfoPanelUi) {
-
+fun InfoPanel(
+    data: InfoPanelUi,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        Text(
+            text = data.washCycleName
+        )
+    }
 }
 
 data class InfoPanelUi(

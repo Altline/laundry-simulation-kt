@@ -1,18 +1,19 @@
 package altline.appliance.ui
 
-import altline.appliance.ui.component.LaundryPanel
-import altline.appliance.ui.component.LaundryPanelUi
 import altline.appliance.ui.component.InfoPanel
 import altline.appliance.ui.component.InfoPanelUi
+import altline.appliance.ui.component.LaundryPanel
+import altline.appliance.ui.component.LaundryPanelUi
 import altline.appliance.ui.theme.AppTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
     with(viewModel.uiState) {
-        Content(laundry, info)
+        Content(laundryPanel, infoPanel)
     }
 }
 
@@ -23,10 +24,10 @@ private fun Content(
 ) {
     Row {
         if (laundry != null) {
-            LaundryPanel(laundry)
+            LaundryPanel(laundry, Modifier.weight(0.5f))
         }
         if (washer != null) {
-            InfoPanel(washer)
+            InfoPanel(washer, Modifier.weight(0.5f))
         }
     }
 }

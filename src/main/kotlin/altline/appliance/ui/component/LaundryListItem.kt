@@ -1,24 +1,26 @@
 package altline.appliance.ui.component
 
+import altline.appliance.ui.resources.AppIcons
+import altline.appliance.ui.resources.appicons.Stain
 import altline.appliance.ui.theme.AppTheme
+import altline.appliance.ui.theme.onSurfaceTinted
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun LaundryListItem(data: LaundryListItemUi) {
     Box(
         Modifier
-            .width(IntrinsicSize.Max)
+            .fillMaxWidth()
             .height(IntrinsicSize.Min),
     ) {
         val barHeight: Float
@@ -42,21 +44,25 @@ fun LaundryListItem(data: LaundryListItemUi) {
             color = Color(0xffffdfbf)
         ) {}
 
-        Column {
+        Column(
+            Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Text(
                 text = data.title
             )
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 IconStat(
-                    icon = Icons.Default.Face,
+                    icon = AppIcons.Stain,
                     contentDescription = "Stain percentage",
-                    text = "${data.stainRatio * 100} %"
+                    text = "${data.stainRatio * 100}%"
                 )
                 if (data.soakRatio != null) {
+                    Spacer(Modifier.width(16.dp))
                     IconStat(
-                        icon = Icons.Default.Face,
+                        icon = Icons.Default.WaterDrop,
                         contentDescription = "Soak percentage", // TODO resource
-                        text = "${data.soakRatio * 100} %"
+                        text = "${data.soakRatio * 100}%"
                     )
                 }
             }
@@ -72,7 +78,8 @@ private fun RowScope.IconStat(
 ) {
     Icon(
         imageVector = icon,
-        contentDescription = contentDescription
+        contentDescription = contentDescription,
+        tint = MaterialTheme.colors.onSurfaceTinted
     )
     Text(
         text = text

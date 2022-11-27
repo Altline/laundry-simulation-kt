@@ -16,10 +16,11 @@ class MainViewModel(
 
     init {
         uiState = MainUiState(
-            laundry = laundryMapper.mapToLaundryPanel(
+            laundryPanel = laundryMapper.mapToLaundryPanel(
                 potentialLaundry = world.laundry.minus(world.washer.load),
                 loadedLaundry = world.washer.load
-            )
+            ),
+            infoPanel = laundryMapper.mapToInfoPanel(world.washer)
         )
     }
 }

@@ -86,5 +86,7 @@ class World {
 
         waterSource.outputs[0] connectTo washer.fluidIntake.inputs[0]
         washer.fluidOutlet.outputs[0] connectTo fluidDrain.inputs[0]
+
+        washer.load(laundry.first())
     }
 }
