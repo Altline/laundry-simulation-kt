@@ -21,6 +21,7 @@ dependencies {
     api(project(":washing"))
 
     implementation(compose.desktop.currentOs)
+    implementation(Libs.Compose.materialIconsExtended)
     implementation(Libs.Koin.core)
     implementation(Libs.Logging.Log4j2.core)
     implementation(Libs.Logging.Log4j2.api)

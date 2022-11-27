@@ -7,6 +7,7 @@ object Libs {
 
     object Compose {
         const val version = "1.3.0-beta03"
+        const val materialIconsExtended = "org.jetbrains.compose.material:material-icons-extended-desktop:$version"
     }
 
     object KotlinxCoroutines {
