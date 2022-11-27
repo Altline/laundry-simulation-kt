@@ -5,12 +5,10 @@ import altline.appliance.ui.resources.appicons.Stain
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
-import altline.appliance.ui.theme.onSurfaceTinted
 import altline.appliance.ui.util.formatPercentage
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -61,14 +59,16 @@ fun LaundryListItem(data: LaundryListItemUi) {
                 IconStat(
                     icon = AppIcons.Stain,
                     contentDescription = strings["stainPercentage"],
-                    text = formatPercentage(data.stainRatio)
+                    text = formatPercentage(data.stainRatio),
+                    tint = Color(0xff7a5928)
                 )
                 if (data.soakRatio != null) {
                     Spacer(Modifier.width(16.dp))
                     IconStat(
                         icon = Icons.Default.WaterDrop,
                         contentDescription = strings["soakPercentage"],
-                        text = formatPercentage(data.soakRatio)
+                        text = formatPercentage(data.soakRatio),
+                        tint = Color(0xff2a698e)
                     )
                 }
             }
@@ -80,12 +80,13 @@ fun LaundryListItem(data: LaundryListItemUi) {
 private fun RowScope.IconStat(
     icon: ImageVector,
     contentDescription: String,
-    text: String
+    text: String,
+    tint: Color
 ) {
     Icon(
         imageVector = icon,
         contentDescription = contentDescription,
-        tint = MaterialTheme.colors.onSurfaceTinted
+        tint = tint
     )
     Text(
         text = text
