@@ -8,7 +8,8 @@ import altline.appliance.substance.Soakable
 import altline.appliance.ui.component.InfoPanelUi
 import altline.appliance.ui.component.LaundryListItemUi
 import altline.appliance.ui.component.LaundryPanelUi
-import altline.appliance.ui.resources.Strings
+import altline.appliance.ui.resources.get
+import altline.appliance.ui.resources.strings
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
 
 class LaundryMapper {
@@ -44,22 +45,22 @@ class LaundryMapper {
 
     private fun mapToLaundryName(body: Body): String {
         return when (body) {
-            is Shirt -> Strings.laundryName_shirt
-            is Clothing -> Strings.laundryName_clothing
-            is Fabric -> Strings.laundryName_fabric
-            else -> Strings.laundryName_body
+            is Shirt -> strings["laundryName_shirt"]
+            is Clothing -> strings["laundryName_clothing"]
+            is Fabric -> strings["laundryName_fabric"]
+            else -> strings["laundryName_body"]
         }
     }
 
     private fun mapClothingSizeToString(size: Clothing.Size): String {
         return when (size) {
-            Clothing.Size.XXS -> Strings.clothingSize_XXS
-            Clothing.Size.XS -> Strings.clothingSize_XS
-            Clothing.Size.S -> Strings.clothingSize_S
-            Clothing.Size.M -> Strings.clothingSize_M
-            Clothing.Size.L -> Strings.clothingSize_L
-            Clothing.Size.XL -> Strings.clothingSize_XL
-            Clothing.Size.XXL -> Strings.clothingSize_XXL
+            Clothing.Size.XXS -> strings["clothingSize_XXS"]
+            Clothing.Size.XS -> strings["clothingSize_XS"]
+            Clothing.Size.S -> strings["clothingSize_S"]
+            Clothing.Size.M -> strings["clothingSize_M"]
+            Clothing.Size.L -> strings["clothingSize_L"]
+            Clothing.Size.XL -> strings["clothingSize_XL"]
+            Clothing.Size.XXL -> strings["clothingSize_XXL"]
         }
     }
 }
