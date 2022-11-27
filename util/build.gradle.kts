@@ -12,5 +12,6 @@ repositories {
 dependencies {
     api(platform(project(":platform")))
 
+    api(Libs.Logging.KotlinLogging.jvm)
     api(Libs.KotlinxCoroutines.core)
 }

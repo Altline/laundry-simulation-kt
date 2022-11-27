@@ -23,4 +23,17 @@ object Libs {
         const val version = "0.3.1"
         const val measured = "io.nacular.measured:measured:$version"
     }
+
+    object Logging {
+        object Log4j2 {
+            const val version = "2.19.0"
+            const val core = "org.apache.logging.log4j:log4j-core:$version"
+            const val api = "org.apache.logging.log4j:log4j-api:$version"
+            const val slf4jBridge = "org.apache.logging.log4j:log4j-slf4j2-impl:$version"
+        }
+        object KotlinLogging {
+            const val version = "3.0.4"
+            const val jvm = "io.github.microutils:kotlin-logging-jvm:$version"
+        }
+    }
 }

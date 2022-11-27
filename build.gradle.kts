@@ -22,6 +22,9 @@ dependencies {
 
     implementation(compose.desktop.currentOs)
     implementation(Libs.Koin.core)
+    implementation(Libs.Logging.Log4j2.core)
+    implementation(Libs.Logging.Log4j2.api)
+    implementation(Libs.Logging.Log4j2.slf4jBridge)
 }
 
 compose.desktop {
