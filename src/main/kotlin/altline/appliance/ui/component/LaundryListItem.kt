@@ -6,6 +6,7 @@ import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.theme.onSurfaceTinted
+import altline.appliance.ui.util.formatPercentage
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
@@ -60,14 +61,14 @@ fun LaundryListItem(data: LaundryListItemUi) {
                 IconStat(
                     icon = AppIcons.Stain,
                     contentDescription = strings["stainPercentage"],
-                    text = "${data.stainRatio * 100}%"
+                    text = formatPercentage(data.stainRatio)
                 )
                 if (data.soakRatio != null) {
                     Spacer(Modifier.width(16.dp))
                     IconStat(
                         icon = Icons.Default.WaterDrop,
                         contentDescription = strings["soakPercentage"],
-                        text = "${data.soakRatio * 100}%"
+                        text = formatPercentage(data.soakRatio)
                     )
                 }
             }
