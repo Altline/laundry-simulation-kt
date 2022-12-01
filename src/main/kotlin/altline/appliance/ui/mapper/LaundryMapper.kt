@@ -16,11 +16,24 @@ class LaundryMapper {
 
     fun mapToLaundryPanel(
         potentialLaundry: Set<Body>,
-        loadedLaundry: Set<Body>
+        loadedLaundry: Set<Body>,
+        selectedLaundryItem: Body?,
+        onItemClick: (Body) -> Unit,
+        onItemDoubleClick: (Body) -> Unit,
+        onTransferClick: () -> Unit
     ): LaundryPanelUi {
+        val bodyToListItem = { item: Body ->
+            mapToLaundryListItem(
+                item,
+                selected = item == selectedLaundryItem,
+                onClick = { onItemClick(item) },
+                onDoubleClick = { onItemDoubleClick(item) }
+            )
+        }
         return LaundryPanelUi(
-            potentialLaundry = potentialLaundry.map(this::mapToLaundryListItem),
-            loadedLaundry = loadedLaundry.map(this::mapToLaundryListItem)
+            potentialLaundry = potentialLaundry.map(bodyToListItem),
+            loadedLaundry = loadedLaundry.map(bodyToListItem),
+            onTransferClick = if (selectedLaundryItem != null) onTransferClick else null
         )
     }
 
@@ -30,15 +43,24 @@ class LaundryMapper {
         )
     }
 
-    private fun mapToLaundryListItem(body: Body): LaundryListItemUi {
+    private fun mapToLaundryListItem(
+        body: Body,
+        selected: Boolean,
+        onClick: () -> Unit,
+        onDoubleClick: () -> Unit
+    ): LaundryListItemUi {
         with(body) {
             val name = mapToLaundryName(this)
             val size = if (this is Clothing) mapClothingSizeToString(this.size) else ""
             val soakRatio = if (this is Soakable) this.soakRatio else null
             return LaundryListItemUi(
+                id = body.id,
                 title = "$name, $size",
                 stainRatio = this.stainRatio,
-                soakRatio = soakRatio
+                soakRatio = soakRatio,
+                selected = selected,
+                onClick = onClick,
+                onDoubleClick = onDoubleClick
             )
         }
     }

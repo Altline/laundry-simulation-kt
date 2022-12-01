@@ -12,7 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,8 +34,11 @@ fun LaundryPanel(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.ArrowDownward, contentDescription = null)
+            IconButton(
+                onClick = { data.onTransferClick?.invoke() },
+                enabled = data.onTransferClick != null
+            ) {
+                Icon(Icons.Default.SwapVert, contentDescription = null)
             }
         }
         LaundryList(data.loadedLaundry)
@@ -59,7 +62,8 @@ private fun ColumnScope.LaundryList(data: List<LaundryListItemUi>) {
 
 data class LaundryPanelUi(
     val potentialLaundry: List<LaundryListItemUi>,
-    val loadedLaundry: List<LaundryListItemUi>
+    val loadedLaundry: List<LaundryListItemUi>,
+    val onTransferClick: (() -> Unit)?
 ) {
     companion object {
         @Composable
@@ -72,7 +76,8 @@ data class LaundryPanelUi(
             loadedLaundry = listOf(
                 LaundryListItemUi.preview(),
                 LaundryListItemUi.preview()
-            )
+            ),
+            onTransferClick = null
         )
     }
 }

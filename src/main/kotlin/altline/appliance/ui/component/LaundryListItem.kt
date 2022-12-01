@@ -7,7 +7,9 @@ import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.util.formatPercentage
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.onClick
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -19,13 +21,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import java.util.*
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LaundryListItem(data: LaundryListItemUi) {
     Box(
         Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+            .onClick(
+                onClick = data.onClick,
+                // adding onDoubleClick delays the call of onClick, which is horrible, hoping for a change soon
+                //onDoubleClick = data.onDoubleClick
+            ),
     ) {
         val barHeight: Float
         if (data.soakRatio != null) {
@@ -73,6 +82,13 @@ fun LaundryListItem(data: LaundryListItemUi) {
                 }
             }
         }
+
+        if (data.selected) {
+            Surface(
+                Modifier.fillMaxSize(),
+                color = Color(0x440099ff)
+            ) {}
+        }
     }
 }
 
@@ -94,16 +110,24 @@ private fun RowScope.IconStat(
 }
 
 data class LaundryListItemUi(
+    val id: UUID,
     val title: String,
     val stainRatio: Double,
-    val soakRatio: Double?
+    val soakRatio: Double?,
+    val selected: Boolean,
+    val onClick: () -> Unit,
+    val onDoubleClick: () -> Unit
 ) {
     companion object {
         @Composable
         fun preview() = LaundryListItemUi(
+            id = UUID.randomUUID(),
             title = "Shirt",
             stainRatio = 0.13,
-            soakRatio = 0.88
+            soakRatio = 0.88,
+            selected = false,
+            onClick = {},
+            onDoubleClick = {}
         )
     }
 }
