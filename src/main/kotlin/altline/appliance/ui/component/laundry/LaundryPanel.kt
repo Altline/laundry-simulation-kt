@@ -1,5 +1,7 @@
 package altline.appliance.ui.component.laundry
 
+import altline.appliance.ui.resources.get
+import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.theme.surfaceTinted
 import androidx.compose.desktop.ui.tooling.preview.Preview
@@ -7,10 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.runtime.Composable
@@ -29,7 +28,10 @@ fun LaundryPanel(
             .background(MaterialTheme.colors.surfaceTinted)
             .padding(8.dp)
     ) {
-        LaundryList(data.potentialLaundry)
+        LaundryList(
+            title = strings["laundryPanel_availableLaundry_title"],
+            data = data.potentialLaundry
+        )
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -41,12 +43,23 @@ fun LaundryPanel(
                 Icon(Icons.Default.SwapVert, contentDescription = null)
             }
         }
-        LaundryList(data.loadedLaundry)
+        LaundryList(
+            title = strings["laundryPanel_loadedLaundry_title"],
+            data = data.loadedLaundry
+        )
     }
 }
 
 @Composable
-private fun ColumnScope.LaundryList(data: List<LaundryListItemUi>) {
+private fun ColumnScope.LaundryList(
+    title: String,
+    data: List<LaundryListItemUi>
+) {
+    Text(
+        text = title,
+        Modifier.padding(start = 8.dp, bottom = 4.dp),
+        style = MaterialTheme.typography.body2
+    )
     LazyColumn(
         Modifier
             .fillMaxWidth()

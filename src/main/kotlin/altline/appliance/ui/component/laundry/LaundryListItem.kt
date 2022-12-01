@@ -6,10 +6,12 @@ import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.util.formatPercentage
+import altline.appliance.ui.util.modifiedColor
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -20,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.util.*
 
@@ -62,7 +65,9 @@ fun LaundryListItem(data: LaundryListItemUi) {
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = data.title
+                text = data.title,
+                color = modifiedColor(alpha = ContentAlpha.medium),
+                fontWeight = FontWeight.Bold
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconStat(
@@ -104,9 +109,7 @@ private fun RowScope.IconStat(
         contentDescription = contentDescription,
         tint = tint
     )
-    Text(
-        text = text
-    )
+    Text(text)
 }
 
 data class LaundryListItemUi(
