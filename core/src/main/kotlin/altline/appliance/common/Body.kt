@@ -5,8 +5,10 @@ import altline.appliance.measure.sumOf
 import altline.appliance.substance.MutableSubstance
 import altline.appliance.substance.Substance
 import io.nacular.measured.units.*
+import java.util.UUID
 
 interface Body {
+    val id: UUID
     val volume: Measure<Volume>
     val stainSubstance: Substance
     val stainRatio: Double

@@ -6,10 +6,13 @@ import altline.appliance.substance.MutableSubstance
 import altline.appliance.substance.Soakable
 import altline.appliance.substance.Substance
 import io.nacular.measured.units.*
+import java.util.*
 
 abstract class Fabric(
     override val volume: Measure<Volume>
 ) : Body, Soakable {
+
+    override val id: UUID = UUID.randomUUID()
 
     override var freshness: Double = 0.0
 
