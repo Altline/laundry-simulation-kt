@@ -3,6 +3,7 @@ package altline.appliance
 import altline.appliance.di.coreModule
 import altline.appliance.ui.MainScreen
 import altline.appliance.ui.MainViewModel
+import altline.appliance.ui.theme.AppTheme
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import org.koin.core.context.GlobalContext
@@ -13,7 +14,9 @@ fun main() = application {
         modules(coreModule)
     }
     Window(onCloseRequest = ::exitApplication) {
-        val viewModel = GlobalContext.get().get<MainViewModel>()
-        MainScreen(viewModel)
+        AppTheme {
+            val viewModel = GlobalContext.get().get<MainViewModel>()
+            MainScreen(viewModel)
+        }
     }
 }
