@@ -2,7 +2,7 @@ package altline.appliance.ui
 
 import altline.appliance.common.Body
 import altline.appliance.data.World
-import altline.appliance.ui.component.LaundryListItemUi
+import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.mapper.LaundryMapper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

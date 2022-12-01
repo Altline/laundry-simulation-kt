@@ -5,9 +5,9 @@ import altline.appliance.fabric.Clothing
 import altline.appliance.fabric.Fabric
 import altline.appliance.fabric.Shirt
 import altline.appliance.substance.Soakable
-import altline.appliance.ui.component.InfoPanelUi
-import altline.appliance.ui.component.LaundryListItemUi
-import altline.appliance.ui.component.LaundryPanelUi
+import altline.appliance.ui.component.laundry.LaundryListItemUi
+import altline.appliance.ui.component.laundry.LaundryPanelUi
+import altline.appliance.ui.component.washer.InfoPanelUi
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.washing.laundry.StandardLaundryWasherBase

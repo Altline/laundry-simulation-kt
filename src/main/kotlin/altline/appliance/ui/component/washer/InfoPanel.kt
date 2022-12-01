@@ -1,4 +1,4 @@
-package altline.appliance.ui.component
+package altline.appliance.ui.component.washer
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text

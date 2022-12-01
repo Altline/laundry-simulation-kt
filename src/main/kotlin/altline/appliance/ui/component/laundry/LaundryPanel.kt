@@ -1,4 +1,4 @@
-package altline.appliance.ui.component
+package altline.appliance.ui.component.laundry
 
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.theme.surfaceTinted

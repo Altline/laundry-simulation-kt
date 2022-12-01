@@ -1,9 +1,9 @@
 package altline.appliance.ui
 
-import altline.appliance.ui.component.InfoPanel
-import altline.appliance.ui.component.InfoPanelUi
-import altline.appliance.ui.component.LaundryPanel
-import altline.appliance.ui.component.LaundryPanelUi
+import altline.appliance.ui.component.laundry.LaundryPanel
+import altline.appliance.ui.component.laundry.LaundryPanelUi
+import altline.appliance.ui.component.washer.InfoPanel
+import altline.appliance.ui.component.washer.InfoPanelUi
 import altline.appliance.ui.theme.AppTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Row

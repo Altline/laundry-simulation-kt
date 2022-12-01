@@ -1,4 +1,4 @@
-package altline.appliance.ui.component
+package altline.appliance.ui.component.laundry
 
 import altline.appliance.ui.resources.AppIcons
 import altline.appliance.ui.resources.appicons.Stain
