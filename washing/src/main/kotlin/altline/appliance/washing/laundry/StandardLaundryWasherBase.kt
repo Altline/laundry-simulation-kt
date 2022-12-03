@@ -57,6 +57,9 @@ abstract class StandardLaundryWasherBase(
     override val running: Boolean
         get() = controller.running
 
+    val runningTime: Measure<Time>
+        get() = controller.runningTime
+
     override val load: Set<Body>
         get() = drum.load
 

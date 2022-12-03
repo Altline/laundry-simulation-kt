@@ -6,6 +6,7 @@ import altline.appliance.measure.Power
 import altline.appliance.util.logger
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import io.nacular.measured.units.*
+import io.nacular.measured.units.Time.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 
 class BasicController(
@@ -25,25 +26,30 @@ class BasicController(
             if (availableEnergy == null || availableEnergy < requiredEnergy) {
                 this@BasicController.stop()
             }
+            runningTime += tickPeriod
         }
     }
 
     override val powerInlet: ElectricalDrainPort
         get() = electricalDevice.powerInlet
 
-    override var running = false
-        private set
-
     override var selectedWashCycle: LaundryWashCycle = washCycles.first()
         set(value) {
             if (value in washCycles) field = value
             else log.warn("The given wash cycle does not exist for the current washer ($value).")
         }
+
     private var activeWashCycle: LaundryWashCycle? = null
+
+    override val running: Boolean
+        get() = electricalDevice.running
+
+    override var runningTime: Measure<Time> = 0 * seconds
+        private set
 
     override fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
         if (running) return
-        running = true
+        runningTime = 0 * seconds
         electricalDevice.start()
         activeWashCycle = selectedWashCycle
         selectedWashCycle.start(washer, coroutineScope)
@@ -54,7 +60,6 @@ class BasicController(
         activeWashCycle?.stop()
         activeWashCycle = null
         electricalDevice.stop()
-        running = false
     }
 
 }
