@@ -1,4 +1,4 @@
-package altline.appliance.washing.laundry
+package altline.appliance.washing.laundry.washCycle
 
 import altline.appliance.measure.Spin
 import io.nacular.measured.units.*

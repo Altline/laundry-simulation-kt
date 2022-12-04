@@ -10,7 +10,9 @@ import altline.appliance.substance.transit.BasicSubstanceConduit
 import altline.appliance.substance.transit.ElectricPump
 import altline.appliance.substance.transit.SubstanceConduit
 import altline.appliance.washing.Washer
+import altline.appliance.washing.laundry.washCycle.CentrifugeParams
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
+import altline.appliance.washing.laundry.washCycle.WashParams
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

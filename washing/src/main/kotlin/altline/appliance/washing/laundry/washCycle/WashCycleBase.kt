@@ -4,18 +4,18 @@ import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-abstract class WashCycleBase : LaundryWashCycle {
+abstract class WashCycleBase(
+    override val stages: List<CycleStage>
+) : LaundryWashCycle {
 
     override fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
         coroutineScope.launch {
-            ensureStartingConditions()
-            executeProgram(washer)
+            ensureStartingConditions(washer)
+            stages.forEach { it.execute(washer) }
         }
     }
 
-    private suspend fun ensureStartingConditions() {
-
+    private suspend fun ensureStartingConditions(washer: StandardLaundryWasherBase) {
+        TODO("Not yet implemented")
     }
-
-    abstract suspend fun executeProgram(washer: StandardLaundryWasherBase)
 }
