@@ -10,7 +10,7 @@ class WashPhase(
 ) : CyclePhase {
 
     override val duration: Measure<Time>
-        get() = sections.sumOf { it.washDuration }
+        get() = sections.sumOf { it.duration }
 
     override suspend fun execute(washer: StandardLaundryWasherBase) {
         sections.forEach { params ->

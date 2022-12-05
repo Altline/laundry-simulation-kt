@@ -4,8 +4,8 @@ import altline.appliance.measure.Spin
 import io.nacular.measured.units.*
 
 data class WashParams(
-    val washDuration: Measure<Time>,
-    val spinDuration: Measure<Time>,
-    val restDuration: Measure<Time>,
+    val duration: Measure<Time>,
+    val spinPeriod: Measure<Time>,
+    val restPeriod: Measure<Time>,
     val spinSpeed: Measure<Spin>
 )

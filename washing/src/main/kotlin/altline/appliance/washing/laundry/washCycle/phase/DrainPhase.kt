@@ -10,7 +10,7 @@ class DrainPhase(
 ) : CyclePhase {
 
     override val duration: Measure<Time>
-        get() = standardFullFlowDrainTime + spinParams.washDuration
+        get() = standardFullFlowDrainTime + spinParams.duration
 
     override suspend fun execute(washer: StandardLaundryWasherBase) {
         washer.drain()

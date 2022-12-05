@@ -101,10 +101,10 @@ abstract class StandardLaundryWasherBase(
 
     internal open suspend fun wash(params: WashParams) {
         with(params) {
-            val cycleCount = (washDuration / (spinDuration + restDuration)).roundToInt()
+            val cycleCount = (duration / (spinPeriod + restPeriod)).roundToInt()
             repeat(cycleCount) {
-                spin(spinSpeed, spinDuration)
-                delay(restDuration)
+                spin(spinSpeed, spinPeriod)
+                delay(restPeriod)
             }
         }
     }

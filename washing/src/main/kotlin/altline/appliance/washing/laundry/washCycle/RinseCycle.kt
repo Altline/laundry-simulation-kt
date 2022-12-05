@@ -20,18 +20,18 @@ class RinseCycle : WashCycleBase(
                 WashPhase(
                     sections = listOf(
                         WashParams(
-                            washDuration = 10 * minutes,
-                            spinDuration = 5 * seconds,
-                            restDuration = 5 * seconds,
+                            duration = 10 * minutes,
+                            spinPeriod = 5 * seconds,
+                            restPeriod = 5 * seconds,
                             spinSpeed = 60 * rpm
                         )
                     )
                 ),
                 DrainPhase(
                     spinParams = WashParams(
-                        washDuration = 1.5 * minutes,
-                        spinDuration = 5 * seconds,
-                        restDuration = 5 * seconds,
+                        duration = 1.5 * minutes,
+                        spinPeriod = 5 * seconds,
+                        restPeriod = 5 * seconds,
                         spinSpeed = 60 * rpm
                     )
                 ),
