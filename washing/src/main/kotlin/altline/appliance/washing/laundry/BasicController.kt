@@ -39,7 +39,8 @@ class BasicController(
             else log.warn("The given wash cycle does not exist for the current washer ($value).")
         }
 
-    private var activeWashCycle: LaundryWashCycle? = null
+    override var activeWashCycle: LaundryWashCycle? = null
+        private set
 
     override val running: Boolean
         get() = electricalDevice.running

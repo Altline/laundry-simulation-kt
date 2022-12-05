@@ -72,6 +72,9 @@ abstract class StandardLaundryWasherBase(
         get() = controller.selectedWashCycle
         set(value) { controller.selectedWashCycle = value }
 
+    val activeWashCycle: LaundryWashCycle?
+        get() = controller.activeWashCycle
+
     override fun load(vararg items: Body) = drum.load(*items)
     override fun unload(vararg items: Body) = drum.unload(*items)
     override fun unloadAll(): List<Body> = drum.unloadAll()

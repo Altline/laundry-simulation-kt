@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 interface LaundryWasherController: ElectricalDevice {
     val washCycles: List<LaundryWashCycle>
     var selectedWashCycle: LaundryWashCycle
+    val activeWashCycle: LaundryWashCycle?
     val runningTime: Measure<Time>
     val running: Boolean
 
