@@ -3,6 +3,7 @@ package altline.appliance.measure
 import altline.appliance.measure.Energy.Companion.joules
 import altline.appliance.measure.Frequency.Companion.hertz
 import altline.appliance.measure.Spin.Companion.rpm
+import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.util.closeEquals
 import altline.appliance.util.isNegligible
@@ -19,6 +20,7 @@ inline fun <reified T : Units> Units?.zero(): Measure<T> {
         Time::class -> 0.0 * (seconds as T)
         Spin::class -> 0.0 * (rpm as T)
         Volume::class -> 0.0 * (liters as T)
+        Temperature::class -> 0.0 * (celsius as T)
         else -> throw RuntimeException()
     }
 }
