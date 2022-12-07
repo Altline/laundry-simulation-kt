@@ -6,12 +6,12 @@ import io.nacular.measured.units.*
 
 class SpinPhase(
     val params: CentrifugeParams
-) : CyclePhase {
+) : CyclePhaseBase() {
 
     override val duration: Measure<Time>
         get() = params.duration
 
-    override suspend fun execute(washer: StandardLaundryWasherBase) {
+    override suspend fun doExecute(washer: StandardLaundryWasherBase) {
         washer.centrifuge(params)
     }
 }

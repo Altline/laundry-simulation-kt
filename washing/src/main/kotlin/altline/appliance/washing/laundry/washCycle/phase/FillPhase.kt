@@ -6,7 +6,7 @@ import io.nacular.measured.units.*
 
 abstract class FillPhase(
     val fillToAmount: Measure<Volume>
-) : CyclePhase {
+) : CyclePhaseBase() {
 
     override val duration: Measure<Time>
         get() = fillToAmount / standardIntakeFlowRate

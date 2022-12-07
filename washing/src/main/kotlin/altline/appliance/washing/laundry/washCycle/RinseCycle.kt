@@ -18,7 +18,7 @@ class RinseCycle : WashCycleBase(
                     fillToAmount = 30 * liters
                 ),
                 WashPhase(
-                    sections = listOf(
+                    WashPhase.Section(
                         WashParams(
                             duration = 10 * minutes,
                             spinPeriod = 5 * seconds,

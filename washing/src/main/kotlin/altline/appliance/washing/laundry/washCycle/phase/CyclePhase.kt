@@ -8,5 +8,8 @@ interface CyclePhase {
      * where it depends on outside factors such as liquid flow rate. */
     val duration: Measure<Time>
 
+    val runningTime: Measure<Time>
+    val active: Boolean
+
     suspend fun execute(washer: StandardLaundryWasherBase)
 }
