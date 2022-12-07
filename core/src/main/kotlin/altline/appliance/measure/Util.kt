@@ -9,8 +9,12 @@ import altline.appliance.util.closeEquals
 import altline.appliance.util.isNegligible
 import altline.appliance.util.isNotNegligible
 import io.nacular.measured.units.*
+import io.nacular.measured.units.Time.Companion.hours
 import io.nacular.measured.units.Time.Companion.milliseconds
+import io.nacular.measured.units.Time.Companion.minutes
 import io.nacular.measured.units.Time.Companion.seconds
+import mu.KotlinLogging
+import java.time.LocalTime
 
 val SUnits: Units? = null
 inline fun <reified T : Units> Units?.zero(): Measure<T> {
@@ -27,6 +31,20 @@ inline fun <reified T : Units> Units?.zero(): Measure<T> {
 
 fun Measure<Frequency>.toPeriod() = (1 / (this `in` hertz)) * seconds
 fun Measure<Time>.toFrequency() = (1 / (this `in` seconds)) * hertz
+
+fun Measure<Time>.toLocalTime(): LocalTime {
+    val hour = (this `in` hours).toInt().also {
+        if (it > 23) {
+            KotlinLogging.logger("Util")
+                .warn("Time measure exceeds 23 hours. The resulting LocalTime hour field will be capped at 23!")
+        }
+    }
+    return LocalTime.of(
+        hour % 24,
+        (this `in` minutes).toInt() % 60,
+        (this `in` seconds).toInt() % 60
+    )
+}
 
 suspend fun delay(time: Measure<Time>) = kotlinx.coroutines.delay((time `in` milliseconds).toLong())
 

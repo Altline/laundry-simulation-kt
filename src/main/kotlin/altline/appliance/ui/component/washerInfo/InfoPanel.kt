@@ -1,7 +1,6 @@
-package altline.appliance.ui.component.washer
+package altline.appliance.ui.component.washerInfo
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -11,19 +10,17 @@ fun InfoPanel(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        Text(
-            text = data.washCycleName
-        )
+        WashCycleSection(data.cycleSectionUi)
     }
 }
 
 data class InfoPanelUi(
-    val washCycleName: String
+    val cycleSectionUi: WashCycleSectionUi
 ) {
     companion object {
         @Composable
         fun preview() = InfoPanelUi(
-            washCycleName = "Rinse Cycle"
+            cycleSectionUi = WashCycleSectionUi.preview()
         )
     }
 }

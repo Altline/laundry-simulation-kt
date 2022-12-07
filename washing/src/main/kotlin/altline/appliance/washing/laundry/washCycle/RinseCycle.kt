@@ -15,7 +15,7 @@ class RinseCycle : WashCycleBase(
         CycleStage(
             phases = listOf(
                 DetergentFillPhase(
-                    fillToAmount = 30 * liters
+                    fillToAmount = 15 * liters
                 ),
                 WashPhase(
                     WashPhase.Section(

@@ -4,16 +4,18 @@ import altline.appliance.common.Body
 import altline.appliance.data.World
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.mapper.LaundryMapper
+import altline.appliance.ui.mapper.WasherInfoMapper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 class MainViewModel(
     private val world: World,
-    private val laundryMapper: LaundryMapper
+    private val laundryMapper: LaundryMapper,
+    private val washerInfoMapper: WasherInfoMapper
 ) {
 
-    var uiState by mutableStateOf(MainUiState())
+    var uiState by mutableStateOf<MainUiState?>(null)
         private set
 
     private var selectedLaundryItem: Body? = null
@@ -38,7 +40,7 @@ class MainViewModel(
                 onItemDoubleClick = { transferLaundryItem(it, selectNext = false) },
                 onTransferClick = { selectedLaundryItem?.let { transferLaundryItem(it, selectNext = true) } }
             ),
-            infoPanel = laundryMapper.mapToInfoPanel(world.washer)
+            infoPanel = washerInfoMapper.mapToInfoPanel(world.washer)
         )
     }
 
@@ -61,8 +63,8 @@ class MainViewModel(
      * **Must be called before the transfer is made.**
      */
     private fun findNextSelection(item: Body): Body? {
-        val uiPotentialLaundry = uiState.laundryPanel!!.potentialLaundry
-        val uiLoadedLaundry = uiState.laundryPanel!!.loadedLaundry
+        val uiPotentialLaundry = uiState!!.laundryPanel.potentialLaundry
+        val uiLoadedLaundry = uiState!!.laundryPanel.loadedLaundry
         var owningList: List<LaundryListItemUi> = emptyList()
         val listItem = uiPotentialLaundry.find { it.id == item.id }
             ?.also { owningList = uiPotentialLaundry }

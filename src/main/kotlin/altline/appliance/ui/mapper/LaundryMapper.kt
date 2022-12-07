@@ -7,10 +7,8 @@ import altline.appliance.fabric.Shirt
 import altline.appliance.substance.Soakable
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
-import altline.appliance.ui.component.washer.InfoPanelUi
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
-import altline.appliance.washing.laundry.StandardLaundryWasherBase
 
 class LaundryMapper {
 
@@ -34,12 +32,6 @@ class LaundryMapper {
             potentialLaundry = potentialLaundry.map(bodyToListItem),
             loadedLaundry = loadedLaundry.map(bodyToListItem),
             onTransferClick = if (selectedLaundryItem != null) onTransferClick else null
-        )
-    }
-
-    fun mapToInfoPanel(washer: StandardLaundryWasherBase): InfoPanelUi {
-        return InfoPanelUi(
-            washCycleName = washer.selectedWashCycle.name // TODO convert to resource
         )
     }
 
