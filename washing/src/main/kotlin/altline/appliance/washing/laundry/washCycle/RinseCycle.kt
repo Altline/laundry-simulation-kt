@@ -1,6 +1,8 @@
 package altline.appliance.washing.laundry.washCycle
 
+import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
+import altline.appliance.measure.Temperature
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.washing.laundry.washCycle.phase.DetergentFillPhase
 import altline.appliance.washing.laundry.washCycle.phase.DrainPhase
@@ -45,6 +47,14 @@ class RinseCycle : WashCycleBase(
         )
     )
 ) {
+    override val temperatureSettings: List<Measure<Temperature>> = listOf()
+    override val spinSpeedSettings: List<Measure<Spin>> = (600..1400 step 200).map { it * rpm }.toList()
+
+    init {
+        selectedTemperatureSettingIndex = null
+        selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
+    }
+
     override fun stop() {
         TODO("Not yet implemented")
     }
