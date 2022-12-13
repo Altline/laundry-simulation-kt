@@ -7,9 +7,14 @@ import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-abstract class WashCycleBase(
-    override val stages: List<CycleStage>
-) : LaundryWashCycle {
+@DslMarker
+annotation class WashCycleDsl
+
+@WashCycleDsl
+abstract class WashCycleBase : LaundryWashCycle {
+
+    final override var stages: List<CycleStage> = emptyList()
+        private set
 
     override val selectedTemperatureSetting: Measure<Temperature>?
         get() = selectedTemperatureSettingIndex?.let { temperatureSettings[it] }
@@ -18,6 +23,7 @@ abstract class WashCycleBase(
         set(value) {
             require(value in temperatureSettings.indices || value == null)
             field = value
+            onTemperatureChanged(selectedTemperatureSetting)
         }
 
     override val selectedSpinSpeedSetting: Measure<Spin>?
@@ -27,6 +33,7 @@ abstract class WashCycleBase(
         set(value) {
             require(value in spinSpeedSettings.indices || value == null)
             field = value
+            onSpinSpeedChanged(selectedSpinSpeedSetting)
         }
 
     override fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
@@ -39,4 +46,14 @@ abstract class WashCycleBase(
     private suspend fun ensureStartingConditions(washer: StandardLaundryWasherBase) {
         TODO("Not yet implemented")
     }
+
+    protected fun addStage(init: CycleStage.() -> Unit): CycleStage {
+        return CycleStage().also {
+            it.init()
+            stages += it
+        }
+    }
+
+    protected abstract fun onTemperatureChanged(value: Measure<Temperature>?)
+    protected abstract fun onSpinSpeedChanged(value: Measure<Spin>?)
 }
