@@ -18,9 +18,13 @@ interface LaundryWashCycle {
     val selectedSpinSpeedSetting: Measure<Spin>?
     var selectedSpinSpeedSettingIndex: Int?
 
+    val running: Boolean
+    val paused: Boolean
+
     val estimatedDuration: Measure<Time>
         get() = stages.sumOf { it.estimatedDuration }
 
     fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope)
     fun stop()
+    fun togglePause()
 }

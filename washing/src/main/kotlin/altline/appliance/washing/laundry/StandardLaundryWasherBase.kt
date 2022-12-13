@@ -56,11 +56,14 @@ abstract class StandardLaundryWasherBase(
         BasicSubstanceConduit(config.outputFlowRate)
     }
 
+    val poweredOn: Boolean
+        get() = controller.poweredOn
+
     override val running: Boolean
-        get() = controller.running
+        get() = controller.cycleRunning
 
     val runningTime: Measure<Time>
-        get() = controller.runningTime
+        get() = controller.cycleRunningTime
 
     override val load: Set<Body>
         get() = drum.load
@@ -78,8 +81,15 @@ abstract class StandardLaundryWasherBase(
     override fun load(vararg items: Body) = drum.load(*items)
     override fun unload(vararg items: Body) = drum.unload(*items)
     override fun unloadAll(): List<Body> = drum.unloadAll()
-    override fun start() = controller.start(this, machineScope)
-    override fun stop() = controller.stop()
+    override fun start() = controller.startCycle(this, machineScope)
+    override fun stop() = controller.stopCycle()
+
+    fun togglePower() = controller.togglePower()
+
+    fun toggleCycleRun() {
+        if (controller.cycleRunning) controller.toggleCyclePause()
+        else start()
+    }
 
     internal open suspend fun fillThroughDetergent(amount: Measure<Volume>) {
         dispenser.dispenseMainDetergent()

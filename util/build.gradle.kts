@@ -14,4 +14,5 @@ dependencies {
 
     api(Libs.Logging.KotlinLogging.jvm)
     api(Libs.KotlinxCoroutines.core)
+    api(Libs.PausingCoroutineDispatcher.pausingCoroutineDispatcher)
 }

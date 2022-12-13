@@ -5,7 +5,8 @@ import altline.appliance.measure.Temperature
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import org.koitharu.pausingcoroutinedispatcher.PausingJob
+import org.koitharu.pausingcoroutinedispatcher.launchPausing
 
 @DslMarker
 annotation class WashCycleDsl
@@ -36,11 +37,28 @@ abstract class WashCycleBase : LaundryWashCycle {
             onSpinSpeedChanged(selectedSpinSpeedSetting)
         }
 
+    private var job: PausingJob? = null
+
+    final override val running: Boolean
+        get() = job?.isActive ?: false
+
+    final override val paused: Boolean
+        get() = job?.isPaused ?: false
+
     override fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
-        coroutineScope.launch {
+        job = coroutineScope.launchPausing {
             ensureStartingConditions(washer)
             stages.forEach { it.execute(washer) }
         }
+    }
+
+    override fun stop() {
+        job?.cancel()
+    }
+
+    override fun togglePause() {
+        if (paused) job?.resume()
+        else job?.pause()
     }
 
     private suspend fun ensureStartingConditions(washer: StandardLaundryWasherBase) {

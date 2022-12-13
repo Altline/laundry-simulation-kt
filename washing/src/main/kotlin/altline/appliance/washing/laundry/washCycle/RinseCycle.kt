@@ -50,8 +50,4 @@ class RinseCycle : WashCycleBase() {
     override fun onSpinSpeedChanged(value: Measure<Spin>?) {
         spinPhaseParams.spinSpeed = value ?: (0 * rpm)
     }
-
-    override fun stop() {
-        TODO("Not yet implemented")
-    }
 }

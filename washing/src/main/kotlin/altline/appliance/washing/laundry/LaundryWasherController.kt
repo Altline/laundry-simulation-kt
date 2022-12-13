@@ -9,9 +9,15 @@ interface LaundryWasherController: ElectricalDevice {
     val washCycles: List<LaundryWashCycle>
     var selectedWashCycle: LaundryWashCycle
     val activeWashCycle: LaundryWashCycle?
-    val runningTime: Measure<Time>
-    val running: Boolean
 
-    fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope)
-    fun stop()
+    val poweredOn: Boolean
+    val cycleRunning: Boolean
+    val cyclePaused: Boolean
+
+    val cycleRunningTime: Measure<Time>
+
+    fun togglePower()
+    fun toggleCyclePause()
+    fun startCycle(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope)
+    fun stopCycle()
 }

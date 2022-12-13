@@ -24,9 +24,9 @@ class BasicController(
             val requiredEnergy = power * tickPeriod
             val availableEnergy = pullEnergy(requiredEnergy, tickPeriod)?.amount
             if (availableEnergy == null || availableEnergy < requiredEnergy) {
-                this@BasicController.stop()
+                this@BasicController.togglePower()
             }
-            runningTime += tickPeriod
+            if (cycleRunning) cycleRunningTime += tickPeriod
         }
     }
 
@@ -42,25 +42,37 @@ class BasicController(
     override var activeWashCycle: LaundryWashCycle? = null
         private set
 
-    override val running: Boolean
+    override val poweredOn: Boolean
         get() = electricalDevice.running
 
-    override var runningTime: Measure<Time> = 0 * seconds
+    override val cycleRunning: Boolean
+        get() = activeWashCycle?.running ?: false
+
+    override val cyclePaused: Boolean
+        get() = activeWashCycle?.paused ?: false
+
+    override var cycleRunningTime: Measure<Time> = 0 * seconds
         private set
 
-    override fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
-        if (running) return
-        runningTime = 0 * seconds
-        electricalDevice.start()
+    override fun togglePower() {
+        if (!poweredOn) electricalDevice.start()
+        else if (!cycleRunning) electricalDevice.stop()
+    }
+
+    override fun toggleCyclePause() {
+        activeWashCycle?.togglePause()
+    }
+
+    override fun startCycle(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
+        if (cycleRunning || !poweredOn) return
+        cycleRunningTime = 0 * seconds
         activeWashCycle = selectedWashCycle
         selectedWashCycle.start(washer, coroutineScope)
     }
 
-    override fun stop() {
-        if (!running) return
+    override fun stopCycle() {
+        if (!cycleRunning) return
         activeWashCycle?.stop()
         activeWashCycle = null
-        electricalDevice.stop()
     }
-
 }
