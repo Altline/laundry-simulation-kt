@@ -21,7 +21,7 @@ val Colors = lightColors(
 )
 
 val Colors.surfaceTinted: Color
-    get() = Color.LightGray
+    get() = Color(0xffe0e0e0)
 
 val Colors.onSurfaceTinted: Color
     get() = Teal900

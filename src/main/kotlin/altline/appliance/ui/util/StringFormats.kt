@@ -15,7 +15,8 @@ private val optionalDecimalFormat = DecimalFormat.getInstance().apply {
     minimumFractionDigits = 0
 }
 
-private val clockTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss")
+private val clockTimeFormat_hms = DateTimeFormatter.ofPattern("HH:mm:ss")
+private val clockTimeFormat_hm = DateTimeFormatter.ofPattern("HH:mm")
 
 fun formatPercentage(number: Double): String {
     return percentFormat.format(number)
@@ -25,8 +26,13 @@ fun Measure<*>.optionalDecimal(): String {
     return "${optionalDecimalFormat.format(amount)} ${units.suffix}"
 }
 
-fun Measure<Time>.clockFormat(): String {
-    return toLocalTime().format(clockTimeFormat)
+fun Measure<Time>.clockFormat(
+    showSeconds: Boolean = true
+): String {
+    return toLocalTime().format(
+        if (showSeconds) clockTimeFormat_hms
+        else clockTimeFormat_hm
+    )
 }
 
 fun Measure<Time>.unitFormat(minimized: Boolean = true): String {

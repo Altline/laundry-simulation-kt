@@ -9,3 +9,11 @@ fun Double.isNotNegligible(threshold: Double) = !isNegligible(threshold)
 
 fun Double.closeEquals(other: Double, threshold: Double): Boolean =
     abs(this - other) <= threshold
+
+fun Int.wrapAround(range: IntRange): Int {
+    return when {
+        this < range.first -> range.last
+        this > range.last -> range.first
+        else -> this
+    }
+}

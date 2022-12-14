@@ -1,6 +1,7 @@
 package altline.appliance.ui.component.washerInfo
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -9,7 +10,7 @@ fun InfoPanel(
     data: InfoPanelUi,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier) {
+    Column(modifier.fillMaxHeight()) {
         WashCycleSection(data.cycleSectionUi)
     }
 }

@@ -6,14 +6,14 @@ import altline.appliance.ui.resources.strings
 import altline.appliance.ui.util.clockFormat
 import altline.appliance.ui.util.optionalDecimal
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
-import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
-import altline.appliance.washing.laundry.washCycle.RinseCycle
 import altline.appliance.washing.laundry.washCycle.WashParams
 import altline.appliance.washing.laundry.washCycle.phase.*
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
-class WasherInfoMapper {
+class WasherInfoMapper(
+    private val washerMapper: WasherMapper
+) {
 
     fun mapToInfoPanel(washer: StandardLaundryWasherBase): InfoPanelUi {
         return InfoPanelUi(
@@ -28,7 +28,7 @@ class WasherInfoMapper {
                 if (selectedWashCycle == activeWashCycle) "${runningTime.clockFormat()} / $duration"
                 else duration
             return WashCycleSectionUi(
-                cycleName = mapToWashCycleName(selectedWashCycle),
+                cycleName = washerMapper.mapToWashCycleName(selectedWashCycle),
                 timer = timer,
                 phases = selectedWashCycle.stages.flatMap { it.phases }.map(::mapPhase)
             )
@@ -90,13 +90,6 @@ class WasherInfoMapper {
             restPeriod = washParams.restPeriod.optionalDecimal(),
             spinSpeed = washParams.spinSpeed.optionalDecimal()
         )
-    }
-
-    private fun mapToWashCycleName(washCycle: LaundryWashCycle): String {
-        return when (washCycle) {
-            is RinseCycle -> strings["washCycle_rinse"]
-            else -> ""
-        }
     }
 
     private fun mapToPhaseName(phase: CyclePhase): String {
