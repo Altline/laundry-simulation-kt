@@ -24,7 +24,7 @@ class BasicController(
             val requiredEnergy = power * tickPeriod
             val availableEnergy = pullEnergy(requiredEnergy, tickPeriod)?.amount
             if (availableEnergy == null || availableEnergy < requiredEnergy) {
-                this@BasicController.togglePower()
+                powerOff()
             }
             if (cycleRunning) cycleRunningTime += tickPeriod
         }
@@ -54,9 +54,12 @@ class BasicController(
     override var cycleRunningTime: Measure<Time> = 0 * seconds
         private set
 
-    override fun togglePower() {
-        if (!poweredOn) electricalDevice.start()
-        else if (!cycleRunning) electricalDevice.stop()
+    override fun powerOn() {
+        if (!poweredOn && powerInlet.isConnected) electricalDevice.start()
+    }
+
+    override fun powerOff() {
+        if (poweredOn && !cycleRunning) electricalDevice.stop()
     }
 
     override fun toggleCyclePause() {

@@ -16,7 +16,8 @@ interface LaundryWasherController: ElectricalDevice {
 
     val cycleRunningTime: Measure<Time>
 
-    fun togglePower()
+    fun powerOn()
+    fun powerOff()
     fun toggleCyclePause()
     fun startCycle(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope)
     fun stopCycle()

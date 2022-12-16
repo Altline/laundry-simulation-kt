@@ -84,7 +84,10 @@ abstract class StandardLaundryWasherBase(
     override fun start() = controller.startCycle(this, machineScope)
     override fun stop() = controller.stopCycle()
 
-    fun togglePower() = controller.togglePower()
+    fun togglePower() {
+        if (controller.poweredOn) controller.powerOff()
+        else controller.powerOn()
+    }
 
     fun toggleCycleRun() {
         if (controller.cycleRunning) controller.toggleCyclePause()
