@@ -2,17 +2,24 @@ package altline.appliance.data
 
 import altline.appliance.common.Body
 import altline.appliance.electricity.ElectricHeater
+import altline.appliance.electricity.transit.InfiniteElectricalSource
 import altline.appliance.fabric.Clothing
 import altline.appliance.fabric.Shirt
 import altline.appliance.measure.Spin.Companion.rpm
+import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.Volume.Companion.milliliters
+import altline.appliance.measure.kilowatts
 import altline.appliance.measure.watts
 import altline.appliance.spin.ElectricMotor
+import altline.appliance.substance.CommonSubstanceTypes
+import altline.appliance.substance.MutableSubstance
 import altline.appliance.substance.transit.ElectricPump
 import altline.appliance.substance.transit.Reservoir
 import altline.appliance.washing.laundry.*
+import altline.appliance.washing.laundry.washCycle.CottonCycle
 import altline.appliance.washing.laundry.washCycle.RinseCycle
+import altline.appliance.washing.laundry.washCycle.SpinCycle
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
@@ -23,17 +30,29 @@ class World {
 
     init {
         laundry = setOf(
-            Shirt(Clothing.Size.S, 80 * milliliters),
-            Shirt(Clothing.Size.M, 100 * milliliters),
-            Shirt(Clothing.Size.L, 120 * milliliters),
+            Shirt(Clothing.Size.S, 80 * milliliters).apply {
+                soak(MutableSubstance(CommonSubstanceTypes.WATER, 30 * milliliters, 20 * celsius))
+                stain(MutableSubstance(CommonSubstanceTypes.WATER, 200 * milliliters, 20 * celsius))
+            },
+            Shirt(Clothing.Size.M, 100 * milliliters).apply {
+                soak(MutableSubstance(CommonSubstanceTypes.WATER, 80 * milliliters, 20 * celsius))
+                stain(MutableSubstance(CommonSubstanceTypes.WATER, 20 * milliliters, 20 * celsius))
+            },
+            Shirt(Clothing.Size.L, 120 * milliliters).apply {
+                soak(MutableSubstance(CommonSubstanceTypes.WATER, 30 * milliliters, 20 * celsius))
+                stain(MutableSubstance(CommonSubstanceTypes.WATER, 10 * milliliters, 20 * celsius))
+            },
         )
+
+        val powerSource = InfiniteElectricalSource(10 * kilowatts)
 
         val waterSource = Reservoir(
             capacity = 1000000 * liters,
             outflowThreshold = 0 * liters,
             shouldSpontaneouslyPush = true,
             inputFlowRate = 0 * liters / seconds,
-            outputFlowRate = 100 * liters / seconds
+            outputFlowRate = 100 * liters / seconds,
+            initialSubstance = MutableSubstance(CommonSubstanceTypes.WATER, 1000000 * liters, 20 * celsius)
         )
         val fluidDrain = Reservoir(
             capacity = 1000000 * liters,
@@ -46,7 +65,9 @@ class World {
         val config = LaundryWasherConfig()
         val controller = BasicController(
             washCycles = listOf(
-                RinseCycle()
+                CottonCycle(),
+                RinseCycle(),
+                SpinCycle()
             ),
             power = 5 * watts
         )
@@ -86,6 +107,8 @@ class World {
 
         waterSource.outputs[0] connectTo washer.fluidIntake.inputs[0]
         washer.fluidOutlet.outputs[0] connectTo fluidDrain.inputs[0]
+
+        powerSource.outputs[0] connectTo washer.powerInlet
 
         washer.load(laundry.first())
     }
