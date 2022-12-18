@@ -17,10 +17,13 @@ open class Reservoir(
     val outflowThreshold: Measure<Volume>,
     shouldSpontaneouslyPush: Boolean,
     inputFlowRate: Measure<VolumetricFlow>,
-    outputFlowRate: Measure<VolumetricFlow>
+    outputFlowRate: Measure<VolumetricFlow>,
+    initialSubstance: MutableSubstance? = null
 ) : BasicSubstanceConduit(inputFlowRate, outputFlowRate) {
 
-    protected open val storedSubstance = MutableSubstance()
+    protected open val storedSubstance = MutableSubstance().apply {
+        if (initialSubstance != null) add(initialSubstance)
+    }
 
     private val coroutineManager by lazy {
         CoroutineManager(CoroutineScope(Dispatchers.Default)) {
