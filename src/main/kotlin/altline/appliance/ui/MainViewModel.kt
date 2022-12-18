@@ -2,6 +2,8 @@ package altline.appliance.ui
 
 import altline.appliance.common.Body
 import altline.appliance.data.World
+import altline.appliance.measure.Frequency.Companion.hertz
+import altline.appliance.measure.repeatPeriodically
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
 import altline.appliance.ui.component.washer.WasherPanelUi
@@ -13,6 +15,10 @@ import altline.appliance.util.wrapAround
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.nacular.measured.units.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val world: World,
@@ -24,6 +30,9 @@ class MainViewModel(
     var uiState by mutableStateOf<MainUiState?>(null)
         private set
 
+    // Dispatcher types other than unconfined cause issues, might need more investigation
+    private val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
+
     private var selectedLaundryItem: Body? = null
 
     private val loadedLaundry: Set<Body>
@@ -34,6 +43,11 @@ class MainViewModel(
 
     init {
         updateData()
+        coroutineScope.launch {
+            repeatPeriodically(1 * hertz) {
+                updateData()
+            }
+        }
     }
 
     private fun updateData() {
@@ -106,7 +120,6 @@ class MainViewModel(
                 else currentCycleIndex + 1
             }.wrapAround(washCycles.indices)
 
-            println(nextCycleIndex)
             selectedWashCycle = washCycles[nextCycleIndex]
         }
         updateWasherData()
