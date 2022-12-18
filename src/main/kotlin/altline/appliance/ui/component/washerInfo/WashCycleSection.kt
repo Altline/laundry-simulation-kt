@@ -29,9 +29,8 @@ fun WashCycleSection(data: WashCycleSectionUi) {
             leftText = data.cycleName,
             rightText = data.timer,
             Modifier.padding(8.dp),
-            settings = TextRowSettings.default(
-                leftTextStyle = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
-                rightTextStyle = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+            textSettings = TextRowSettings.default(
+                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
             )
         )
         Divider()
@@ -74,9 +73,9 @@ private fun CyclePhase(data: CyclePhaseUi) {
             TextRow(
                 leftText = data.name,
                 rightText = data.timer,
-                settings = TextRowSettings.default(
-                    leftTextStyle = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.SemiBold),
-                    rightTextStyle = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.SemiBold)
+                textSettings = TextRowSettings.default(
+                    style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.SemiBold),
+                    verticalAlignment = Alignment.CenterVertically
                 )
             )
         }
@@ -112,26 +111,26 @@ private fun WashParams(data: WashParamsUi) {
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         val textRowSettings = TextRowSettings.default(
-            leftTextColor = modifiedColor(alpha = ContentAlpha.medium),
-            leftTextStyle = MaterialTheme.typography.caption,
-            rightTextColor = modifiedColor(alpha = ContentAlpha.medium),
-            rightTextStyle = MaterialTheme.typography.caption,
-            fillWhitespace = true
+            color = modifiedColor(alpha = ContentAlpha.medium),
+            style = MaterialTheme.typography.caption
         )
         TextRow(
             leftText = strings["washParams_spinPeriod"],
             rightText = data.spinPeriod,
-            settings = textRowSettings
+            textSettings = textRowSettings,
+            fillWhitespace = true
         )
         TextRow(
             leftText = strings["washParams_restPeriod"],
             rightText = data.restPeriod,
-            settings = textRowSettings
+            textSettings = textRowSettings,
+            fillWhitespace = true
         )
         TextRow(
             leftText = strings["washParams_spinSpeed"],
             rightText = data.spinSpeed,
-            settings = textRowSettings
+            textSettings = textRowSettings,
+            fillWhitespace = true
         )
     }
 }

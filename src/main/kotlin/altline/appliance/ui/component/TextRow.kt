@@ -20,7 +20,18 @@ fun TextRow(
     leftText: String,
     rightText: String,
     modifier: Modifier = Modifier,
-    settings: TextRowSettings = TextRowSettings.default()
+    textSettings: TextRowSettings = TextRowSettings.default(),
+    fillWhitespace: Boolean = false
+) = TextRow(leftText, rightText, modifier, textSettings, textSettings, fillWhitespace)
+
+@Composable
+fun TextRow(
+    leftText: String,
+    rightText: String,
+    modifier: Modifier = Modifier,
+    leftTextSettings: TextRowSettings = TextRowSettings.default(),
+    rightTextSettings: TextRowSettings = TextRowSettings.default(),
+    fillWhitespace: Boolean = false
 ) {
     Row(
         Modifier
@@ -30,11 +41,13 @@ fun TextRow(
     ) {
         Text(
             text = leftText,
-            color = settings.leftTextColor,
-            style = settings.leftTextStyle,
-            textAlign = TextAlign.Left
+            modifier = leftTextSettings.verticalAlignment?.let { Modifier.align(it) } ?: Modifier,
+            color = leftTextSettings.color,
+            style = leftTextSettings.style,
+            textAlign = TextAlign.Left,
+            maxLines = 2
         )
-        if (settings.fillWhitespace) {
+        if (fillWhitespace) {
             Box(
                 Modifier
                     .weight(1f)
@@ -46,29 +59,26 @@ fun TextRow(
         }
         Text(
             text = rightText,
-            color = settings.rightTextColor,
-            style = settings.rightTextStyle,
+            modifier = rightTextSettings.verticalAlignment?.let { Modifier.align(it) } ?: Modifier,
+            color = rightTextSettings.color,
+            style = rightTextSettings.style,
             textAlign = TextAlign.Right
         )
     }
 }
 
 data class TextRowSettings(
-    val leftTextColor: Color,
-    val leftTextStyle: TextStyle,
-    val rightTextColor: Color,
-    val rightTextStyle: TextStyle,
-    val fillWhitespace: Boolean
+    val color: Color,
+    val style: TextStyle,
+    val verticalAlignment: Alignment.Vertical?
 ) {
     companion object {
         @Composable
         fun default(
-            leftTextColor: Color = MaterialTheme.colors.onSurface,
-            leftTextStyle: TextStyle = MaterialTheme.typography.body2,
-            rightTextColor: Color = MaterialTheme.colors.onSurface,
-            rightTextStyle: TextStyle = MaterialTheme.typography.body2,
-            fillWhitespace: Boolean = false
-        ) = TextRowSettings(leftTextColor, leftTextStyle, rightTextColor, rightTextStyle, fillWhitespace)
+            color: Color = MaterialTheme.colors.onSurface,
+            style: TextStyle = MaterialTheme.typography.body2,
+            verticalAlignment: Alignment.Vertical? = null
+        ) = TextRowSettings(color, style, verticalAlignment)
     }
 }
 
@@ -76,6 +86,9 @@ data class TextRowSettings(
 @Preview
 private fun PreviewTextRow() {
     AppTheme {
-        TextRow("Left text", "Right text", settings = TextRowSettings.default(fillWhitespace = true))
+        TextRow(
+            "Left text", "Right text",
+            fillWhitespace = true
+        )
     }
 }
