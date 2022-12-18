@@ -33,7 +33,7 @@ class RinseCycle : WashCycleBase() {
             )
             spinPhase(
                 duration = 5 * minutes,
-                spinSpeed = this@RinseCycle.selectedSpinSpeedSetting ?: (0 * rpm)
+                spinSpeed = 0 * rpm
             ).also {
                 this@RinseCycle.spinPhaseParams = it.params
             }

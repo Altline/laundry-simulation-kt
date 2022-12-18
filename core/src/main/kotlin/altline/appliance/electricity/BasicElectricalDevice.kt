@@ -33,7 +33,8 @@ abstract class BasicElectricalDevice(
     }
 
     final override val powerInlet = inletDrain.inputs[0]
-    protected val powerSource: ElectricalSource? = powerInlet.connectedPort?.owner
+    protected val powerSource: ElectricalSource?
+        get() = powerInlet.connectedPort?.owner
 
     protected val tickPeriod = 0.5 * seconds
 
