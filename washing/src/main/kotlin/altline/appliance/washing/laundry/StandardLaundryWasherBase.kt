@@ -62,7 +62,7 @@ abstract class StandardLaundryWasherBase(
     override val running: Boolean
         get() = controller.cycleRunning
 
-    val runningTime: Measure<Time>
+    val runningTime: Measure<Time>?
         get() = controller.cycleRunningTime
 
     override val load: Set<Body>

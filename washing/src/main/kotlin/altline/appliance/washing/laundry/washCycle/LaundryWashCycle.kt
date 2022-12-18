@@ -24,6 +24,9 @@ interface LaundryWashCycle {
     val estimatedDuration: Measure<Time>
         get() = stages.sumOf { it.estimatedDuration }
 
+    val runningTime: Measure<Time>
+        get() = stages.sumOf { it.runningTime }
+
     fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope)
     fun stop()
     fun togglePause()

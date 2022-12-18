@@ -24,9 +24,12 @@ class WasherInfoMapper(
     private fun mapToParamsSection(washer: StandardLaundryWasherBase): WashCycleSectionUi {
         with(washer) {
             val duration = selectedWashCycle.estimatedDuration.clockFormat()
-            val timer =
-                if (selectedWashCycle == activeWashCycle) "${runningTime.clockFormat()} / $duration"
-                else duration
+            val timer = buildString {
+                runningTime?.let {
+                    append("${it.clockFormat()} / ")
+                }
+                append(duration)
+            }
             return WashCycleSectionUi(
                 cycleName = washerMapper.mapToWashCycleName(selectedWashCycle),
                 timer = timer,

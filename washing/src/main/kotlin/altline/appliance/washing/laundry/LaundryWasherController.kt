@@ -14,7 +14,7 @@ interface LaundryWasherController: ElectricalDevice {
     val cycleRunning: Boolean
     val cyclePaused: Boolean
 
-    val cycleRunningTime: Measure<Time>
+    val cycleRunningTime: Measure<Time>?
 
     fun powerOn()
     fun powerOff()

@@ -15,6 +15,9 @@ class CycleStage {
     val estimatedDuration: Measure<Time>
         get() = phases.sumOf { it.duration }
 
+    val runningTime: Measure<Time>
+        get() = phases.sumOf { it.runningTime }
+
     suspend fun execute(washer: StandardLaundryWasherBase) {
         phases.forEach { it.execute(washer) }
     }

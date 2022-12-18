@@ -6,7 +6,6 @@ import altline.appliance.measure.Power
 import altline.appliance.util.logger
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import io.nacular.measured.units.*
-import io.nacular.measured.units.Time.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 
 class BasicController(
@@ -26,7 +25,6 @@ class BasicController(
             if (availableEnergy == null || availableEnergy < requiredEnergy) {
                 powerOff()
             }
-            if (cycleRunning) cycleRunningTime += tickPeriod
         }
     }
 
@@ -51,8 +49,8 @@ class BasicController(
     override val cyclePaused: Boolean
         get() = activeWashCycle?.paused ?: false
 
-    override var cycleRunningTime: Measure<Time> = 0 * seconds
-        private set
+    override val cycleRunningTime: Measure<Time>?
+        get() = activeWashCycle?.runningTime
 
     override fun powerOn() {
         if (!poweredOn && powerInlet.isConnected) electricalDevice.start()
@@ -68,7 +66,6 @@ class BasicController(
 
     override fun startCycle(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
         if (cycleRunning || !poweredOn) return
-        cycleRunningTime = 0 * seconds
         activeWashCycle = selectedWashCycle
         selectedWashCycle.start(washer, coroutineScope)
     }
