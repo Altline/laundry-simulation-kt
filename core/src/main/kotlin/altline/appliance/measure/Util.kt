@@ -60,10 +60,10 @@ fun Measure<Time>.toLocalTime(): LocalTime {
 suspend fun delay(time: Measure<Time>) = kotlinx.coroutines.delay((time `in` milliseconds).toLong())
 
 @JvmName("repeatPeriodically1")
-suspend fun repeatPeriodically(frequency: Measure<Frequency>, times: Int = -1, action: (Long) -> Unit) =
+suspend inline fun repeatPeriodically(frequency: Measure<Frequency>, times: Int = -1, action: (Long) -> Unit) =
     repeatPeriodically(frequency.toPeriod(), times, action)
 
-suspend fun repeatPeriodically(period: Measure<Time>, times: Int = -1, action: suspend (Long) -> Unit) {
+suspend inline fun repeatPeriodically(period: Measure<Time>, times: Int = -1, action: (Long) -> Unit) {
     if (times < 0) {
         var count = 0L
         while (true) {

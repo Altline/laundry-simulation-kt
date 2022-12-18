@@ -142,9 +142,7 @@ abstract class StandardLaundryWasherBase(
         condition: (liquidVolume: Measure<Volume>) -> Boolean
     ) {
         repeatPeriodically(measureRate) {
-            if (condition(drum.excessLiquidAmount)) {
-                return@repeatPeriodically
-            }
+            if (condition(drum.excessLiquidAmount)) return
         }
     }
 }
