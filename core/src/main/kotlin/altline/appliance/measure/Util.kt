@@ -15,19 +15,30 @@ import io.nacular.measured.units.Time.Companion.minutes
 import io.nacular.measured.units.Time.Companion.seconds
 import mu.KotlinLogging
 import java.time.LocalTime
+import kotlin.reflect.typeOf
 
-val SUnits: Units? = null
-inline fun <reified T : Units> Units?.zero(): Measure<T> {
-    return when (T::class) {
-        Energy::class -> 0.0 * (joules as T)
-        Frequency::class -> 0.0 * (hertz as T)
-        Time::class -> 0.0 * (seconds as T)
-        Spin::class -> 0.0 * (rpm as T)
-        Volume::class -> 0.0 * (liters as T)
-        Temperature::class -> 0.0 * (celsius as T)
-        else -> throw RuntimeException()
+/**
+ * Returns a measure with a value of 0 and a unit determined from the reified generic type. If the type could not be
+ * determined, for example, when a nested type is generic (`UnitsRatio<QuantityType, Time>`), an [UnsupportedZeroException] is thrown.
+ */
+inline fun <reified T : Units> zero(): Measure<T> {
+    return when (typeOf<T>()) {
+        typeOf<Energy>() -> 0.0 * (joules as T)
+        typeOf<Frequency>() -> 0.0 * (hertz as T)
+        typeOf<Time>() -> 0.0 * (seconds as T)
+        typeOf<Spin>() -> 0.0 * (rpm as T)
+        typeOf<Volume>() -> 0.0 * (liters as T)
+        typeOf<Temperature>() -> 0.0 * (celsius as T)
+        typeOf<Power>() -> 0.0 * (watts as T)
+        typeOf<VolumetricFlow>() -> 0.0 * ((liters / seconds) as T)
+        else -> throw UnsupportedZeroException()
     }
 }
+
+/**
+ * Signifies that a generic measurement unit type could not be determined at runtime.
+ */
+class UnsupportedZeroException : Exception()
 
 fun Measure<Frequency>.toPeriod() = (1 / (this `in` hertz)) * seconds
 fun Measure<Time>.toFrequency() = (1 / (this `in` seconds)) * hertz
@@ -76,21 +87,33 @@ fun <T : Units> Measure<T>.closeEquals(other: Measure<T>, threshold: Double = 0.
     return a.closeEquals(b, threshold)
 }
 
-inline fun <T, reified U : Units> Collection<T>.sumOf(selector: (T) -> Measure<U>): Measure<U> {
-    var sum: Measure<U> = SUnits.zero()
-    for (element in this) {
-        sum += selector(element)
-    }
-    return sum
-}
+/**
+ * Returns the sum of all values produced by [selector] function applied to each element in the collection.
+ *
+ * *Note*: Due to the current flaw in determining the exact type of generic measurement unit in some situations,
+ * this function may throw an [UnsupportedZeroException] if this collection is empty and the type wasn't determined.
+ */
+inline fun <T, reified U : Units> Iterable<T>.sumOf(selector: (T) -> Measure<U>): Measure<U> =
+    fold(zero<U>()) { acc, value -> acc + selector(value) }
 
-inline fun <T, reified U : Units> Array<T>.sumOf(selector: (T) -> Measure<U>): Measure<U> {
-    var sum: Measure<U> = SUnits.zero()
-    for (element in this) {
-        sum += selector(element)
-    }
-    return sum
-}
+/**
+ * @see Iterable.sumOf
+ */
+inline fun <T, reified U : Units> Array<T>.sumOf(selector: (T) -> Measure<U>): Measure<U> =
+    asIterable().sumOf(selector)
+
+/**
+ * Returns the sum of all values produced by [selector] function applied to each element in the collection.
+ * Returns `null` if the collection is empty.
+ */
+fun <T, U : Units> Iterable<T>.sumOfOrNull(selector: (T) -> Measure<U>): Measure<U>? =
+    map(selector).reduceOrNull { a, b -> a + b }
+
+/**
+ * @see Iterable.sumOfOrNull
+ */
+fun <T, U : Units> Array<T>.sumOfOrNull(selector: (T) -> Measure<U>): Measure<U>? =
+    asIterable().sumOfOrNull(selector)
 
 /** Redefinition of an existing div function from [Units] to avoid overload ambiguity. */
 fun <T : Units> Measure<T>.divSameUnit(other: Measure<T>): Double =

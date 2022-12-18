@@ -61,7 +61,8 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
         flowId: Long
     ) {
         val nonSpillingDrains = mutableListOf<FlowDrain<QuantityType, FlowableType>>()
-        val totalOutputFlowRate = drains.sumOf { it.realInputFlowRate }
+        val totalOutputFlowRate = drains.sumOfOrNull { it.realInputFlowRate } ?: return
+
         drains.forEach { drain ->
             val ratio = drain.realInputFlowRate.divSameUnit(totalOutputFlowRate)
             val splitAmount = toPush.amount * ratio
@@ -93,7 +94,8 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
     ): FlowableType? {
         val unexhaustedSources = mutableListOf<FlowSource<QuantityType, FlowableType>>()
         var pulled: FlowableType? = null
-        val totalInputFlowRate = sources.sumOf { it.realOutputFlowRate }
+        val totalInputFlowRate = sources.sumOfOrNull { it.realOutputFlowRate } ?: return null
+
         sources.forEach { source ->
             val ratio = source.realOutputFlowRate.divSameUnit(totalInputFlowRate)
             val splitAmount = amount * ratio
