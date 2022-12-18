@@ -62,7 +62,7 @@ abstract class WashCycleBase : LaundryWashCycle {
     }
 
     private suspend fun ensureStartingConditions(washer: StandardLaundryWasherBase) {
-        TODO("Not yet implemented")
+        washer.drain()
     }
 
     protected fun addStage(init: CycleStage.() -> Unit): CycleStage {
