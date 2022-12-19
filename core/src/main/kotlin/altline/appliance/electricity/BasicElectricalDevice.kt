@@ -55,6 +55,9 @@ abstract class BasicElectricalDevice(
         coroutineManager.active = false
     }
 
+    protected open fun onStart() {}
+    protected open fun onStop() {}
+
     protected abstract fun operate()
 
     protected fun pullEnergy(amount: Measure<Energy>, timeFrame: Measure<Time>): MutableElectricalEnergy? {

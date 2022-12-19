@@ -19,13 +19,20 @@ class ElectricMotor(
             field = value
         }
 
+    var currentSpeed: Measure<Spin> = 0 * rpm
+        private set
+
+    override fun onStop() {
+        currentSpeed = 0 * rpm
+    }
+
     override fun operate() {
         val requiredEnergy = (power * tickPeriod) * (speedSetting / maxSpeed)
         val availableEnergy = pullEnergy(requiredEnergy, tickPeriod)?.amount
         if (availableEnergy != null) {
             val energyRatio = availableEnergy / requiredEnergy
-            val speed = speedSetting * energyRatio
-            connectedLoad?.spin(speed, tickPeriod)
+            currentSpeed = speedSetting * energyRatio
+            connectedLoad?.spin(currentSpeed, tickPeriod)
         }
     }
 }
