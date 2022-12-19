@@ -88,6 +88,7 @@ open class Reservoir(
             if (excessAmount.amount > 0.0) {
                 val excess = storedSubstance.extract(excessAmount)
                 super.pushFlow(excess, DefaultFlowTimeFrame, Random.nextLong())
+                storedSubstance.add(excess)
             }
         }
     }

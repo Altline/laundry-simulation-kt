@@ -61,11 +61,13 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
         flowId: Long
     ) {
         val nonSpillingDrains = mutableListOf<FlowDrain<QuantityType, FlowableType>>()
-        val totalOutputFlowRate = drains.sumOfOrNull { it.realInputFlowRate } ?: return
+        val totalOutputFlowRate = drains.sumOfOrNull { it.realInputFlowRate }.takeIf { it?.amount != 0.0 } ?: return
 
         drains.forEach { drain ->
             val ratio = drain.realInputFlowRate.divSameUnit(totalOutputFlowRate)
             val splitAmount = toPush.amount * ratio
+            if (splitAmount.isNegligible()) return@forEach
+
             val chunk = toPush.extract(splitAmount) as FlowableType
             val leftoverAmount = drain.pushFlow(chunk, timeFrame, flowId)
             toPush.add(chunk)
@@ -94,11 +96,13 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
     ): FlowableType? {
         val unexhaustedSources = mutableListOf<FlowSource<QuantityType, FlowableType>>()
         var pulled: FlowableType? = null
-        val totalInputFlowRate = sources.sumOfOrNull { it.realOutputFlowRate } ?: return null
+        val totalInputFlowRate = sources.sumOfOrNull { it.realOutputFlowRate }.takeIf { it?.amount != 0.0 } ?: return null
 
         sources.forEach { source ->
             val ratio = source.realOutputFlowRate.divSameUnit(totalInputFlowRate)
             val splitAmount = amount * ratio
+            if (splitAmount.isNegligible()) return@forEach
+
             source.pullFlow(splitAmount, timeFrame, flowId)?.let { chunk ->
                 if (pulled == null) pulled = chunk
                 else pulled!!.add(chunk)
