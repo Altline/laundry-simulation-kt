@@ -1,5 +1,6 @@
 package altline.appliance.washing.laundry
 
+import altline.appliance.common.SpeedModifier
 import altline.appliance.measure.Frequency
 import altline.appliance.measure.Frequency.Companion.hertz
 import altline.appliance.measure.Spin
@@ -10,7 +11,7 @@ import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
 data class LaundryWasherConfig(
-    val waterMeasureRate: Measure<Frequency> = 1.0 * hertz,
+    val waterMeasureRate: Measure<Frequency> = (1.0 * hertz) * SpeedModifier,
 
     val intakeFlowRate: Measure<VolumetricFlow> = 0.2 * liters / seconds,
     val outputFlowRate: Measure<VolumetricFlow> = 1.0 * liters / seconds,

@@ -1,8 +1,8 @@
 package altline.appliance.ui
 
 import altline.appliance.common.Body
+import altline.appliance.common.RefreshPeriod
 import altline.appliance.data.World
-import altline.appliance.measure.Frequency.Companion.hertz
 import altline.appliance.measure.repeatPeriodically
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
@@ -15,7 +15,6 @@ import altline.appliance.util.wrapAround
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +43,7 @@ class MainViewModel(
     init {
         updateData()
         coroutineScope.launch {
-            repeatPeriodically(1 * hertz) {
+            repeatPeriodically(RefreshPeriod) {
                 updateData()
             }
         }

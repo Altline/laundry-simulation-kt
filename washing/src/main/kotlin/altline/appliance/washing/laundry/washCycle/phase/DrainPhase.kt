@@ -1,8 +1,10 @@
 package altline.appliance.washing.laundry.washCycle.phase
 
+import altline.appliance.common.RefreshPeriod
+import altline.appliance.common.TimeFactor
 import altline.appliance.measure.repeatPeriodically
+import altline.appliance.washing.laundry.StandardFullFlowDrainTime
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
-import altline.appliance.washing.laundry.standardFullFlowDrainTime
 import altline.appliance.washing.laundry.washCycle.WashParams
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
@@ -36,8 +38,8 @@ class DrainPhase(
         suspend fun execute(washer: StandardLaundryWasherBase) {
             coroutineScope {
                 launch {
-                    repeatPeriodically(1 * seconds) {
-                        runningTime += 1 * seconds
+                    repeatPeriodically(RefreshPeriod) {
+                        runningTime += (TimeFactor `in` seconds) * seconds
                     }
                 }
                 active = true

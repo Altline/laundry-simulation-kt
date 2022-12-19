@@ -1,9 +1,8 @@
 package altline.appliance.transit
 
+import altline.appliance.common.RefreshPeriod
+import altline.appliance.common.TimeFactor
 import io.nacular.measured.units.*
-import io.nacular.measured.units.Time.Companion.seconds
-
-val DefaultFlowTimeFrame = 0.5 * seconds
 
 interface Flowable<QuantityType : Units> {
     val amount: Measure<QuantityType>
@@ -21,6 +20,9 @@ interface FlowSource<QuantityType : Units, FlowableType : Flowable<QuantityType>
 
     val outputCount: Int
     val outputs: Array<Port<QuantityType, FlowableType>>
+
+    val tickPeriod get() = RefreshPeriod
+    val timeFactor get() = TimeFactor
 
     fun disconnectOutputs() {
         outputs.forEach { it.disconnect() }
@@ -59,6 +61,9 @@ interface FlowDrain<QuantityType : Units, FlowableType : Flowable<QuantityType>>
     val inputCount: Int
     val inputs: Array<Port<QuantityType, FlowableType>>
 
+    val tickPeriod get() = RefreshPeriod
+    val timeFactor get() = TimeFactor
+
     fun disconnectInputs() {
         inputs.forEach { it.disconnect() }
     }
@@ -90,4 +95,8 @@ interface FlowDrain<QuantityType : Units, FlowableType : Flowable<QuantityType>>
 }
 
 interface Conduit<QuantityType : Units, FlowableType : Flowable<QuantityType>>
-    : FlowSource<QuantityType, FlowableType>, FlowDrain<QuantityType, FlowableType>
+    : FlowSource<QuantityType, FlowableType>, FlowDrain<QuantityType, FlowableType> {
+
+    override val tickPeriod get() = RefreshPeriod
+    override val timeFactor get() = TimeFactor
+}

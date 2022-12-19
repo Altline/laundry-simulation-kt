@@ -20,8 +20,8 @@ class ElectricHeater(
         }
 
     override fun operate() {
-        val requiredEnergy = (power * tickPeriod) * powerSetting
-        val availableEnergy = pullEnergy(requiredEnergy, tickPeriod)?.amount
+        val requiredEnergy = (power * timeFactor) * powerSetting
+        val availableEnergy = pullEnergy(requiredEnergy, timeFactor)?.amount
         if (availableEnergy != null) {
             heatedSubstance?.let {
                 val calories = availableEnergy `in` calories

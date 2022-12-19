@@ -20,8 +20,8 @@ class BasicController(
 
     private val electricalDevice = object : BasicElectricalDevice(power) {
         override fun operate() {
-            val requiredEnergy = power * tickPeriod
-            val availableEnergy = pullEnergy(requiredEnergy, tickPeriod)?.amount
+            val requiredEnergy = power * timeFactor
+            val availableEnergy = pullEnergy(requiredEnergy, timeFactor)?.amount
             if (availableEnergy == null || availableEnergy < requiredEnergy) {
                 powerOff()
             }

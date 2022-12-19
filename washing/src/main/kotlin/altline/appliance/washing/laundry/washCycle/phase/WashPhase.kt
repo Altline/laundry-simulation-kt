@@ -1,5 +1,7 @@
 package altline.appliance.washing.laundry.washCycle.phase
 
+import altline.appliance.common.RefreshPeriod
+import altline.appliance.common.TimeFactor
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Temperature
 import altline.appliance.measure.repeatPeriodically
@@ -52,8 +54,8 @@ class WashPhase : CyclePhaseBase() {
         suspend fun execute(washer: StandardLaundryWasherBase) {
             coroutineScope {
                 launch {
-                    repeatPeriodically(1 * seconds) {
-                        runningTime += 1 * seconds
+                    repeatPeriodically(RefreshPeriod) {
+                        runningTime += (TimeFactor `in` seconds) * seconds
                     }
                 }
                 active = true

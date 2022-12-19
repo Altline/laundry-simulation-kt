@@ -1,9 +1,12 @@
 package altline.appliance.washing.laundry.washCycle.phase
 
+import altline.appliance.common.RefreshPeriod
+import altline.appliance.common.TimeFactor
 import altline.appliance.measure.repeatPeriodically
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.WashCycleDsl
 import io.nacular.measured.units.*
+import io.nacular.measured.units.Time.Companion.seconds
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -11,7 +14,7 @@ import kotlinx.coroutines.launch
 @WashCycleDsl
 abstract class CyclePhaseBase : CyclePhase {
 
-    final override var runningTime: Measure<Time> = 0 * Time.seconds
+    final override var runningTime: Measure<Time> = 0 * seconds
         private set
 
     final override var active: Boolean = false
@@ -20,8 +23,8 @@ abstract class CyclePhaseBase : CyclePhase {
     final override suspend fun execute(washer: StandardLaundryWasherBase) {
         coroutineScope {
             launch {
-                repeatPeriodically(1 * Time.seconds) {
-                    runningTime += 1 * Time.seconds
+                repeatPeriodically(RefreshPeriod) {
+                    runningTime += (TimeFactor `in` seconds) * seconds
                 }
             }
             active = true

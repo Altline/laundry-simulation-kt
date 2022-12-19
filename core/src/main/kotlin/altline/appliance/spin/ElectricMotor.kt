@@ -27,12 +27,12 @@ class ElectricMotor(
     }
 
     override fun operate() {
-        val requiredEnergy = (power * tickPeriod) * (speedSetting / maxSpeed)
-        val availableEnergy = pullEnergy(requiredEnergy, tickPeriod)?.amount
+        val requiredEnergy = (power * timeFactor) * (speedSetting / maxSpeed)
+        val availableEnergy = pullEnergy(requiredEnergy, timeFactor)?.amount
         if (availableEnergy != null) {
             val energyRatio = availableEnergy / requiredEnergy
             currentSpeed = speedSetting * energyRatio
-            connectedLoad?.spin(currentSpeed, tickPeriod)
+            connectedLoad?.spin(currentSpeed, timeFactor)
         }
     }
 }

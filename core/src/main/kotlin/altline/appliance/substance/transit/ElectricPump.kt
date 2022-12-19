@@ -41,12 +41,12 @@ class ElectricPump(
     }
 
     override fun operate() {
-        val requiredEnergy = (power * tickPeriod) * powerSetting
-        val availableEnergy = pullEnergy(requiredEnergy, tickPeriod)?.amount
+        val requiredEnergy = (power * timeFactor) * powerSetting
+        val availableEnergy = pullEnergy(requiredEnergy, timeFactor)?.amount
         if (availableEnergy != null) {
             val energyRatio = availableEnergy / requiredEnergy
-            val pumpAmount = pipe.maxFlowRate * powerSetting * energyRatio * tickPeriod
-            pump(pumpAmount, tickPeriod)
+            val pumpAmount = pipe.maxFlowRate * powerSetting * energyRatio * timeFactor
+            pump(pumpAmount, timeFactor)
         }
     }
 }

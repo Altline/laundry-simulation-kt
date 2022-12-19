@@ -5,7 +5,6 @@ import altline.appliance.measure.VolumetricFlow
 import altline.appliance.measure.repeatPeriodically
 import altline.appliance.substance.MutableSubstance
 import altline.appliance.substance.isNotEmpty
-import altline.appliance.transit.DefaultFlowTimeFrame
 import altline.appliance.util.CoroutineManager
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
@@ -84,10 +83,10 @@ open class Reservoir(
     }
 
     private suspend fun spontaneousPushLoop() {
-        repeatPeriodically(DefaultFlowTimeFrame) {
+        repeatPeriodically(tickPeriod) {
             if (excessAmount.amount > 0.0) {
                 val excess = storedSubstance.extract(excessAmount)
-                super.pushFlow(excess, DefaultFlowTimeFrame, Random.nextLong())
+                super.pushFlow(excess, timeFactor, Random.nextLong())
                 storedSubstance.add(excess)
             }
         }
