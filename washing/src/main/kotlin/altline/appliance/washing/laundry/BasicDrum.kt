@@ -9,6 +9,7 @@ import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.substance.MutableSubstance
 import altline.appliance.substance.Soakable
+import altline.appliance.substance.Substance
 import altline.appliance.substance.fresheningPotential
 import altline.appliance.substance.transit.Reservoir
 import altline.appliance.washing.cleaningPower
@@ -33,6 +34,9 @@ class BasicDrum(
 
     private val _load = mutableSetOf<Body>()
     override val load= _load as Set<Body>
+
+    override val excessLiquid: Substance
+        get() = storedSubstance
 
     override val excessLiquidAmount: Measure<Volume>
         get() = storedSubstanceAmount
