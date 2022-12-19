@@ -21,6 +21,9 @@ class Valve(
             realOutputFlowRate = value
         }
 
+    override var realInputFlowRate = 0.0 * liters / seconds
+    override var realOutputFlowRate = 0.0 * liters / seconds
+
     fun open(flowRate: Measure<VolumetricFlow> = maxFlowRate) {
         realFlowRate = flowRate.coerceIn(0.0 * liters / seconds, maxFlowRate)
     }

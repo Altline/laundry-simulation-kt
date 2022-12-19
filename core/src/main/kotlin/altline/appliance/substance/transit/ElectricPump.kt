@@ -4,7 +4,6 @@ import altline.appliance.electricity.BasicElectricalDevice
 import altline.appliance.measure.Power
 import altline.appliance.measure.Volume
 import altline.appliance.measure.VolumetricFlow
-import altline.appliance.measure.divSameUnit
 import io.nacular.measured.units.*
 import kotlin.random.Random
 
@@ -20,11 +19,10 @@ class ElectricPump(
     val substanceInputs = pipe.inputs
     val substanceOutputs = pipe.outputs
 
-    var powerSetting: Double
-        get() = pipe.realFlowRate.divSameUnit(pipe.maxFlowRate)
+    var powerSetting: Double = 1.0
         set(value) {
             require(value in 0.0..1.0)
-            pipe.open(value * pipe.maxFlowRate)
+            field = value
         }
 
     private fun pump(amount: Measure<Volume>, timeFrame: Measure<Time>) {
@@ -34,12 +32,20 @@ class ElectricPump(
         }
     }
 
+    override fun onStart() {
+        pipe.open()
+    }
+
+    override fun onStop() {
+        pipe.close()
+    }
+
     override fun operate() {
         val requiredEnergy = (power * tickPeriod) * powerSetting
         val availableEnergy = pullEnergy(requiredEnergy, tickPeriod)?.amount
         if (availableEnergy != null) {
             val energyRatio = availableEnergy / requiredEnergy
-            val pumpAmount = (pipe.realFlowRate * tickPeriod) * energyRatio
+            val pumpAmount = pipe.maxFlowRate * powerSetting * energyRatio * tickPeriod
             pump(pumpAmount, tickPeriod)
         }
     }
