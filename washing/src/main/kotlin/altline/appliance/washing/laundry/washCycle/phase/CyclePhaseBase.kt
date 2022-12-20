@@ -7,7 +7,6 @@ import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.WashCycleDsl
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -22,7 +21,7 @@ abstract class CyclePhaseBase : CyclePhase {
 
     final override suspend fun execute(washer: StandardLaundryWasherBase) {
         coroutineScope {
-            launch {
+            val timerJob = launch {
                 repeatPeriodically(RefreshPeriod) {
                     runningTime += (TimeFactor `in` seconds) * seconds
                 }
@@ -30,7 +29,7 @@ abstract class CyclePhaseBase : CyclePhase {
             active = true
             doExecute(washer)
             active = false
-            cancel()
+            timerJob.cancel()
         }
     }
 
