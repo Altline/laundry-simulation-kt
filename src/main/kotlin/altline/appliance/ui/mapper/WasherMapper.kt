@@ -1,10 +1,7 @@
 package altline.appliance.ui.mapper
 
 import altline.appliance.measure.Spin.Companion.rpm
-import altline.appliance.ui.component.washer.ControlPanelUi
-import altline.appliance.ui.component.washer.DispenserPanelUi
-import altline.appliance.ui.component.washer.StatusPanelUi
-import altline.appliance.ui.component.washer.WasherPanelUi
+import altline.appliance.ui.component.washer.*
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.util.clockFormat
@@ -14,6 +11,7 @@ import altline.appliance.washing.laundry.washCycle.CottonCycle
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import altline.appliance.washing.laundry.washCycle.RinseCycle
 import altline.appliance.washing.laundry.washCycle.SpinCycle
+import io.nacular.measured.units.*
 import kotlin.math.roundToInt
 
 class WasherMapper {
@@ -51,7 +49,8 @@ class WasherMapper {
                     temperature = shownWashCycle.selectedTemperatureSetting?.optionalDecimal() ?: "-",
                     spinSpeed = "${shownWashCycle.selectedSpinSpeedSetting?.`in`(rpm)?.roundToInt() ?: "-"}"
                 )
-            } else null
+            } else null,
+            drumUi = DrumUi(60 * rpm)
         )
     }
 

@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.unit.dp
@@ -172,7 +173,7 @@ private fun CycleSelector(
                 .align(Alignment.Center)
                 .size(60.dp)
                 .clip(CircleShape)
-                .rotate(animatedAngle)
+                .graphicsLayer { rotationZ = animatedAngle }
                 .onClick(
                     matcher = PointerMatcher.mouse(PointerButton.Primary)
                 ) { onSelectNextCycle(false) }

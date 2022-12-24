@@ -17,3 +17,12 @@ fun Int.wrapAround(range: IntRange): Int {
         else -> this
     }
 }
+
+/**
+ * Linearly interpolate between [start] and [stop] with [fraction] fraction between them.
+ * The returned value is always limited to the range between [start] and [stop].
+ */
+fun lerpCoerced(start: Float, stop: Float, fraction: Float): Float {
+    val coercedFraction = fraction.coerceIn(0f, 1f)
+    return ((1 - coercedFraction) * start + coercedFraction * stop)
+}

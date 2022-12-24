@@ -4,8 +4,8 @@ import altline.appliance.ui.component.VerticalDivider
 import altline.appliance.ui.theme.AppTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
@@ -48,7 +48,7 @@ private fun WasherHead(
     data: WasherPanelUi,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier) {
+    Row(modifier.background(Color.White)) {
         DispenserPanel(
             data.dispenserPanelUi,
             Modifier.weight(1f).fillMaxHeight()
@@ -71,56 +71,40 @@ private fun WasherBody(
     data: WasherPanelUi,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier) {
-        val drumOffsetY = (-75).dp
-        Surface(
-            Modifier
-                .align(Alignment.Center)
-                .offset(y = drumOffsetY)
-                .size(520.dp),
-            shape = CircleShape,
-            border = BorderStroke(2.dp, Color.LightGray)
-        ) {}
-        Surface(
-            Modifier
-                .align(Alignment.Center)
-                .offset(y = drumOffsetY)
-                .size(480.dp),
-            shape = CircleShape,
-            color = Color(0xfff7f7f7),
-            border = BorderStroke(1.dp, Color(0xffe0e0e0))
-        ) {}
-        Surface(
-            Modifier
-                .align(Alignment.Center)
-                .offset(y = drumOffsetY)
-                .size(320.dp),
-            shape = CircleShape,
-            border = BorderStroke(2.dp, Color.LightGray)
-        ) {}
-
-        Surface(
-            Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 20.dp, bottom = 20.dp)
-                .size(150.dp, 100.dp),
-            shape = RoundedCornerShape(10),
-            border = BorderStroke(1.dp, Color(0xffe0e0e0))
-        ) {}
+    Box(
+        modifier.background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        Drum(data.drumUi)
+        FilterDoor()
     }
+}
+
+@Composable
+private fun BoxScope.FilterDoor() {
+    Surface(
+        Modifier
+            .align(Alignment.BottomEnd)
+            .padding(end = 20.dp, bottom = 20.dp)
+            .size(150.dp, 100.dp),
+        shape = RoundedCornerShape(10),
+        border = BorderStroke(1.dp, Color(0xffe0e0e0))
+    ) {}
 }
 
 data class WasherPanelUi(
     val dispenserPanelUi: DispenserPanelUi,
     val controlPanelUi: ControlPanelUi,
-    val statusPanelUi: StatusPanelUi?
+    val statusPanelUi: StatusPanelUi?,
+    val drumUi: DrumUi
 ) {
     companion object {
         @Composable
         fun preview() = WasherPanelUi(
             dispenserPanelUi = DispenserPanelUi.preview(),
             controlPanelUi = ControlPanelUi.preview(),
-            statusPanelUi = StatusPanelUi.preview()
+            statusPanelUi = StatusPanelUi.preview(),
+            drumUi = DrumUi.preview()
         )
     }
 }
