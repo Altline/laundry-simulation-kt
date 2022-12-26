@@ -83,7 +83,8 @@ open class BasicConduit<QuantityType : Units, FlowableType : MutableFlowable<Qua
     override fun pullFlow(amount: Measure<QuantityType>, timeFrame: Measure<Time>, flowId: Long): FlowableType? {
         if (checkId(flowId)) {
             val flowableAmount = realInputFlowRate * timeFrame
-            return tryPull(connectedSources, flowableAmount, timeFrame, flowId)
+            val askingAmount = flowableAmount.coerceAtMost(amount)
+            return tryPull(connectedSources, askingAmount, timeFrame, flowId)
         }
         return null
     }
