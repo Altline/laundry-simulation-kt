@@ -2,6 +2,7 @@ package altline.appliance.washing.laundry
 
 import altline.appliance.common.Body
 import altline.appliance.common.RefreshPeriod
+import altline.appliance.common.SpeedModifier
 import altline.appliance.electricity.ElectricalDevice
 import altline.appliance.electricity.transit.BasicElectricalConduit
 import altline.appliance.electricity.transit.ElectricalDrainPort
@@ -143,7 +144,7 @@ abstract class StandardLaundryWasherBase(
             val cycleCount = (duration / (spinPeriod + restPeriod)).roundToInt()
             repeat(cycleCount) { i ->
                 spin(spinSpeed, reverseDirection = i % 2 != 0, spinPeriod)
-                delay(restPeriod)
+                delay(restPeriod / SpeedModifier)
             }
         }
     }
@@ -160,7 +161,7 @@ abstract class StandardLaundryWasherBase(
         drumMotor.speedSetting = speed
         drumMotor.reverseDirection = reverseDirection
         drumMotor.start()
-        delay(duration)
+        delay(duration / SpeedModifier)
         drumMotor.stop()
     }
 

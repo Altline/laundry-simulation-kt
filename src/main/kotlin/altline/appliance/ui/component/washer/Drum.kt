@@ -1,5 +1,6 @@
 package altline.appliance.ui.component.washer
 
+import altline.appliance.common.SpeedModifier
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.ui.theme.AppTheme
@@ -35,7 +36,8 @@ import io.nacular.measured.units.times
 fun Drum(data: DrumUi) {
     val directionModifier = if (data.reverseDirection) -1 else 1
     val rpm = (data.spinSpeed `in` rpm).toFloat()
-    val inertRpm by animateRpmAsState(rpm)
+    val rawInertRpm by animateRpmAsState(rpm)
+    val inertRpm = rawInertRpm * SpeedModifier
 
     val fastRpmThreshold = 100
     val spinBlur = lerpCoerced(0.dp, 8.dp, (inertRpm - fastRpmThreshold) / 1000f)

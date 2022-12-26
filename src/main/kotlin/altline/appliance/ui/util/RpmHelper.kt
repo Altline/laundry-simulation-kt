@@ -1,5 +1,6 @@
 package altline.appliance.ui.util
 
+import altline.appliance.common.SpeedModifier
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -11,7 +12,7 @@ fun animateRpmAsState(rpm: Float): State<Float> {
     var prevRpm by remember { mutableStateOf(0f) }
     return animateFloatAsState(
         targetValue = rpm,
-        animationSpec = tween(((rpm - prevRpm).absoluteValue * 20).toInt(), easing = LinearEasing)
+        animationSpec = tween(((rpm - prevRpm).absoluteValue * 20 / SpeedModifier).toInt(), easing = LinearEasing)
     ).also {
         if (prevRpm != rpm) prevRpm = rpm
     }
