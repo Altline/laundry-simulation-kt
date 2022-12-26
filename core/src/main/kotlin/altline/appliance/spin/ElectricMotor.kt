@@ -13,6 +13,8 @@ class ElectricMotor(
 
     var connectedLoad: Spinnable? = null
 
+    var reverseDirection: Boolean = false
+
     var speedSetting: Measure<Spin> = maxSpeed
         set(value) {
             require(value in (0.0 * rpm)..maxSpeed)

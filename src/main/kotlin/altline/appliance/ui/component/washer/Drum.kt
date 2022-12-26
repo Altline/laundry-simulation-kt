@@ -46,6 +46,7 @@ fun Drum(data: DrumUi) {
     )
 
     val rpm = data.spinSpeed `in` rpm
+    val directionModifier = if (data.reverseDirection) -1 else 1
 
     val fastRpmThreshold = 100
     val spinBlur = lerpCoerced(0.dp, 8.dp, ((rpm - fastRpmThreshold) / 1000f).toFloat())
@@ -56,7 +57,7 @@ fun Drum(data: DrumUi) {
     val glassDiameter = 320.dp
 
     LaunchedEffect(tick) {
-        rotation += (0.1f * rpm).toFloat()
+        rotation += (0.1f * rpm).toFloat() * directionModifier
     }
 
     Surface(
@@ -123,12 +124,14 @@ fun Drum(data: DrumUi) {
 }
 
 data class DrumUi(
-    val spinSpeed: Measure<Spin>
+    val spinSpeed: Measure<Spin>,
+    val reverseDirection: Boolean
 ) {
     companion object {
         @Composable
         fun preview() = DrumUi(
-            spinSpeed = 60 * rpm
+            spinSpeed = 60 * rpm,
+            reverseDirection = false
         )
     }
 }

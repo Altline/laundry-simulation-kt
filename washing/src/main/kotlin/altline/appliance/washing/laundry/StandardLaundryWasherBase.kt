@@ -115,8 +115,8 @@ abstract class StandardLaundryWasherBase(
     internal open suspend fun wash(params: WashParams) {
         with(params) {
             val cycleCount = (duration / (spinPeriod + restPeriod)).roundToInt()
-            repeat(cycleCount) {
-                spin(spinSpeed, spinPeriod)
+            repeat(cycleCount) { i ->
+                spin(spinSpeed, reverseDirection = i % 2 != 0, spinPeriod)
                 delay(restPeriod)
             }
         }
@@ -125,13 +125,14 @@ abstract class StandardLaundryWasherBase(
     internal open suspend fun centrifuge(params: CentrifugeParams) {
         with(params) {
             pump.start()
-            spin(spinSpeed, duration)
+            spin(spinSpeed, reverseDirection = false, duration)
             pump.stop()
         }
     }
 
-    private suspend fun spin(speed: Measure<Spin>, duration: Measure<Time>) {
+    private suspend fun spin(speed: Measure<Spin>, reverseDirection: Boolean, duration: Measure<Time>) {
         drumMotor.speedSetting = speed
+        drumMotor.reverseDirection = reverseDirection
         drumMotor.start()
         delay(duration)
         drumMotor.stop()
