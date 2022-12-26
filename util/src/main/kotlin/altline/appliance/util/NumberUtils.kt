@@ -10,6 +10,14 @@ fun Double.isNotNegligible(threshold: Double) = !isNegligible(threshold)
 fun Double.closeEquals(other: Double, threshold: Double): Boolean =
     abs(this - other) <= threshold
 
+fun Float.isNegligible(threshold: Float): Boolean =
+    this >= -threshold && this <= threshold
+
+fun Float.isNotNegligible(threshold: Float) = !isNegligible(threshold)
+
+fun Float.closeEquals(other: Float, threshold: Float): Boolean =
+    abs(this - other) <= threshold
+
 fun Int.wrapAround(range: IntRange): Int {
     return when {
         this < range.first -> range.last

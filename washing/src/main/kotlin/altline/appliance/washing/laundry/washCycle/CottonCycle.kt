@@ -25,7 +25,7 @@ class CottonCycle : WashCycleBase() {
                     duration = 10 * Time.minutes,
                     spinPeriod = 5 * Time.seconds,
                     restPeriod = 5 * Time.seconds,
-                    spinSpeed = 60 * rpm
+                    spinSpeed = 50 * rpm
                 ).also {
                     this@CottonCycle.mainWashParams = it.washParams
                 }
