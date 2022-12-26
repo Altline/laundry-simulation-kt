@@ -22,8 +22,13 @@ fun formatPercentage(number: Double): String {
     return percentFormat.format(number)
 }
 
-fun Measure<*>.optionalDecimal(): String {
-    return "${optionalDecimalFormat.format(amount)} ${units.suffix}"
+fun <T : Units> Measure<T>.optionalDecimal(mandatoryUnits: T? = null): String {
+    return if (mandatoryUnits == null) {
+        "${optionalDecimalFormat.format(amount)} ${units.suffix}"
+    } else {
+        val amountInUnits = this `in` mandatoryUnits
+        "${optionalDecimalFormat.format(amountInUnits)} ${mandatoryUnits.suffix}"
+    }
 }
 
 fun Measure<Time>.clockFormat(
