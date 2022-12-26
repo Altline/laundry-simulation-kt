@@ -51,10 +51,12 @@ abstract class BasicElectricalDevice(
 
     fun start() {
         coroutineManager.active = true
+        onStart()
     }
 
     fun stop() {
         coroutineManager.active = false
+        onStop()
     }
 
     protected open fun onStart() {}
