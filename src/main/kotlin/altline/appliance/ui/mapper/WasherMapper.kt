@@ -11,7 +11,7 @@ import altline.appliance.washing.laundry.washCycle.CottonCycle
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import altline.appliance.washing.laundry.washCycle.RinseCycle
 import altline.appliance.washing.laundry.washCycle.SpinCycle
-import io.nacular.measured.units.*
+import io.nacular.measured.units.times
 import kotlin.math.roundToInt
 
 class WasherMapper {
@@ -50,7 +50,10 @@ class WasherMapper {
                     spinSpeed = "${shownWashCycle.selectedSpinSpeedSetting?.`in`(rpm)?.roundToInt() ?: "-"}"
                 )
             } else null,
-            drumUi = DrumUi(60 * rpm)
+            drumUi = DrumUi(
+                spinSpeed = washer.scanner?.spinSpeed ?: (0 * rpm),
+                reverseDirection = washer.scanner?.reverseSpinDirection ?: false
+            )
         )
     }
 

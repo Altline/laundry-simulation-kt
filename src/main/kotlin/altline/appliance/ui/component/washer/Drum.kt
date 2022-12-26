@@ -29,9 +29,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.times
+import kotlin.math.absoluteValue
 
 @Composable
 fun Drum(data: DrumUi) {
+    val directionModifier = if (data.reverseDirection) -1 else 1
+    val rpm = (data.spinSpeed `in` rpm).toFloat()
+    var prevRpm by remember { mutableStateOf(0f) }
+    val inertRpm by animateFloatAsState(
+        targetValue = rpm,
+        animationSpec = tween(((rpm - prevRpm).absoluteValue * 20).toInt(), easing = LinearEasing)
+    )
+
+    val fastRpmThreshold = 100
+    val spinBlur = lerpCoerced(0.dp, 8.dp, (inertRpm - fastRpmThreshold) / 1000f)
+    val spinAlpha = lerpCoerced(255f, 100f, (inertRpm - 200f) / 1500f)
+    val spinBackgroundAlpha = lerpCoerced(0f, 1f, (inertRpm - fastRpmThreshold) / 1000f)
+
+    val drumOffsetY = (-75).dp
+    val glassDiameter = 320.dp
+
     var rotation by remember { mutableStateOf(0f) }
     val infiniteTransition = rememberInfiniteTransition()
     val tick by infiniteTransition.animateFloat(
@@ -45,19 +62,8 @@ fun Drum(data: DrumUi) {
         )
     )
 
-    val rpm = data.spinSpeed `in` rpm
-    val directionModifier = if (data.reverseDirection) -1 else 1
-
-    val fastRpmThreshold = 100
-    val spinBlur = lerpCoerced(0.dp, 8.dp, ((rpm - fastRpmThreshold) / 1000f).toFloat())
-    val spinAlpha = lerpCoerced(255f, 100f, ((rpm - 200f) / 1500f).toFloat())
-    val spinBackgroundAlpha = lerpCoerced(0f, 1f, ((rpm - fastRpmThreshold) / 1000f).toFloat())
-
-    val drumOffsetY = (-75).dp
-    val glassDiameter = 320.dp
-
     LaunchedEffect(tick) {
-        rotation += (0.1f * rpm).toFloat() * directionModifier
+        rotation += 0.1f * inertRpm * directionModifier
     }
 
     Surface(
@@ -70,7 +76,7 @@ fun Drum(data: DrumUi) {
     Surface(
         Modifier
             .offset(y = drumOffsetY)
-            .size(460.dp),
+            .size(470.dp),
         shape = CircleShape,
         color = Color(0xfff7f7f7),
         border = BorderStroke(1.dp, Color(0xffe0e0e0))
@@ -86,7 +92,7 @@ fun Drum(data: DrumUi) {
             .graphicsLayer { rotationZ = rotation },
         contentAlignment = Alignment.Center
     ) {
-        if (rpm > fastRpmThreshold) {
+        if (inertRpm > fastRpmThreshold) {
             Image(
                 painterResource("images/DrumBlur.png"),
                 contentDescription = null,
@@ -121,6 +127,8 @@ fun Drum(data: DrumUi) {
             border = BorderStroke(1.dp, Color.LightGray)
         ) {}
     }
+
+    if (prevRpm != rpm) prevRpm = rpm
 }
 
 data class DrumUi(
