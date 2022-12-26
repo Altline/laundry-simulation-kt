@@ -5,7 +5,9 @@ import altline.appliance.measure.Power
 import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.substance.MutableSubstance
-import io.nacular.measured.units.*
+import altline.appliance.substance.isNotEmpty
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.times
 
 class ElectricHeater(
     power: Measure<Power>
@@ -23,12 +25,14 @@ class ElectricHeater(
         val requiredEnergy = (power * timeFactor) * powerSetting
         val availableEnergy = pullEnergy(requiredEnergy, timeFactor)?.amount
         if (availableEnergy != null) {
-            heatedSubstance?.let {
+            val heatedSubstance = heatedSubstance
+            if (heatedSubstance != null && heatedSubstance.isNotEmpty()) {
                 val calories = availableEnergy `in` calories
-                val milliliters = it.amount `in` milliliters
+                val milliliters = heatedSubstance.amount `in` milliliters
+                val temperature = heatedSubstance.temperature!!
                 // Here the assumption is that every substance requires the same amount of energy to be equally heated
                 // = 1 calorie to heat 1 milliliter of substance 1 degree celsius
-                it.temperature += (calories / milliliters) * celsius
+                heatedSubstance.temperature = temperature + (calories / milliliters) * celsius
             }
         }
     }

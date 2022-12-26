@@ -7,17 +7,18 @@ import altline.appliance.measure.isNegligible
 import altline.appliance.measure.sumOf
 import altline.appliance.transit.Flowable
 import altline.appliance.transit.MutableFlowable
-import io.nacular.measured.units.*
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.div
+import io.nacular.measured.units.times
 
 interface Substance : Flowable<Volume> {
     val parts: Set<Part>
-    val temperature: Measure<Temperature>
+
+    /** The temperature of the substance. This is null if, and only if, the substance is empty. */
+    val temperature: Measure<Temperature>?
 
     override val amount: Measure<Volume>
         get() = parts.sumOf { it.amount }
-
-    val isEmpty: Boolean
-        get() = parts.isEmpty()
 
     interface Part {
         val type: SubstanceType
@@ -34,7 +35,7 @@ interface Substance : Flowable<Volume> {
 
 class MutableSubstance(
     parts: Set<Substance.Part>,
-    override var temperature: Measure<Temperature>
+    override var temperature: Measure<Temperature>?
 ) : Substance, MutableFlowable<Volume> {
 
     constructor(
@@ -63,11 +64,18 @@ class MutableSubstance(
         this.temperature = newTemperature
     }
 
-    private fun mergeTemperature(other: Substance): Measure<Temperature> {
-        val totalAmount = this.amount + other.amount
-        val thisRatio = this.amount / totalAmount
-        val otherRatio = other.amount / totalAmount
-        return (this.temperature * thisRatio) + (other.temperature * otherRatio)
+    private fun mergeTemperature(other: Substance): Measure<Temperature>? {
+        return when {
+            this.isEmpty() && other.isEmpty() -> null
+            this.isEmpty() -> other.temperature
+            other.isEmpty() -> this.temperature
+            else -> {
+                val totalAmount = this.amount + other.amount
+                val thisRatio = this.amount / totalAmount
+                val otherRatio = other.amount / totalAmount
+                (this.temperature!! * thisRatio) + (other.temperature!! * otherRatio)
+            }
+        }
     }
 
     override fun extract(amount: Measure<Volume>): MutableSubstance {

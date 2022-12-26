@@ -7,10 +7,7 @@ import altline.appliance.measure.Spin
 import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.liters
-import altline.appliance.substance.MutableSubstance
-import altline.appliance.substance.Soakable
-import altline.appliance.substance.Substance
-import altline.appliance.substance.fresheningPotential
+import altline.appliance.substance.*
 import altline.appliance.substance.transit.Reservoir
 import altline.appliance.washing.cleaningPower
 import io.nacular.measured.units.*
@@ -105,15 +102,19 @@ class BasicDrum(
 
     private fun calcCleaningPower(body: Body): Double {
         return if (body is Soakable) {
+            if (body.soakedSubstance.isEmpty()) return 0.0
+
             val soakRatio = body.soakedSubstance.amount / body.volume
             val soakCoefficient = ((soakRatio - config.lowerSoakRatio) / config.upperSoakRatio - config.lowerSoakRatio)
                 .coerceIn(0.0, 1.0)
-            val temperatureCoefficient = (body.soakedSubstance.temperature / (100 * celsius))
+            val temperatureCoefficient = (body.soakedSubstance.temperature!! / (100 * celsius))
                 .coerceIn(0.0, 1.0)
             body.soakedSubstance.cleaningPower * soakCoefficient * temperatureCoefficient
 
         } else {
-            val temperatureCoefficient = (storedSubstance.temperature / (100 * celsius))
+            if (storedSubstance.isEmpty()) return 0.0
+
+            val temperatureCoefficient = (storedSubstance.temperature!! / (100 * celsius))
                 .coerceIn(0.0, 1.0)
             storedSubstance.cleaningPower * temperatureCoefficient
         }
