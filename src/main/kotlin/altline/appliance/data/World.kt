@@ -87,7 +87,7 @@ class World {
         )
         val drumMotor = ElectricMotor(
             power = 400 * watts,
-            maxSpeed = 1000 * rpm
+            maxSpeed = 1600 * rpm
         )
         val pump = ElectricPump(
             power = 40 * watts,
@@ -111,5 +111,7 @@ class World {
         powerSource.outputs[0] connectTo washer.powerInlet
 
         washer.load(laundry.first())
+
+        washer.scanner = WasherStateScanner()
     }
 }

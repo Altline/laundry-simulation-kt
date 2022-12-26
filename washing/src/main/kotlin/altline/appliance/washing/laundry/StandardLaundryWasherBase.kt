@@ -1,6 +1,7 @@
 package altline.appliance.washing.laundry
 
 import altline.appliance.common.Body
+import altline.appliance.common.RefreshPeriod
 import altline.appliance.electricity.ElectricalDevice
 import altline.appliance.electricity.transit.BasicElectricalConduit
 import altline.appliance.electricity.transit.ElectricalDrainPort
@@ -16,6 +17,8 @@ import altline.appliance.washing.laundry.washCycle.WashParams
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 abstract class StandardLaundryWasherBase(
@@ -73,10 +76,33 @@ abstract class StandardLaundryWasherBase(
 
     var selectedWashCycle: LaundryWashCycle
         get() = controller.selectedWashCycle
-        set(value) { controller.selectedWashCycle = value }
+        set(value) {
+            controller.selectedWashCycle = value
+        }
 
     val activeWashCycle: LaundryWashCycle?
         get() = controller.activeWashCycle
+
+    private var scanningJob: Job? = null
+    var scanner: WasherStateScanner? = null
+        set(value) {
+            if (value != field) {
+                field = value
+                scanningJob?.cancel()
+                if (value != null) {
+                    scanningJob = machineScope.launch { scan() }
+                }
+            }
+        }
+
+    private suspend fun scan() {
+        repeatPeriodically(RefreshPeriod) {
+            scanner?.run {
+                scanDrumMotor(drumMotor)
+                scanWashLiquid(drum.excessLiquid)
+            }
+        }
+    }
 
     override fun load(vararg items: Body) = drum.load(*items)
     override fun unload(vararg items: Body) = drum.unload(*items)

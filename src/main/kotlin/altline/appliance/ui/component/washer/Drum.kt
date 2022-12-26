@@ -3,6 +3,7 @@ package altline.appliance.ui.component.washer
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.ui.theme.AppTheme
+import altline.appliance.ui.util.animateRpmAsState
 import altline.appliance.ui.util.lerpCoerced
 import altline.appliance.util.lerpCoerced
 import androidx.compose.animation.core.*
@@ -29,17 +30,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.times
-import kotlin.math.absoluteValue
 
 @Composable
 fun Drum(data: DrumUi) {
     val directionModifier = if (data.reverseDirection) -1 else 1
     val rpm = (data.spinSpeed `in` rpm).toFloat()
-    var prevRpm by remember { mutableStateOf(0f) }
-    val inertRpm by animateFloatAsState(
-        targetValue = rpm,
-        animationSpec = tween(((rpm - prevRpm).absoluteValue * 20).toInt(), easing = LinearEasing)
-    )
+    val inertRpm by animateRpmAsState(rpm)
 
     val fastRpmThreshold = 100
     val spinBlur = lerpCoerced(0.dp, 8.dp, (inertRpm - fastRpmThreshold) / 1000f)
@@ -127,8 +123,6 @@ fun Drum(data: DrumUi) {
             border = BorderStroke(1.dp, Color.LightGray)
         ) {}
     }
-
-    if (prevRpm != rpm) prevRpm = rpm
 }
 
 data class DrumUi(

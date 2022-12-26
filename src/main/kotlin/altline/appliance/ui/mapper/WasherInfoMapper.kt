@@ -1,5 +1,6 @@
 package altline.appliance.ui.mapper
 
+import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.ui.component.washerInfo.*
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
@@ -17,7 +18,8 @@ class WasherInfoMapper(
 
     fun mapToInfoPanel(washer: StandardLaundryWasherBase): InfoPanelUi {
         return InfoPanelUi(
-            cycleSectionUi = mapToParamsSection(washer)
+            cycleSectionUi = mapToParamsSection(washer),
+            washerStateSectionUi = mapToWasherStateSection(washer)
         )
     }
 
@@ -25,8 +27,10 @@ class WasherInfoMapper(
         with(washer) {
             val duration = selectedWashCycle.estimatedDuration.clockFormat()
             val timer = buildString {
-                runningTime?.let {
-                    append("${it.clockFormat()} / ")
+                if (selectedWashCycle == activeWashCycle) {
+                    runningTime?.let {
+                        append("${it.clockFormat()} / ")
+                    }
                 }
                 append(duration)
             }
@@ -127,5 +131,14 @@ class WasherInfoMapper(
         val durationString = duration?.clockFormat() ?: "-"
         return if (runningTime == 0 * seconds) durationString
         else "${runningTime.clockFormat()} / $durationString"
+    }
+
+    private fun mapToWasherStateSection(washer: StandardLaundryWasherBase): WasherStateSectionUi? {
+        return washer.scanner?.run {
+            WasherStateSectionUi(
+                spinSpeed = spinSpeed,
+                waterLevel = waterLevel.optionalDecimal(mandatoryUnits = liters)
+            )
+        }
     }
 }

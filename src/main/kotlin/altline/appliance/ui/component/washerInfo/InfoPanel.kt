@@ -12,16 +12,21 @@ fun InfoPanel(
 ) {
     Column(modifier.fillMaxHeight()) {
         WashCycleSection(data.cycleSectionUi)
+        if (data.washerStateSectionUi != null) {
+            WasherStateSection(data.washerStateSectionUi)
+        }
     }
 }
 
 data class InfoPanelUi(
-    val cycleSectionUi: WashCycleSectionUi
+    val cycleSectionUi: WashCycleSectionUi,
+    val washerStateSectionUi: WasherStateSectionUi?
 ) {
     companion object {
         @Composable
         fun preview() = InfoPanelUi(
-            cycleSectionUi = WashCycleSectionUi.preview()
+            cycleSectionUi = WashCycleSectionUi.preview(),
+            washerStateSectionUi = WasherStateSectionUi.preview()
         )
     }
 }
