@@ -1,16 +1,10 @@
 package altline.appliance.washing.laundry.washCycle.phase
 
-import altline.appliance.common.RefreshPeriod
-import altline.appliance.common.TimeFactor
-import altline.appliance.measure.repeatPeriodically
 import altline.appliance.washing.laundry.StandardFullFlowDrainTime
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.WashParams
-import io.nacular.measured.units.*
-import io.nacular.measured.units.Time.Companion.seconds
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.Time
 
 class DrainPhase(
     val spinParams: WashParams
@@ -29,24 +23,16 @@ class DrainPhase(
     }
 
     sealed class Section {
-        var runningTime: Measure<Time> = 0 * seconds
-            private set
+        private val timedWrapper = TimedWrapper()
 
-        var active: Boolean = false
-            private set
+        val runningTime: Measure<Time>
+            get() = timedWrapper.runningTime
+
+        val active: Boolean
+            get() = timedWrapper.active
 
         suspend fun execute(washer: StandardLaundryWasherBase) {
-            coroutineScope {
-                launch {
-                    repeatPeriodically(RefreshPeriod) {
-                        runningTime += (TimeFactor `in` seconds) * seconds
-                    }
-                }
-                active = true
-                doExecute(washer)
-                active = false
-                cancel()
-            }
+            timedWrapper.executeTimed { doExecute(washer) }
         }
 
         protected abstract suspend fun doExecute(washer: StandardLaundryWasherBase)
