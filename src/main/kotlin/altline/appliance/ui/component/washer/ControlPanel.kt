@@ -201,21 +201,12 @@ private fun CycleSelector(
                 .rotate(tickAngle)
                 .offset(y = -38.dp)
 
-            if (cycle == selectedCycle) {
-                Icon(
-                    Icons.Filled.Circle,
-                    contentDescription = strings["active"],
-                    iconModifier,
-                    tint = Color.LightGray
-                )
-            } else {
-                Icon(
-                    Icons.Filled.Circle,
-                    contentDescription = strings["inactive"],
-                    iconModifier,
-                    tint = Color.LightGray
-                )
-            }
+            Icon(
+                Icons.Filled.Circle,
+                contentDescription = null,
+                iconModifier,
+                tint = Color.LightGray
+            )
         }
     }
 }

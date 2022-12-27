@@ -2,6 +2,7 @@ package altline.appliance.ui.component.washerInfo
 
 import altline.appliance.ui.component.TextRow
 import altline.appliance.ui.component.TextRowSettings
+import altline.appliance.ui.component.washerInfo.CyclePhaseUi.ActiveState.*
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
@@ -55,21 +56,36 @@ private fun CyclePhase(data: CyclePhaseUi) {
             val iconModifier = Modifier
                 .padding(end = 4.dp)
                 .size(8.dp)
-            if (data.active) {
-                Icon(
-                    Icons.Filled.Circle,
-                    contentDescription = strings["active"],
-                    iconModifier,
-                    tint = Color.Green
-                )
-            } else {
-                Icon(
-                    Icons.Outlined.Circle,
-                    contentDescription = strings["inactive"],
-                    iconModifier,
-                    tint = Color.Gray
-                )
+
+            when (data.active) {
+                NOT_EXECUTED -> {
+                    Icon(
+                        Icons.Outlined.Circle,
+                        contentDescription = strings["notExecuted"],
+                        iconModifier,
+                        tint = Color.Gray
+                    )
+                }
+
+                EXECUTED -> {
+                    Icon(
+                        Icons.Filled.Circle,
+                        contentDescription = strings["executed"],
+                        iconModifier,
+                        tint = Color.Gray
+                    )
+                }
+
+                ACTIVE -> {
+                    Icon(
+                        Icons.Filled.Circle,
+                        contentDescription = strings["active"],
+                        iconModifier,
+                        tint = Color.Green
+                    )
+                }
             }
+
             TextRow(
                 leftText = data.name,
                 rightText = data.timer,
@@ -139,8 +155,12 @@ data class CyclePhaseUi(
     val name: String,
     val timer: String,
     val sections: List<PhaseSectionUi>,
-    val active: Boolean
-)
+    val active: ActiveState
+) {
+    enum class ActiveState {
+        NOT_EXECUTED, ACTIVE, EXECUTED
+    }
+}
 
 data class PhaseSectionUi(
     val name: String,
@@ -170,7 +190,7 @@ data class WashCycleSectionUi(
                     name = "Fill",
                     timer = "0:01:35 / -",
                     sections = emptyList(),
-                    active = false
+                    active = NOT_EXECUTED
                 ),
                 CyclePhaseUi(
                     name = "Wash",
@@ -197,7 +217,7 @@ data class WashCycleSectionUi(
                             active = true
                         )
                     ),
-                    active = true
+                    active = ACTIVE
                 )
             )
         )
