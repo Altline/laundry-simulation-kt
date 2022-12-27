@@ -1,8 +1,8 @@
 package altline.appliance.substance
 
 import altline.appliance.measure.Temperature
-import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume
+import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.isNegligible
 import altline.appliance.measure.sumOf
 import altline.appliance.transit.Flowable
@@ -35,7 +35,7 @@ interface Substance : Flowable<Volume> {
 
 class MutableSubstance(
     parts: Set<Substance.Part>,
-    override var temperature: Measure<Temperature>?
+    temperature: Measure<Temperature>?
 ) : Substance, MutableFlowable<Volume> {
 
     constructor(
@@ -44,7 +44,16 @@ class MutableSubstance(
         temperature: Measure<Temperature>
     ) : this(setOf(Substance.Part(type, amount)), temperature)
 
-    constructor() : this(emptySet(), 0.0 * celsius)
+    constructor() : this(emptySet(), null)
+
+    override var temperature: Measure<Temperature>? = temperature
+        set(value) {
+            require(isEmpty() && value == null || isNotEmpty() && value != null) {
+                "Temperature must be null if the substance is empty and must not be null if it is not empty.\n" +
+                        "isEmpty: ${isEmpty()}, temperature: $value"
+            }
+            field = value
+        }
 
     private val _parts = mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
     override val parts = _parts as Set<Substance.Part>
@@ -79,6 +88,8 @@ class MutableSubstance(
     }
 
     override fun extract(amount: Measure<Volume>): MutableSubstance {
+        if (amount == 0 * liters) return MutableSubstance()
+
         val ratio = (amount / this.amount).coerceAtMost(1.0)
         val newParts = mutableSetOf<Substance.Part>()
         _parts.forEach { part ->
@@ -87,11 +98,16 @@ class MutableSubstance(
             newParts += Substance.Part(part.type, separatedAmount)
         }
         _parts.removeAll { it.amount.isNegligible() }
-        return MutableSubstance(newParts, temperature)
+        return MutableSubstance(newParts, temperature).also {
+            if (isEmpty()) temperature = null
+        }
     }
 
     override fun extractAll(): MutableSubstance {
-        return MutableSubstance(parts, temperature).also { _parts.clear() }
+        return MutableSubstance(parts, temperature).also {
+            _parts.clear()
+            temperature = null
+        }
     }
 
     fun remixWith(other: MutableSubstance, amount: Measure<Volume>) {
