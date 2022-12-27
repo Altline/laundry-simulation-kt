@@ -40,13 +40,17 @@ class DrainPhase(
 
     class FocusedDrainSection : Section() {
         override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-            washer.drain()
+            washer.drainUntilEmpty()
         }
     }
 
     class WashDrainSection(val spinParams: WashParams) : Section() {
         override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-            // TODO
+            with(washer) {
+                startDrain()
+                wash(spinParams)
+                stopDrain()
+            }
         }
     }
 }

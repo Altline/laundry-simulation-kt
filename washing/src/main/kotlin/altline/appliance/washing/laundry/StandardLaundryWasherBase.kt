@@ -15,7 +15,9 @@ import altline.appliance.washing.Washer
 import altline.appliance.washing.laundry.washCycle.CentrifugeParams
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import altline.appliance.washing.laundry.washCycle.WashParams
-import io.nacular.measured.units.*
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.Time
+import io.nacular.measured.units.div
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -133,9 +135,17 @@ abstract class StandardLaundryWasherBase(
         dispenser.haltMainSoftener()
     }
 
-    internal open suspend fun drain() {
-        pump.start()
+    internal open suspend fun drainUntilEmpty() {
+        startDrain()
         trackLiquidUntil { it.isNegligible() }
+        stopDrain()
+    }
+
+    internal open suspend fun startDrain() {
+        pump.start()
+    }
+
+    internal open suspend fun stopDrain() {
         pump.stop()
     }
 
