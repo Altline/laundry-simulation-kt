@@ -58,7 +58,9 @@ class MutableSubstance(
     private val _parts = mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
     override val parts = _parts as Set<Substance.Part>
 
-    override fun add(other: MutableFlowable<Volume>) {
+    private val mutexLock = Any()
+
+    override fun add(other: MutableFlowable<Volume>) = synchronized(mutexLock) {
         require(other is MutableSubstance)
         val newTemperature = mergeTemperature(other)
         other.parts.forEach { part ->
@@ -87,7 +89,7 @@ class MutableSubstance(
         }
     }
 
-    override fun extract(amount: Measure<Volume>): MutableSubstance {
+    override fun extract(amount: Measure<Volume>): MutableSubstance = synchronized(mutexLock) {
         if (amount == 0 * liters) return MutableSubstance()
 
         val ratio = (amount / this.amount).coerceAtMost(1.0)
@@ -103,14 +105,14 @@ class MutableSubstance(
         }
     }
 
-    override fun extractAll(): MutableSubstance {
+    override fun extractAll(): MutableSubstance = synchronized(mutexLock) {
         return MutableSubstance(parts, temperature).also {
             _parts.clear()
             temperature = null
         }
     }
 
-    fun remixWith(other: MutableSubstance, amount: Measure<Volume>) {
+    fun remixWith(other: MutableSubstance, amount: Measure<Volume>) = synchronized(mutexLock) {
         if (amount == 0 * liters) return
 
         val thisPart = this.extract(amount)
