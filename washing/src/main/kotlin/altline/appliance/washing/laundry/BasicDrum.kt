@@ -4,14 +4,18 @@ import altline.appliance.common.Body
 import altline.appliance.common.volume
 import altline.appliance.electricity.ElectricHeater
 import altline.appliance.measure.Spin
+import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.substance.*
 import altline.appliance.substance.transit.Reservoir
 import altline.appliance.washing.cleaningPower
-import io.nacular.measured.units.*
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.Time
 import io.nacular.measured.units.Time.Companion.seconds
+import io.nacular.measured.units.div
+import io.nacular.measured.units.times
 
 class BasicDrum(
     capacity: Measure<Volume>,
@@ -30,7 +34,7 @@ class BasicDrum(
     override val outputPort = outputs[0]
 
     private val _load = mutableSetOf<Body>()
-    override val load= _load as Set<Body>
+    override val load = _load as Set<Body>
 
     override val excessLiquid: Substance
         get() = storedSubstance
@@ -72,13 +76,12 @@ class BasicDrum(
 
     override fun spin(speed: Measure<Spin>, duration: Measure<Time>) {
         for (piece in load) {
-            wash(piece, speed, duration `in` seconds)
+            if (speed < config.centrifugeThreshold) wash(piece, speed, duration `in` seconds)
+            else dry(piece, speed, duration `in` seconds)
         }
     }
 
     private fun wash(body: Body, spinSpeed: Measure<Spin>, seconds: Double) {
-        if (spinSpeed > config.centrifugeThreshold) return
-
         val spinEffectiveness = spinSpeed / config.centrifugeThreshold
 
         if (body is Soakable) {
@@ -108,8 +111,9 @@ class BasicDrum(
         return if (body is Soakable) {
             if (body.soakedSubstance.isEmpty()) return 0.0
 
-            val soakCoefficient = ((body.soakRatio - config.lowerSoakRatio) / (config.upperSoakRatio - config.lowerSoakRatio))
-                .coerceIn(0.0, 1.0)
+            val soakCoefficient =
+                ((body.soakRatio - config.lowerSoakRatio) / (config.upperSoakRatio - config.lowerSoakRatio))
+                    .coerceIn(0.0, 1.0)
             val temperatureCoefficient = (body.soakedSubstance.temperature!! / (100 * celsius))
                 .coerceIn(0.0, 1.0)
             body.soakedSubstance.cleaningPower * soakCoefficient * temperatureCoefficient
@@ -121,5 +125,13 @@ class BasicDrum(
                 .coerceIn(0.0, 1.0)
             storedSubstance.cleaningPower * temperatureCoefficient
         }
+    }
+
+    private fun dry(body: Body, spinSpeed: Measure<Spin>, seconds: Double) {
+        if (body !is Soakable) return
+
+        val amountToDry = body.soakedSubstance.amount * (spinSpeed `in` rpm) * seconds / 600000
+        val driedSubstance = body.dry(amountToDry)
+        storedSubstance.add(driedSubstance)
     }
 }
