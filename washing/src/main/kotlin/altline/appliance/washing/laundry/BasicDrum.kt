@@ -82,6 +82,10 @@ class BasicDrum(
         val spinEffectiveness = spinSpeed / config.centrifugeThreshold
 
         if (body is Soakable) {
+            if (body.soakRatio < 1) {
+                body.soak(storedSubstance)
+            }
+
             // resoak
             val resoakAmount = minOf(body.soakedSubstance.amount, excessLiquidAmount) *
                     config.nominalResoakFactor * spinEffectiveness
@@ -104,8 +108,7 @@ class BasicDrum(
         return if (body is Soakable) {
             if (body.soakedSubstance.isEmpty()) return 0.0
 
-            val soakRatio = body.soakedSubstance.amount / body.volume
-            val soakCoefficient = ((soakRatio - config.lowerSoakRatio) / config.upperSoakRatio - config.lowerSoakRatio)
+            val soakCoefficient = ((body.soakRatio - config.lowerSoakRatio) / (config.upperSoakRatio - config.lowerSoakRatio))
                 .coerceIn(0.0, 1.0)
             val temperatureCoefficient = (body.soakedSubstance.temperature!! / (100 * celsius))
                 .coerceIn(0.0, 1.0)

@@ -111,6 +111,8 @@ class MutableSubstance(
     }
 
     fun remixWith(other: MutableSubstance, amount: Measure<Volume>) {
+        if (amount == 0 * liters) return
+
         val thisPart = this.extract(amount)
         val otherPart = other.extract(amount)
         this.add(otherPart)
