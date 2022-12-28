@@ -2,6 +2,7 @@ package altline.appliance.washing.laundry
 
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
+import altline.appliance.measure.Temperature
 import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.spin.ElectricMotor
@@ -16,6 +17,9 @@ class WasherStateScanner {
     var reverseSpinDirection: Boolean = false
         private set
 
+    var temperature: Measure<Temperature>? = null
+        private set
+
     var waterLevel: Measure<Volume> = 0 * liters
         private set
 
@@ -25,6 +29,7 @@ class WasherStateScanner {
     }
 
     fun scanWashLiquid(washLiquid: Substance) {
+        temperature = washLiquid.temperature
         waterLevel = washLiquid.amount
     }
 }

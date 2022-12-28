@@ -22,7 +22,11 @@ fun formatPercentage(number: Double): String {
     return percentFormat.format(number)
 }
 
-fun <T : Units> Measure<T>.optionalDecimal(mandatoryUnits: T? = null): String {
+fun <T : Units> Measure<T>.optionalDecimal(
+    mandatoryUnits: T? = null,
+    maxFractionDigits: Int = 3
+): String {
+    optionalDecimalFormat.maximumFractionDigits = maxFractionDigits
     return if (mandatoryUnits == null) {
         "${optionalDecimalFormat.format(amount)} ${units.suffix}"
     } else {

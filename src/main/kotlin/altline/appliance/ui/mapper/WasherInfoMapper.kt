@@ -151,6 +151,7 @@ class WasherInfoMapper(
         return washer.scanner?.run {
             WasherStateSectionUi(
                 spinSpeed = spinSpeed,
+                temperature = temperature?.optionalDecimal(maxFractionDigits = 1) ?: "-",
                 waterLevel = waterLevel.optionalDecimal(mandatoryUnits = liters)
             )
         }

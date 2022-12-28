@@ -43,6 +43,10 @@ fun WasherStateSection(data: WasherStateSectionUi) {
             rightText = shownRpm
         )
         TextRow(
+            leftText = strings["washerState_temperature"],
+            rightText = data.temperature
+        )
+        TextRow(
             leftText = strings["washerState_waterLevel"],
             rightText = data.waterLevel
         )
@@ -51,12 +55,14 @@ fun WasherStateSection(data: WasherStateSectionUi) {
 
 data class WasherStateSectionUi(
     val spinSpeed: Measure<Spin>,
+    val temperature: String,
     val waterLevel: String
 ) {
     companion object {
         @Composable
         fun preview() = WasherStateSectionUi(
             spinSpeed = 1000 * rpm,
+            temperature = "20 °C",
             waterLevel = "10.5 L"
         )
     }
