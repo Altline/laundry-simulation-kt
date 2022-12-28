@@ -5,7 +5,9 @@ import altline.appliance.electricity.transit.ElectricalDrainPort
 import altline.appliance.measure.Power
 import altline.appliance.util.logger
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
-import io.nacular.measured.units.*
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.Time
+import io.nacular.measured.units.times
 import kotlinx.coroutines.CoroutineScope
 
 class BasicController(
@@ -74,5 +76,41 @@ class BasicController(
         if (!cycleRunning) return
         activeWashCycle?.stop()
         activeWashCycle = null
+    }
+
+    override fun increaseTemperature() {
+        if (cycleRunning) return
+
+        with(selectedWashCycle) {
+            if (selectedTemperatureSettingIndex == temperatureSettings.lastIndex)
+                return
+            selectedTemperatureSettingIndex = selectedTemperatureSettingIndex?.plus(1)
+        }
+    }
+
+    override fun decreaseTemperature() {
+        if (cycleRunning) return
+
+        with(selectedWashCycle) {
+            if (selectedTemperatureSettingIndex == 0)
+                return
+            selectedTemperatureSettingIndex = selectedTemperatureSettingIndex?.minus(1)
+        }
+    }
+
+    override fun increaseSpinSpeed() {
+        with(selectedWashCycle) {
+            if (selectedSpinSpeedSettingIndex == spinSpeedSettings.lastIndex)
+                return
+            selectedSpinSpeedSettingIndex = selectedSpinSpeedSettingIndex?.plus(1)
+        }
+    }
+
+    override fun decreaseSpinSpeed() {
+        with(selectedWashCycle) {
+            if (selectedSpinSpeedSettingIndex == 0)
+                return
+            selectedSpinSpeedSettingIndex = selectedSpinSpeedSettingIndex?.minus(1)
+        }
     }
 }

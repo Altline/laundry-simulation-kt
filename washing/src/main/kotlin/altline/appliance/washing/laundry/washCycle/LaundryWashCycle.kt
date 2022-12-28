@@ -4,11 +4,15 @@ import altline.appliance.measure.Spin
 import altline.appliance.measure.Temperature
 import altline.appliance.measure.sumOf
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
-import io.nacular.measured.units.*
+import altline.appliance.washing.laundry.washCycle.phase.CyclePhase
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.Time
 import kotlinx.coroutines.CoroutineScope
 
 interface LaundryWashCycle {
     val stages: List<CycleStage>
+    val activeStage: CycleStage?
+    val activePhase: CyclePhase?
 
     val temperatureSettings: List<Measure<Temperature>>
     val selectedTemperatureSetting: Measure<Temperature>?

@@ -15,6 +15,7 @@ import altline.appliance.washing.Washer
 import altline.appliance.washing.laundry.washCycle.CentrifugeParams
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import altline.appliance.washing.laundry.washCycle.WashParams
+import altline.appliance.washing.laundry.washCycle.phase.SpinPhase
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.Time
 import io.nacular.measured.units.div
@@ -121,6 +122,17 @@ abstract class StandardLaundryWasherBase(
     fun toggleCycleRun() {
         if (controller.cycleRunning) controller.toggleCyclePause()
         else start()
+    }
+
+    fun increaseTemperature() = controller.increaseTemperature()
+    fun decreaseTemperature() = controller.decreaseTemperature()
+    fun increaseSpinSpeed() = controller.increaseSpinSpeed().also { updateCentrifugeSpeed() }
+    fun decreaseSpinSpeed() = controller.decreaseSpinSpeed().also { updateCentrifugeSpeed() }
+
+    private fun updateCentrifugeSpeed() {
+        if (activeWashCycle?.activePhase is SpinPhase) {
+            drumMotor.speedSetting = activeWashCycle!!.selectedSpinSpeedSetting!!
+        }
     }
 
     internal open suspend fun fillThroughDetergent(amount: Measure<Volume>) {

@@ -34,8 +34,10 @@ class MainViewModel(
 
     private var selectedLaundryItem: Body? = null
 
+    private val washer get() = world.washer
+
     private val loadedLaundry: Set<Body>
-        get() = world.washer.load
+        get() = washer.load
 
     private val potentialLaundry: Set<Body>
         get() = world.laundry.minus(loadedLaundry)
@@ -77,20 +79,20 @@ class MainViewModel(
 
     private fun getWasherPanel(): WasherPanelUi {
         return washerMapper.mapToWasherPanel(
-            world.washer,
+            washer,
             onDispenserClick = this::openDispenser,
             onSelectNextCycle = this::selectNextCycle,
             onPowerOnOff = this::togglePower,
             onStartPause = this::toggleCycleRun,
-            onTempUp = {},
-            onTempDown = {},
-            onRpmUp = {},
-            onRpmDown = {}
+            onTempUp = this::increaseTemperature,
+            onTempDown = this::decreaseTemperature,
+            onRpmUp = this::increaseSpinSpeed,
+            onRpmDown = this::decreaseSpinSpeed
         )
     }
 
     private fun getInfoPanel(): InfoPanelUi {
-        return washerInfoMapper.mapToInfoPanel(world.washer)
+        return washerInfoMapper.mapToInfoPanel(washer)
     }
 
     private fun selectLaundryItem(item: Body) {
@@ -100,10 +102,8 @@ class MainViewModel(
 
     private fun transferLaundryItem(item: Body, selectNext: Boolean) {
         selectedLaundryItem = if (selectNext) findNextSelection(item) else item
-        with(world) {
-            if (item in washer.load) washer.unload(item)
-            else washer.load(item)
-        }
+        if (item in washer.load) washer.unload(item)
+        else washer.load(item)
         updateData()
     }
 
@@ -112,7 +112,7 @@ class MainViewModel(
     }
 
     private fun selectNextCycle(reverse: Boolean) {
-        with(world.washer) {
+        with(washer) {
             val currentCycleIndex = washCycles.indexOf(selectedWashCycle)
             val nextCycleIndex = kotlin.run {
                 if (reverse) currentCycleIndex - 1
@@ -125,12 +125,32 @@ class MainViewModel(
     }
 
     private fun togglePower() {
-        world.washer.togglePower()
+        washer.togglePower()
         updateWasherData()
     }
 
     private fun toggleCycleRun() {
-        world.washer.toggleCycleRun()
+        washer.toggleCycleRun()
+        updateWasherData()
+    }
+
+    private fun increaseTemperature() {
+        washer.increaseTemperature()
+        updateWasherData()
+    }
+
+    private fun decreaseTemperature() {
+        washer.decreaseTemperature()
+        updateWasherData()
+    }
+
+    private fun increaseSpinSpeed() {
+        washer.increaseSpinSpeed()
+        updateWasherData()
+    }
+
+    private fun decreaseSpinSpeed() {
+        washer.decreaseSpinSpeed()
         updateWasherData()
     }
 

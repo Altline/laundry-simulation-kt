@@ -193,7 +193,7 @@ private fun CycleSelector(
             )
         }
 
-        cycles.forEachIndexed { index, cycle ->
+        cycles.forEachIndexed { index, _ ->
             val tickAngle = index * (360f / cycles.size)
             val iconModifier = Modifier
                 .size(5.dp)

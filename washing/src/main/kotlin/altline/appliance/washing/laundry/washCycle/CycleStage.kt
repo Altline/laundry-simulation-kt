@@ -12,6 +12,9 @@ class CycleStage {
     var phases: List<CyclePhase> = emptyList()
         private set
 
+    val activePhase: CyclePhase?
+        get() = phases.find { it.active }
+
     val estimatedDuration: Measure<Time>
         get() = phases.sumOf { it.duration }
 

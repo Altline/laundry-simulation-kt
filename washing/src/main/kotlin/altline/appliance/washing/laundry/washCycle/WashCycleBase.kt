@@ -3,6 +3,7 @@ package altline.appliance.washing.laundry.washCycle
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Temperature
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
+import altline.appliance.washing.laundry.washCycle.phase.CyclePhase
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import org.koitharu.pausingcoroutinedispatcher.PausingJob
@@ -16,6 +17,12 @@ abstract class WashCycleBase : LaundryWashCycle {
 
     final override var stages: List<CycleStage> = emptyList()
         private set
+
+    override val activeStage: CycleStage?
+        get() = stages.find { it.activePhase != null }
+
+    override val activePhase: CyclePhase?
+        get() = activeStage?.activePhase
 
     override val selectedTemperatureSetting: Measure<Temperature>?
         get() = selectedTemperatureSettingIndex?.let { temperatureSettings[it] }
