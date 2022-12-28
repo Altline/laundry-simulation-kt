@@ -10,6 +10,7 @@ import altline.appliance.transit.MutableFlowable
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.div
 import io.nacular.measured.units.times
+import java.util.*
 
 interface Substance : Flowable<Volume> {
     val parts: Set<Part>
@@ -55,7 +56,9 @@ class MutableSubstance(
             field = value
         }
 
-    private val _parts = mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
+    private val _parts = Collections.synchronizedSet(
+        mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
+    )
     override val parts = _parts as Set<Substance.Part>
 
     private val mutexLock = Any()
