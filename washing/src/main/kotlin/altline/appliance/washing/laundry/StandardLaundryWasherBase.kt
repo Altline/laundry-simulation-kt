@@ -7,6 +7,7 @@ import altline.appliance.electricity.ElectricalDevice
 import altline.appliance.electricity.transit.BasicElectricalConduit
 import altline.appliance.electricity.transit.ElectricalDrainPort
 import altline.appliance.measure.*
+import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.spin.ElectricMotor
 import altline.appliance.substance.transit.BasicSubstanceConduit
 import altline.appliance.substance.transit.ElectricPump
@@ -19,6 +20,7 @@ import altline.appliance.washing.laundry.washCycle.phase.SpinPhase
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.Time
 import io.nacular.measured.units.div
+import io.nacular.measured.units.times
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -62,6 +64,13 @@ abstract class StandardLaundryWasherBase(
     open val fluidOutlet: SubstanceConduit by lazy {
         BasicSubstanceConduit(config.outputFlowRate)
     }
+
+    private val thermostat = MeasuringTrigger<Temperature>(
+        triggerSetting = 20 * celsius,
+        tolerance = 5 * celsius,
+        onDropBelow = { drum.heater.start() },
+        onRiseAbove = { drum.heater.stop() }
+    )
 
     val poweredOn: Boolean
         get() = controller.poweredOn
@@ -163,11 +172,25 @@ abstract class StandardLaundryWasherBase(
 
     internal open suspend fun wash(params: WashParams) {
         with(params) {
+            val setTemperature = temperature
+            if (setTemperature != null) {
+                thermostat.triggerSetting = setTemperature
+            }
+
             val cycleCount = (duration / (spinPeriod + restPeriod)).roundToInt()
             repeat(cycleCount) { i ->
+                val currentTemperature = drum.excessLiquid.temperature
+                if (setTemperature != null && currentTemperature != null) {
+                    thermostat.check(currentTemperature)
+                } else if (drum.heater.running) {
+                    drum.heater.stop()
+                }
+
                 spin(spinSpeed, reverseDirection = i % 2 != 0, spinPeriod)
                 delay(restPeriod / SpeedModifier)
             }
+
+            if (drum.heater.running) drum.heater.stop()
         }
     }
 
