@@ -91,7 +91,7 @@ class BasicDrum(
 
             // resoak
             val resoakAmount = minOf(body.soakedSubstance.amount, excessLiquidAmount) *
-                    config.nominalResoakFactor * spinEffectiveness
+                    config.nominalResoakFactor * spinEffectiveness * seconds
             body.resoakWith(storedSubstance, resoakAmount)
 
             // freshen

@@ -115,8 +115,9 @@ class MutableSubstance(
     fun remixWith(other: MutableSubstance, amount: Measure<Volume>) = synchronized(mutexLock) {
         if (amount == 0 * liters) return
 
-        val thisPart = this.extract(amount)
-        val otherPart = other.extract(amount)
+        val realAmount = amount.coerceAtMost(minOf(this.amount, other.amount))
+        val thisPart = this.extract(realAmount)
+        val otherPart = other.extract(realAmount)
         this.add(otherPart)
         other.add(thisPart)
     }
