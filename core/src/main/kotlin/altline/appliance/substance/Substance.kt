@@ -1,10 +1,7 @@
 package altline.appliance.substance
 
-import altline.appliance.measure.Temperature
-import altline.appliance.measure.Volume
+import altline.appliance.measure.*
 import altline.appliance.measure.Volume.Companion.liters
-import altline.appliance.measure.isNegligible
-import altline.appliance.measure.sumOf
 import altline.appliance.transit.Flowable
 import altline.appliance.transit.MutableFlowable
 import io.nacular.measured.units.Measure
@@ -36,7 +33,7 @@ interface Substance : Flowable<Volume> {
 
 class MutableSubstance(
     parts: Set<Substance.Part>,
-    temperature: Measure<Temperature>?
+    initialTemperature: Measure<Temperature>?
 ) : Substance, MutableFlowable<Volume> {
 
     constructor(
@@ -47,8 +44,17 @@ class MutableSubstance(
 
     constructor() : this(emptySet(), null)
 
-    override var temperature: Measure<Temperature>? = temperature
-        set(value) {
+    private val _parts = Collections.synchronizedSet(
+        mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
+    )
+    override val parts = _parts as Set<Substance.Part>
+
+    /**
+     * Setting of this value is thread-safe.
+     * @see Substance.temperature
+     */
+    override var temperature: Measure<Temperature>? = initialTemperature
+        set(value) = synchronized(this) {
             require(isEmpty() && value == null || isNotEmpty() && value != null) {
                 "Temperature must be null if the substance is empty and must not be null if it is not empty.\n" +
                         "isEmpty: ${isEmpty()}, temperature: $value"
@@ -56,14 +62,7 @@ class MutableSubstance(
             field = value
         }
 
-    private val _parts = Collections.synchronizedSet(
-        mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
-    )
-    override val parts = _parts as Set<Substance.Part>
-
-    private val mutexLock = Any()
-
-    override fun add(other: MutableFlowable<Volume>) = synchronized(mutexLock) {
+    override fun add(other: MutableFlowable<Volume>) = synchronized(this) {
         require(other is MutableSubstance)
         val newTemperature = mergeTemperature(other)
         other.parts.forEach { part ->
@@ -75,6 +74,7 @@ class MutableSubstance(
             }
         }
         other._parts.clear()
+        other.temperature = null
         this.temperature = newTemperature
     }
 
@@ -92,7 +92,7 @@ class MutableSubstance(
         }
     }
 
-    override fun extract(amount: Measure<Volume>): MutableSubstance = synchronized(mutexLock) {
+    override fun extract(amount: Measure<Volume>): MutableSubstance = synchronized(this) {
         if (amount == 0 * liters) return MutableSubstance()
 
         val ratio = (amount / this.amount).coerceAtMost(1.0)
@@ -108,14 +108,14 @@ class MutableSubstance(
         }
     }
 
-    override fun extractAll(): MutableSubstance = synchronized(mutexLock) {
+    override fun extractAll(): MutableSubstance = synchronized(this) {
         return MutableSubstance(parts, temperature).also {
             _parts.clear()
             temperature = null
         }
     }
 
-    fun remixWith(other: MutableSubstance, amount: Measure<Volume>) = synchronized(mutexLock) {
+    fun remixWith(other: MutableSubstance, amount: Measure<Volume>) = synchronized(this) {
         if (amount == 0 * liters) return
 
         val realAmount = amount.coerceAtMost(minOf(this.amount, other.amount))
@@ -135,5 +135,5 @@ class MutableSubstance(
 }
 
 private fun Set<Substance.Part>.filterEmpty(): Set<Substance.Part> {
-    return filterTo(mutableSetOf()) { it.amount.amount >= 0.0 }
+    return filterTo(mutableSetOf()) { it.amount.isNotNegligible() }
 }

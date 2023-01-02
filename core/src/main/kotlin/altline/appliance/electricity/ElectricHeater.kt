@@ -25,14 +25,17 @@ class ElectricHeater(
         val requiredEnergy = (power * timeFactor) * powerSetting
         val availableEnergy = pullEnergy(requiredEnergy, timeFactor)?.amount
         if (availableEnergy != null) {
-            val heatedSubstance = heatedSubstance
-            if (heatedSubstance != null && heatedSubstance.isNotEmpty()) {
-                val calories = availableEnergy `in` calories
-                val milliliters = heatedSubstance.amount `in` milliliters
-                val temperature = heatedSubstance.temperature!!
-                // Here the assumption is that every substance requires the same amount of energy to be equally heated
-                // = 1 calorie to heat 1 milliliter of substance 1 degree celsius
-                heatedSubstance.temperature = temperature + (calories / milliliters) * celsius
+            heatedSubstance?.let { heatedSubstance ->
+                synchronized(heatedSubstance) {
+                    if (heatedSubstance.isNotEmpty()) {
+                        val calories = availableEnergy `in` calories
+                        val milliliters = heatedSubstance.amount `in` milliliters
+                        val temperature = heatedSubstance.temperature!!
+                        // Here the assumption is that every substance requires the same amount of energy to be equally heated
+                        // = 1 calorie to heat 1 milliliter of substance 1 degree Celsius
+                        heatedSubstance.temperature = temperature + (calories / milliliters) * celsius
+                    }
+                }
             }
         }
     }

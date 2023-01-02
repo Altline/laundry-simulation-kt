@@ -44,16 +44,23 @@ class BasicDrum(
 
     init {
         heater.heatedSubstance = storedSubstance
+        TemperatureEqualizer().startFor(storedSubstance)
     }
 
     override fun load(vararg items: Body) {
         if (load.volume + items.volume <= capacity) {
             _load += items
+            items.forEach { item ->
+                item.temperatureEqualizer.overridingAmbientSubstance = storedSubstance
+            }
         }
     }
 
     override fun unload(vararg items: Body) {
         _load -= items.toSet()
+        items.forEach {
+            it.temperatureEqualizer.overridingAmbientSubstance = null
+        }
     }
 
     override fun unloadAll(): List<Body> {

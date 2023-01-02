@@ -4,6 +4,7 @@ import altline.appliance.measure.Volume
 import altline.appliance.measure.sumOf
 import altline.appliance.substance.MutableSubstance
 import altline.appliance.substance.Substance
+import altline.appliance.substance.TemperatureEqualizer
 import io.nacular.measured.units.*
 import java.util.UUID
 
@@ -12,6 +13,8 @@ interface Body {
     val volume: Measure<Volume>
     val stainSubstance: Substance
     val stainRatio: Double
+
+    val temperatureEqualizer: TemperatureEqualizer
 
     fun stain(substance: MutableSubstance)
     fun clearStain(amount: Measure<Volume>): MutableSubstance

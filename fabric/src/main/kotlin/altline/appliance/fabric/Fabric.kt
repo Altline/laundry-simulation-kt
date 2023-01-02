@@ -5,7 +5,9 @@ import altline.appliance.measure.Volume
 import altline.appliance.substance.MutableSubstance
 import altline.appliance.substance.Soakable
 import altline.appliance.substance.Substance
-import io.nacular.measured.units.*
+import altline.appliance.substance.TemperatureEqualizer
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.div
 import java.util.*
 
 abstract class Fabric(
@@ -21,6 +23,11 @@ abstract class Fabric(
 
     private val _soakedSubstance = MutableSubstance()
     override val soakedSubstance = _soakedSubstance as Substance
+
+    override val temperatureEqualizer = TemperatureEqualizer().apply {
+        startFor(_stainSubstance)
+        startFor(_soakedSubstance)
+    }
 
     override val stainRatio: Double
         get() = stainSubstance.amount / volume

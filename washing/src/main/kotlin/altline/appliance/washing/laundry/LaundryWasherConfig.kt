@@ -22,5 +22,5 @@ data class LaundryWasherConfig(
     /** The upper soak ratio limit where washing effectiveness no longer depends on soakness. */
     val upperSoakRatio: Double = 1.25,
 
-    val nominalResoakFactor: Double = 0.1,
+    val nominalResoakFactor: Double = 0.5,
 )
