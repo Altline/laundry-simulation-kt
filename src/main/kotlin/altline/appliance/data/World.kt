@@ -32,15 +32,15 @@ class World {
         laundry = setOf(
             Shirt(Clothing.Size.S, 80 * milliliters).apply {
                 soak(MutableSubstance(CommonSubstanceTypes.WATER, 30 * milliliters, 20 * celsius))
-                stain(MutableSubstance(CommonSubstanceTypes.WATER, 200 * milliliters, 20 * celsius))
+                stain(MutableSubstance(CommonSubstanceTypes.COFFEE, 200 * milliliters, 20 * celsius))
             },
             Shirt(Clothing.Size.M, 100 * milliliters).apply {
                 soak(MutableSubstance(CommonSubstanceTypes.WATER, 80 * milliliters, 20 * celsius))
-                stain(MutableSubstance(CommonSubstanceTypes.WATER, 20 * milliliters, 20 * celsius))
+                stain(MutableSubstance(CommonSubstanceTypes.COFFEE, 20 * milliliters, 20 * celsius))
             },
             Shirt(Clothing.Size.L, 120 * milliliters).apply {
                 soak(MutableSubstance(CommonSubstanceTypes.WATER, 30 * milliliters, 20 * celsius))
-                stain(MutableSubstance(CommonSubstanceTypes.WATER, 10 * milliliters, 20 * celsius))
+                stain(MutableSubstance(CommonSubstanceTypes.COFFEE, 10 * milliliters, 20 * celsius))
             },
         )
 

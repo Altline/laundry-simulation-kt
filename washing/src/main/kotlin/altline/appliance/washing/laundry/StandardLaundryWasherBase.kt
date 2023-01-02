@@ -103,6 +103,7 @@ abstract class StandardLaundryWasherBase(
                 field = value
                 scanningJob?.cancel()
                 if (value != null) {
+                    value.washLiquid = drum.excessLiquid
                     scanningJob = machineScope.launch { scan() }
                 }
             }
@@ -112,7 +113,6 @@ abstract class StandardLaundryWasherBase(
         repeatPeriodically(RefreshPeriod) {
             scanner?.run {
                 scanDrumMotor(drumMotor)
-                scanWashLiquid(drum.excessLiquid)
             }
         }
     }

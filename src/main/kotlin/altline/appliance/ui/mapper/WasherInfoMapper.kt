@@ -1,6 +1,9 @@
 package altline.appliance.ui.mapper
 
 import altline.appliance.measure.Volume.Companion.liters
+import altline.appliance.substance.CommonSubstanceTypes
+import altline.appliance.substance.Substance
+import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.washerInfo.*
 import altline.appliance.ui.component.washerInfo.CyclePhaseUi.ActiveState.*
 import altline.appliance.ui.resources.get
@@ -151,9 +154,29 @@ class WasherInfoMapper(
         return washer.scanner?.run {
             WasherStateSectionUi(
                 spinSpeed = spinSpeed,
-                temperature = temperature?.optionalDecimal(maxFractionDigits = 1) ?: "-",
-                waterLevel = waterLevel.optionalDecimal(mandatoryUnits = liters)
+                temperature = washLiquid?.temperature?.optionalDecimal(maxFractionDigits = 1) ?: "-",
+                liquidLevel = washLiquid?.amount?.optionalDecimal(mandatoryUnits = liters) ?: "-",
+                liquidParts = mapSubstanceParts(washLiquid)
             )
+        }
+    }
+
+    private fun mapSubstanceParts(substance: Substance?): List<Pair<String, String>> {
+        return substance?.parts
+            ?.sortedByDescending { it.amount }
+            ?.map { part ->
+                Pair(
+                    mapToSubstanceTypeName(part.type),
+                    part.amount.optionalDecimal()
+                )
+            } ?: emptyList()
+    }
+
+    private fun mapToSubstanceTypeName(substanceType: SubstanceType): String {
+        return when (substanceType) {
+            CommonSubstanceTypes.WATER -> strings["substanceType_water"]
+            CommonSubstanceTypes.COFFEE -> strings["substanceType_coffee"]
+            else -> ""
         }
     }
 }

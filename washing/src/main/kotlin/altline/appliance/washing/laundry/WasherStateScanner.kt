@@ -2,12 +2,10 @@ package altline.appliance.washing.laundry
 
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
-import altline.appliance.measure.Temperature
-import altline.appliance.measure.Volume
-import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.spin.ElectricMotor
 import altline.appliance.substance.Substance
-import io.nacular.measured.units.*
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.times
 
 class WasherStateScanner {
 
@@ -17,19 +15,10 @@ class WasherStateScanner {
     var reverseSpinDirection: Boolean = false
         private set
 
-    var temperature: Measure<Temperature>? = null
-        private set
-
-    var waterLevel: Measure<Volume> = 0 * liters
-        private set
+    var washLiquid: Substance? = null
 
     fun scanDrumMotor(drumMotor: ElectricMotor) {
         spinSpeed = drumMotor.currentSpeed
         reverseSpinDirection = drumMotor.reverseDirection
-    }
-
-    fun scanWashLiquid(washLiquid: Substance) {
-        temperature = washLiquid.temperature
-        waterLevel = washLiquid.amount
     }
 }
