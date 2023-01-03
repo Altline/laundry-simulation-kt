@@ -10,13 +10,18 @@ import io.nacular.measured.units.times
 import java.util.*
 
 interface Substance : Flowable<Volume> {
+    /**
+     * The set of parts that make up this substance.
+     * This set is a [Collections.synchronizedSet], however, some Kotlin-provided iteration functions override and
+     * skip this synchronization, so it should likely be done manually if those functions need to be called.
+     */
     val parts: Set<Part>
 
     /** The temperature of the substance. This is null if, and only if, the substance is empty. */
     val temperature: Measure<Temperature>?
 
     override val amount: Measure<Volume>
-        get() = parts.sumOf { it.amount }
+        get() = synchronized(this) { parts.sumOf { it.amount } }
 
     interface Part {
         val type: SubstanceType
