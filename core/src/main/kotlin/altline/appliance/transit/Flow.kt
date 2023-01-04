@@ -47,8 +47,8 @@ interface FlowSource<QuantityType : Units, FlowableType : Flowable<QuantityType>
 
         fun disconnect() {
             connectedPort?.let {
-                it.disconnect()
                 connectedPort = null
+                it.disconnect()
             }
         }
     }
@@ -87,8 +87,8 @@ interface FlowDrain<QuantityType : Units, FlowableType : Flowable<QuantityType>>
 
         fun disconnect() {
             connectedPort?.let {
-                it.disconnect()
                 connectedPort = null
+                it.disconnect()
             }
         }
     }
