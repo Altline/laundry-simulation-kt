@@ -25,3 +25,24 @@ val Colors.surfaceTinted: Color
 
 val Colors.onSurfaceTinted: Color
     get() = Teal900
+
+object SubstanceColors {
+    val Water = Color(0xffdffbff)
+    val Coffee = Color(0xff513c21)
+
+    val UltimateDetergent = Color(0xff00ffc7)
+    val StrongDetergent = Color(0xff60ffdc)
+    val BasicDetergent = Color(0xff96ffe8)
+    val MildDetergent = Color(0xffbcfff0)
+    val WeakDetergent = Color(0xffd9fff7)
+    val BarelyDetergent = Color(0xffebfffb)
+    val UselessDetergent = Color(0xffffffff)
+
+    val UltimateSoftener = Color(0xff007fff)
+    val StrongSoftener = Color(0xff44a1ff)
+    val BasicSoftener = Color(0xff7fbeff)
+    val MildSoftener = Color(0xffbbddff)
+    val WeakSoftener = Color(0xffd8ebff)
+    val BarelySoftener = Color(0xffe9f4ff)
+    val UselessSoftener = Color(0xffffffff)
+}

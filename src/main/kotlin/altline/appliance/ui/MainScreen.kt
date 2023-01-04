@@ -3,6 +3,8 @@ package altline.appliance.ui
 import altline.appliance.ui.component.VerticalDivider
 import altline.appliance.ui.component.laundry.LaundryPanel
 import altline.appliance.ui.component.laundry.LaundryPanelUi
+import altline.appliance.ui.component.washer.DispenserTray
+import altline.appliance.ui.component.washer.DispenserTrayUi
 import altline.appliance.ui.component.washer.WasherPanel
 import altline.appliance.ui.component.washer.WasherPanelUi
 import altline.appliance.ui.component.washerInfo.InfoPanel
@@ -16,11 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.rememberDialogState
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
     viewModel.uiState?.run {
-        Content(laundryPanel, washerPanel, infoPanel)
+        Content(laundryPanel, washerPanel, infoPanel, dispenserTray)
     }
 }
 
@@ -28,7 +32,8 @@ fun MainScreen(viewModel: MainViewModel) {
 private fun Content(
     laundry: LaundryPanelUi,
     washer: WasherPanelUi,
-    info: InfoPanelUi
+    info: InfoPanelUi,
+    dispenserTray: DispenserTrayUi?
 ) {
     var rowSize by remember { mutableStateOf(IntSize.Zero) }
 
@@ -41,6 +46,16 @@ private fun Content(
         VerticalDivider(thickness = 3.dp)
         InfoPanel(info, Modifier.requiredWidthIn(min = minInfoPanelWidth).weight(1f))
     }
+
+    if (dispenserTray != null) {
+        Dialog(
+            onCloseRequest = dispenserTray.onCloseTray,
+            state = rememberDialogState(width = 580.dp, height = 460.dp),
+            resizable = false
+        ) {
+            DispenserTray(dispenserTray)
+        }
+    }
 }
 
 @Preview
@@ -50,7 +65,8 @@ private fun PreviewContent() {
         Content(
             LaundryPanelUi.preview(),
             WasherPanelUi.preview(),
-            InfoPanelUi.preview()
+            InfoPanelUi.preview(),
+            DispenserTrayUi.preview()
         )
     }
 }

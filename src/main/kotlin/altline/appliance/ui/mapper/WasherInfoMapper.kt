@@ -1,6 +1,7 @@
 package altline.appliance.ui.mapper
 
 import altline.appliance.measure.Volume.Companion.liters
+import altline.appliance.substance.CommonFabricSofteners
 import altline.appliance.substance.CommonSubstanceTypes
 import altline.appliance.substance.Substance
 import altline.appliance.substance.SubstanceType
@@ -10,6 +11,7 @@ import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.util.clockFormat
 import altline.appliance.ui.util.optionalDecimal
+import altline.appliance.washing.CommonDetergents
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.WashParams
 import altline.appliance.washing.laundry.washCycle.phase.*
@@ -176,6 +178,23 @@ class WasherInfoMapper(
         return when (substanceType) {
             CommonSubstanceTypes.WATER -> strings["substanceType_water"]
             CommonSubstanceTypes.COFFEE -> strings["substanceType_coffee"]
+
+            CommonDetergents.ULTIMATE_DETERGENT -> "${strings["power_ultimate"]} ${strings["substanceType_detergent_partial"]}"
+            CommonDetergents.STRONG_DETERGENT -> "${strings["power_strong"]} ${strings["substanceType_detergent_partial"]}"
+            CommonDetergents.BASIC_DETERGENT -> "${strings["power_basic"]} ${strings["substanceType_detergent_partial"]}"
+            CommonDetergents.MILD_DETERGENT -> "${strings["power_mild"]} ${strings["substanceType_detergent_partial"]}"
+            CommonDetergents.WEAK_DETERGENT -> "${strings["power_weak"]} ${strings["substanceType_detergent_partial"]}"
+            CommonDetergents.BARELY_DETERGENT -> "${strings["power_basic"]} ${strings["substanceType_detergent_partial"]}"
+            CommonDetergents.USELESS_DETERGENT -> "${strings["power_useless"]} ${strings["substanceType_detergent_partial"]}"
+
+            CommonFabricSofteners.ULTIMATE_SOFTENER -> "${strings["power_ultimate"]} ${strings["substanceType_softener_partial"]}"
+            CommonFabricSofteners.STRONG_SOFTENER -> "${strings["power_strong"]} ${strings["substanceType_softener_partial"]}"
+            CommonFabricSofteners.BASIC_SOFTENER -> "${strings["power_basic"]} ${strings["substanceType_softener_partial"]}"
+            CommonFabricSofteners.MILD_SOFTENER -> "${strings["power_mild"]} ${strings["substanceType_softener_partial"]}"
+            CommonFabricSofteners.WEAK_SOFTENER -> "${strings["power_weak"]} ${strings["substanceType_softener_partial"]}"
+            CommonFabricSofteners.BARELY_SOFTENER -> "${strings["power_basic"]} ${strings["substanceType_softener_partial"]}"
+            CommonFabricSofteners.USELESS_SOFTENER -> "${strings["power_useless"]} ${strings["substanceType_softener_partial"]}"
+
             else -> ""
         }
     }

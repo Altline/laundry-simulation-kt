@@ -1,9 +1,13 @@
 package altline.appliance.ui
 
+import altline.appliance.common.AmbientTemperature
 import altline.appliance.common.Body
 import altline.appliance.common.RefreshPeriod
 import altline.appliance.data.World
+import altline.appliance.measure.Volume
 import altline.appliance.measure.repeatPeriodically
+import altline.appliance.substance.MutableSubstance
+import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
 import altline.appliance.ui.component.washer.WasherPanelUi
@@ -12,11 +16,15 @@ import altline.appliance.ui.mapper.LaundryMapper
 import altline.appliance.ui.mapper.WasherInfoMapper
 import altline.appliance.ui.mapper.WasherMapper
 import altline.appliance.util.wrapAround
+import altline.appliance.washing.CommonDetergents
+import altline.appliance.washing.laundry.SlottedDispenser
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.nacular.measured.units.Measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -42,9 +50,17 @@ class MainViewModel(
     private val potentialLaundry: Set<Body>
         get() = world.laundry.minus(loadedLaundry)
 
+    private var selectedAdditive: SubstanceType = CommonDetergents.BASIC_DETERGENT
+
     init {
-        updateData()
+        uiState = MainUiState(
+            laundryPanel = getLaundryPanel(),
+            washerPanel = getWasherPanel(),
+            infoPanel = getInfoPanel(),
+            dispenserTray = null
+        )
         coroutineScope.launch {
+            delay(1000)
             repeatPeriodically(RefreshPeriod) {
                 updateData()
             }
@@ -52,7 +68,7 @@ class MainViewModel(
     }
 
     private fun updateData() {
-        uiState = MainUiState(
+        uiState = uiState?.copy(
             laundryPanel = getLaundryPanel(),
             washerPanel = getWasherPanel(),
             infoPanel = getInfoPanel()
@@ -108,7 +124,47 @@ class MainViewModel(
     }
 
     private fun openDispenser() {
+        washer.openDispenserTray()
+        updateDispenser()
+    }
 
+    private fun closeDispenser() {
+        uiState = uiState?.copy(dispenserTray = null)
+        washer.closeDispenserTray()
+    }
+
+    private fun addDispenserAdditive(slot: SlottedDispenser.Tray.Slot, amount: Measure<Volume>) {
+        slot.fill(
+            MutableSubstance(
+                type = selectedAdditive,
+                amount = amount,
+                temperature = AmbientTemperature
+            )
+        )
+        updateDispenser()
+    }
+
+    private fun removeDispenserAdditive(slot: SlottedDispenser.Tray.Slot, amount: Measure<Volume>) {
+        slot.empty(amount)
+        updateDispenser()
+    }
+
+    private fun selectAdditive(substanceType: SubstanceType) {
+        this.selectedAdditive = substanceType
+        updateDispenser()
+    }
+
+    private fun updateDispenser() {
+        uiState = uiState?.copy(
+            dispenserTray = washerMapper.mapDispenserTray(
+                tray = washer.dispenserTray,
+                selectedAdditive = selectedAdditive,
+                onAdditiveAdd = this::addDispenserAdditive,
+                onAdditiveRemove = this::removeDispenserAdditive,
+                onAdditivePick = this::selectAdditive,
+                onCloseTray = this::closeDispenser
+            )
+        )
     }
 
     private fun selectNextCycle(reverse: Boolean) {

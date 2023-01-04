@@ -31,7 +31,7 @@ interface Substance : Flowable<Volume> {
     companion object {
         fun Part(type: SubstanceType, amount: Measure<Volume>) = object : Part {
             override val type: SubstanceType = type
-            override val amount: Measure<Volume> = amount
+            override val amount: Measure<Volume> = amount.coerceAtLeast(0 * liters)
         }
     }
 }

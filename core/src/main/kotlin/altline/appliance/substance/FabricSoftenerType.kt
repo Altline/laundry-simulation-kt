@@ -8,11 +8,11 @@ enum class CommonFabricSofteners(
     override val fresheningPotential: Double
 ) : FabricSoftenerType {
 
-    USELESS_SOFTENER(0.0),
-    BARELY_SOFTENER(0.2),
-    WEAK_SOFTENER(0.4),
-    MILD_SOFTENER(0.6),
-    BASIC_SOFTENER(0.8),
+    ULTIMATE_SOFTENER(1.0),
     STRONG_SOFTENER(0.95),
-    ULTIMATE_SOFTENER(1.0)
+    BASIC_SOFTENER(0.8),
+    MILD_SOFTENER(0.6),
+    WEAK_SOFTENER(0.4),
+    BARELY_SOFTENER(0.2),
+    USELESS_SOFTENER(0.0);
 }

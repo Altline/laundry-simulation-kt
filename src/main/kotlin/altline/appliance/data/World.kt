@@ -25,7 +25,7 @@ import io.nacular.measured.units.Time.Companion.seconds
 
 class World {
 
-    val washer: StandardLaundryWasherBase
+    val washer: HouseholdLaundryWasher
     val laundry: Set<Body>
 
     init {
@@ -72,7 +72,7 @@ class World {
             power = 5 * watts
         )
         val dispenser = PreWashSlottedDispenser(
-            preWashDetergentCapacity = 100 * milliliters,
+            preWashDetergentCapacity = 150 * milliliters,
             mainDetergentCapacity = 300 * milliliters,
             mainSoftenerCapacity = 100 * milliliters,
             config = config

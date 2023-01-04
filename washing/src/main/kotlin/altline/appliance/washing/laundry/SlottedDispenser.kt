@@ -3,11 +3,13 @@ package altline.appliance.washing.laundry
 import altline.appliance.measure.Volume
 import altline.appliance.measure.VolumetricFlow
 import altline.appliance.substance.MutableSubstance
+import altline.appliance.substance.Substance
 import altline.appliance.substance.transit.BasicSubstanceConduit
 import altline.appliance.substance.transit.SubstanceConduit
 import altline.appliance.substance.transit.Valve
 import altline.appliance.washing.WashDispenser
-import io.nacular.measured.units.*
+import io.nacular.measured.units.Measure
+import io.nacular.measured.units.Time
 
 abstract class SlottedDispenser(
     protected val config: LaundryWasherConfig
@@ -72,20 +74,21 @@ abstract class SlottedDispenser(
             maxFlowRate: Measure<VolumetricFlow>
         ) : BasicSubstanceConduit(maxFlowRate) {
 
-            private val additive = MutableSubstance()
+            private val _additive = MutableSubstance()
+            val additive = _additive as Substance
 
             fun fill(additive: MutableSubstance) {
-                val amountToAdd = capacity - this.additive.amount
+                val amountToAdd = capacity - this._additive.amount
                 val toAdd = additive.extract(amountToAdd)
-                this.additive.add(toAdd)
+                this._additive.add(toAdd)
             }
 
-            fun empty(): MutableSubstance {
-                return this.additive.extractAll()
+            fun empty(amount: Measure<Volume> = capacity): MutableSubstance {
+                return this._additive.extract(amount)
             }
 
             override fun pushFlow(flowable: MutableSubstance, timeFrame: Measure<Time>, flowId: Long): Measure<Volume> {
-                flowable.add(additive.extractAll())
+                flowable.add(_additive.extractAll())
                 return super.pushFlow(flowable, timeFrame, flowId)
             }
 

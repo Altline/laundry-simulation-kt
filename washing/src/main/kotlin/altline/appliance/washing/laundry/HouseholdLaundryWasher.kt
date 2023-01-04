@@ -12,4 +12,13 @@ open class HouseholdLaundryWasher(
     override val config: LaundryWasherConfig
 ) : StandardLaundryWasherBase(controller, dispenser, drum, drumMotor, pump, config) {
 
+    val dispenserTray: PreWashSlottedDispenser.Tray
+        get() = dispenser.tray
+
+    fun openDispenserTray(): PreWashSlottedDispenser.Tray {
+        dispenser.openTray()
+        return dispenserTray
+    }
+
+    fun closeDispenserTray() = dispenser.closeTray()
 }
