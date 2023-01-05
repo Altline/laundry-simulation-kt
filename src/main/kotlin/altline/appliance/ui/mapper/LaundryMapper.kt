@@ -2,15 +2,13 @@ package altline.appliance.ui.mapper
 
 import altline.appliance.common.Body
 import altline.appliance.fabric.Clothing
-import altline.appliance.fabric.Fabric
-import altline.appliance.fabric.Shirt
 import altline.appliance.substance.Soakable
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
-import altline.appliance.ui.resources.get
-import altline.appliance.ui.resources.strings
 
-class LaundryMapper {
+class LaundryMapper(
+    private val stringMapper: StringMapper
+) {
 
     fun mapToLaundryPanel(
         potentialLaundry: Set<Body>,
@@ -42,8 +40,8 @@ class LaundryMapper {
         onDoubleClick: () -> Unit
     ): LaundryListItemUi {
         with(body) {
-            val name = mapToLaundryName(this)
-            val size = if (this is Clothing) mapClothingSizeToString(this.size) else ""
+            val name = stringMapper.mapLaundryName(this)
+            val size = if (this is Clothing) stringMapper.mapClothingSize(this.size) else ""
             val soakRatio = if (this is Soakable) this.soakRatio else null
             return LaundryListItemUi(
                 id = body.id,
@@ -54,27 +52,6 @@ class LaundryMapper {
                 onClick = onClick,
                 onDoubleClick = onDoubleClick
             )
-        }
-    }
-
-    private fun mapToLaundryName(body: Body): String {
-        return when (body) {
-            is Shirt -> strings["laundryName_shirt"]
-            is Clothing -> strings["laundryName_clothing"]
-            is Fabric -> strings["laundryName_fabric"]
-            else -> strings["laundryName_body"]
-        }
-    }
-
-    private fun mapClothingSizeToString(size: Clothing.Size): String {
-        return when (size) {
-            Clothing.Size.XXS -> strings["clothingSize_XXS"]
-            Clothing.Size.XS -> strings["clothingSize_XS"]
-            Clothing.Size.S -> strings["clothingSize_S"]
-            Clothing.Size.M -> strings["clothingSize_M"]
-            Clothing.Size.L -> strings["clothingSize_L"]
-            Clothing.Size.XL -> strings["clothingSize_XL"]
-            Clothing.Size.XXL -> strings["clothingSize_XXL"]
         }
     }
 }
