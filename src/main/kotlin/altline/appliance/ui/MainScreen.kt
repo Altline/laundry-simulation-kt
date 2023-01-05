@@ -9,6 +9,8 @@ import altline.appliance.ui.component.washer.WasherPanel
 import altline.appliance.ui.component.washer.WasherPanelUi
 import altline.appliance.ui.component.washerInfo.InfoPanel
 import altline.appliance.ui.component.washerInfo.InfoPanelUi
+import altline.appliance.ui.resources.get
+import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
@@ -50,7 +52,8 @@ private fun Content(
     if (dispenserTray != null) {
         Dialog(
             onCloseRequest = dispenserTray.onCloseTray,
-            state = rememberDialogState(width = 580.dp, height = 460.dp),
+            state = rememberDialogState(width = 580.dp, height = 540.dp),
+            title = strings["dispenser_title"],
             resizable = false
         ) {
             DispenserTray(dispenserTray)

@@ -1,11 +1,13 @@
 package altline.appliance.ui.component.washer
 
+import altline.appliance.data.AllSubstanceTypes
 import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.measure.divSameUnit
 import altline.appliance.substance.CommonFabricSofteners
 import altline.appliance.substance.SubstanceType
-import altline.appliance.ui.mapper.ColorMapper
+import altline.appliance.ui.component.SubstancePicker
+import altline.appliance.ui.component.SubstanceTile
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.SubstanceColors
@@ -15,13 +17,14 @@ import altline.appliance.washing.CommonDetergents
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,21 +35,90 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.nacular.measured.units.Measure
 import io.nacular.measured.units.times
-import org.koin.core.context.GlobalContext
 
 @Composable
-fun DispenserTray(data: DispenserTrayUi) = with(data) {
-    Row(
-        Modifier.padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.Bottom
-    ) {
-        if (preWashSlot != null) Slot(preWashSlot, 250.dp)
-        Slot(mainSlot, 250.dp)
-        Slot(softenerSlot, 120.dp)
+fun DispenserTray(data: DispenserTrayUi) {
+    var substancePickerOpen by remember { mutableStateOf(false) }
 
-        Spacer(Modifier.width(12.dp))
-        AdditivePicker(data.selectedAdditive, data.onAdditivePick)
+    if (substancePickerOpen) {
+        SubstancePicker(
+            substanceTypes = AllSubstanceTypes,
+            selectedType = data.selectedAdditive,
+            onSubstancePick = { substancePickerOpen = false; data.onAdditivePick(it) },
+            onClose = { substancePickerOpen = false }
+        )
+    } else {
+        TrayContent(data, onOpenSubstancePicker = { substancePickerOpen = true })
+    }
+}
+
+@Composable
+private fun TrayContent(
+    data: DispenserTrayUi,
+    onOpenSubstancePicker: () -> Unit
+) = with(data) {
+    val tileSize = 50.dp
+
+    Column(Modifier.padding(16.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            if (preWashSlot != null) Slot(preWashSlot, 250.dp)
+            Slot(mainSlot, 250.dp)
+            Slot(softenerSlot, 120.dp)
+
+            Spacer(Modifier.width(12.dp))
+            AdditivePicker(tileSize, selectedAdditive, onAdditivePick)
+        }
+
+        Spacer(Modifier.height(24.dp))
+        Box(Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onCloseTray,
+                Modifier
+                    .align(Alignment.Center)
+                    .height(40.dp),
+                contentPadding = PaddingValues(horizontal = 30.dp)
+            ) {
+                Text(strings["dispenser_closeTray"])
+            }
+
+            when (selectedAdditive) {
+                in CommonDetergents.values(),
+                in CommonFabricSofteners.values() -> {
+                    Column(
+                        Modifier.align(Alignment.CenterEnd),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Surface(
+                            Modifier
+                                .size(tileSize)
+                                .clickable(onClick = onOpenSubstancePicker),
+                            shape = RoundedCornerShape(8.dp),
+                            color = Color.White,
+                            border = BorderStroke(1.dp, Color.LightGray)
+                        ) {}
+                        Text(
+                            text = strings["dispenser_more"],
+                            style = MaterialTheme.typography.caption,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                else -> {
+                    SubstanceTile(
+                        substanceType = selectedAdditive,
+                        size = tileSize,
+                        selected = false,
+                        showLabel = true,
+                        onClick = onOpenSubstancePicker,
+                        Modifier.align(Alignment.CenterEnd)
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -98,10 +170,10 @@ private fun Slot(data: DispenserSlotUi, height: Dp) {
 
 @Composable
 private fun AdditivePicker(
+    tileSize: Dp,
     selectedAdditive: SubstanceType,
     onAdditivePick: (SubstanceType) -> Unit
 ) {
-    val tileSize = 50.dp
     val powerStrings = listOf(
         strings["power_ultimate"],
         strings["power_strong"],
@@ -161,8 +233,6 @@ private fun <T : SubstanceType> AdditiveTileColumn(
     tileSize: Dp,
     onAdditivePick: (SubstanceType) -> Unit
 ) {
-    val colorMapper = GlobalContext.get().get<ColorMapper>()
-
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -172,39 +242,15 @@ private fun <T : SubstanceType> AdditiveTileColumn(
             style = MaterialTheme.typography.body2
         )
         for (additive in additives) {
-            AdditiveTile(
+            SubstanceTile(
+                substanceType = additive,
                 size = tileSize,
-                color = colorMapper.mapSubstanceTypeToColor(additive),
                 selected = additive == selectedAdditive,
+                showLabel = false,
                 onClick = { onAdditivePick(additive) }
             )
         }
     }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun AdditiveTile(
-    size: Dp,
-    color: Color,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    val border =
-        if (selected) BorderStroke(3.dp, Color.LightGray)
-        else BorderStroke(1.dp, Color.LightGray)
-
-    val elevation = if (selected) 8.dp else 0.dp
-
-    Surface(
-        selected = selected,
-        onClick = onClick,
-        Modifier.size(size),
-        shape = RoundedCornerShape(8.dp),
-        color = color,
-        border = border,
-        elevation = elevation
-    ) {}
 }
 
 data class DispenserTrayUi(
