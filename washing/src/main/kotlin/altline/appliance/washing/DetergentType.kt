@@ -23,6 +23,8 @@ enum class CommonDetergents(
     WEAK_DETERGENT(convertDiluted(0.0003)),
     BARELY_DETERGENT(convertDiluted(0.0002)),
     USELESS_DETERGENT(convertDiluted(0.0));
+
+    override val evaporates: Boolean = false
 }
 
 /** Used to calculate the nominal cleaning power of a substance based on the desired cleaning power of the whole mix

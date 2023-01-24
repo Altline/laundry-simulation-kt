@@ -4,9 +4,7 @@ import altline.appliance.measure.*
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.transit.Flowable
 import altline.appliance.transit.MutableFlowable
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.div
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 import java.util.*
 
 interface Substance : Flowable<Volume> {
@@ -117,6 +115,13 @@ class MutableSubstance(
         return MutableSubstance(parts, temperature).also {
             _parts.clear()
             temperature = null
+        }
+    }
+
+    fun extractAllEvaporating(): MutableSubstance = synchronized(this) {
+        return MutableSubstance(parts.filter { it.type.evaporates }.toSet(), temperature).also {
+            _parts.removeIf { it.type.evaporates }
+            if (_parts.isEmpty()) temperature = null
         }
     }
 

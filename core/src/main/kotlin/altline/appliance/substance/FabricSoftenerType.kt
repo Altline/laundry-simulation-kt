@@ -15,4 +15,6 @@ enum class CommonFabricSofteners(
     WEAK_SOFTENER(0.4),
     BARELY_SOFTENER(0.2),
     USELESS_SOFTENER(0.0);
+
+    override val evaporates: Boolean = false
 }

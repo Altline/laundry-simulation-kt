@@ -57,6 +57,9 @@ abstract class Fabric(
     }
 
     override fun dry(amount: Measure<Volume>): MutableSubstance {
-        return _soakedSubstance.extract(amount)
+        val extracted = _soakedSubstance.extract(amount)
+        val evaporating = extracted.extractAllEvaporating()
+        stain(extracted)
+        return evaporating
     }
 }
