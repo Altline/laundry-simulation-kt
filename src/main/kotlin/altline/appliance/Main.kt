@@ -1,5 +1,6 @@
 package altline.appliance
 
+import altline.appliance.audio.Audio
 import altline.appliance.di.coreModule
 import altline.appliance.ui.MainScreen
 import altline.appliance.ui.MainViewModel
@@ -42,4 +43,9 @@ private fun initialize() {
     startKoin {
         modules(coreModule)
     }
+
+    Audio.init()
+    Runtime.getRuntime().addShutdownHook(Thread {
+        Audio.close()
+    })
 }

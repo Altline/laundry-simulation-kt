@@ -29,6 +29,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(Libs.Compose.materialIconsExtended)
     implementation(Libs.Koin.core)
+    implementation(Libs.AudioCue.audioCue)
     implementation(Libs.Logging.Log4j2.core)
     implementation(Libs.Logging.Log4j2.api)
     implementation(Libs.Logging.Log4j2.slf4jBridge)

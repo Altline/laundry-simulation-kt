@@ -25,6 +25,11 @@ object Libs {
         const val core = "io.insert-koin:koin-core:$version"
     }
 
+    object AudioCue {
+        const val version = "2.0.0"
+        const val audioCue = "com.adonax:audiocue:$version"
+    }
+
     object Measured {
         const val version = "0.3.1"
         const val measured = "io.nacular.measured:measured:$version"
