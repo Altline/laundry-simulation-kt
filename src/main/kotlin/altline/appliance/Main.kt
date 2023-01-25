@@ -4,6 +4,7 @@ import altline.appliance.di.coreModule
 import altline.appliance.ui.MainScreen
 import altline.appliance.ui.MainViewModel
 import altline.appliance.ui.theme.AppTheme
+import androidx.compose.runtime.*
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -14,9 +15,13 @@ import org.koin.core.context.startKoin
 import java.awt.Dimension
 
 fun main() = application {
-    startKoin {
-        modules(coreModule)
+    var initialized by remember { mutableStateOf(false) }
+
+    LaunchedEffect(true) {
+        initialize()
+        initialized = true
     }
+
     Window(
         onCloseRequest = ::exitApplication,
         state = WindowState(
@@ -24,9 +29,17 @@ fun main() = application {
         )
     ) {
         window.minimumSize = Dimension(700, 500)
-        AppTheme {
-            val viewModel = GlobalContext.get().get<MainViewModel>()
-            MainScreen(viewModel)
+        if (initialized) {
+            AppTheme {
+                val viewModel = GlobalContext.get().get<MainViewModel>()
+                MainScreen(viewModel)
+            }
         }
+    }
+}
+
+private fun initialize() {
+    startKoin {
+        modules(coreModule)
     }
 }
