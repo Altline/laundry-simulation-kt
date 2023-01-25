@@ -11,11 +11,8 @@ import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.substance.*
 import altline.appliance.substance.transit.Reservoir
 import altline.appliance.washing.cleaningPower
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
+import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
-import io.nacular.measured.units.div
-import io.nacular.measured.units.times
 
 class BasicDrum(
     capacity: Measure<Volume>,
@@ -96,18 +93,11 @@ class BasicDrum(
                 body.soak(storedSubstance)
             }
 
-            // resoak
             val resoakAmount = minOf(body.soakedSubstance.amount, excessLiquidAmount) *
                     config.nominalResoakFactor * spinEffectiveness * seconds
             body.resoakWith(storedSubstance, resoakAmount)
-
-            // freshen
-            val diff = body.soakedSubstance.fresheningPotential - body.freshness
-            val step = diff / 10 * spinEffectiveness * seconds
-            body.freshness += step
         }
 
-        // clean
         val effectiveCleaningPower = calcCleaningPower(body) * spinEffectiveness
         val stainAmountToClear = body.stainSubstance.amount * effectiveCleaningPower * seconds
         val clearedStain = body.clearStain(stainAmountToClear)

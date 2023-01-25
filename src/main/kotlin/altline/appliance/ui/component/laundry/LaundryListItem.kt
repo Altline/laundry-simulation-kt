@@ -1,5 +1,6 @@
 package altline.appliance.ui.component.laundry
 
+import altline.appliance.ui.component.VerticalDivider
 import altline.appliance.ui.resources.AppIcons
 import altline.appliance.ui.resources.appicons.Stain
 import altline.appliance.ui.resources.get
@@ -7,6 +8,7 @@ import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.util.formatPercentage
 import altline.appliance.ui.util.modifiedColor
+import altline.appliance.util.lerpCoerced
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -39,26 +41,7 @@ fun LaundryListItem(data: LaundryListItemUi) {
                 //onDoubleClick = data.onDoubleClick
             ),
     ) {
-        val barHeight: Float
-        if (data.soakRatio != null) {
-            barHeight = 0.5f
-            Surface(
-                Modifier
-                    .fillMaxWidth(data.soakRatio.toFloat())
-                    .fillMaxHeight(0.5f)
-                    .align(Alignment.TopStart),
-                color = Color(0xffbfe1ff)
-            ) {}
-        } else {
-            barHeight = 1f
-        }
-        Surface(
-            Modifier
-                .fillMaxWidth(data.stainRatio.toFloat())
-                .fillMaxHeight(barHeight)
-                .align(Alignment.BottomStart),
-            color = Color(0xffffdfbf)
-        ) {}
+        BarMeters(data.soakRatio, data.stainRatio, data.freshness)
 
         Column(
             Modifier.padding(8.dp),
@@ -91,14 +74,58 @@ fun LaundryListItem(data: LaundryListItemUi) {
         if (data.selected) {
             Surface(
                 Modifier.fillMaxSize(),
-                color = Color(0x440099ff)
+                color = Color(0x260099ff)
             ) {}
         }
     }
 }
 
 @Composable
-private fun RowScope.IconStat(
+private fun BoxScope.BarMeters(
+    soakRatio: Double?,
+    stainRatio: Double,
+    freshness: Double
+) {
+    val freshnessBarWidthFraction = 0.1f
+    val barHeight: Float
+
+    if (soakRatio != null) {
+        barHeight = 0.5f
+        Surface(
+            Modifier
+                .fillMaxWidth(lerpCoerced(0f, 1 - freshnessBarWidthFraction, soakRatio.toFloat()))
+                .fillMaxHeight(0.5f)
+                .align(Alignment.TopStart),
+            color = Color(0xffbfe1ff)
+        ) {}
+    } else {
+        barHeight = 1f
+    }
+
+    Surface(
+        Modifier
+            .fillMaxWidth(lerpCoerced(0f, 1 - freshnessBarWidthFraction, stainRatio.toFloat()))
+            .fillMaxHeight(barHeight)
+            .align(Alignment.BottomStart),
+        color = Color(0xffffdfbf)
+    ) {}
+
+    Row(
+        Modifier.align(Alignment.BottomEnd),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        VerticalDivider()
+        Surface(
+            Modifier
+                .fillMaxWidth(freshnessBarWidthFraction)
+                .fillMaxHeight(freshness.toFloat()),
+            color = Color(0xff7fbeff)
+        ) {}
+    }
+}
+
+@Composable
+private fun IconStat(
     icon: ImageVector,
     contentDescription: String,
     text: String,
@@ -117,6 +144,7 @@ data class LaundryListItemUi(
     val title: String,
     val stainRatio: Double,
     val soakRatio: Double?,
+    val freshness: Double,
     val selected: Boolean,
     val onClick: () -> Unit,
     val onDoubleClick: () -> Unit
@@ -128,6 +156,7 @@ data class LaundryListItemUi(
             title = "Shirt",
             stainRatio = 0.13,
             soakRatio = 0.88,
+            freshness = 0.4,
             selected = false,
             onClick = {},
             onDoubleClick = {}

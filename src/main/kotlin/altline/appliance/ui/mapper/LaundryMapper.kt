@@ -2,9 +2,13 @@ package altline.appliance.ui.mapper
 
 import altline.appliance.common.Body
 import altline.appliance.fabric.Clothing
+import altline.appliance.measure.Volume.Companion.milliliters
+import altline.appliance.measure.sumOf
 import altline.appliance.substance.Soakable
+import altline.appliance.substance.fresheningPotential
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
+import io.nacular.measured.units.*
 
 class LaundryMapper(
     private val stringMapper: StringMapper
@@ -39,19 +43,39 @@ class LaundryMapper(
         onClick: () -> Unit,
         onDoubleClick: () -> Unit
     ): LaundryListItemUi {
-        with(body) {
-            val name = stringMapper.mapLaundryName(this)
-            val size = if (this is Clothing) stringMapper.mapClothingSize(this.size) else ""
-            val soakRatio = if (this is Soakable) this.soakRatio else null
-            return LaundryListItemUi(
-                id = body.id,
-                title = "$name, $size",
-                stainRatio = this.stainRatio,
-                soakRatio = soakRatio,
-                selected = selected,
-                onClick = onClick,
-                onDoubleClick = onDoubleClick
-            )
+        val name = stringMapper.mapLaundryName(body)
+        val size = if (body is Clothing) stringMapper.mapClothingSize(body.size) else ""
+        val soakRatio = if (body is Soakable) body.soakRatio else null
+        return LaundryListItemUi(
+            id = body.id,
+            title = "$name, $size",
+            stainRatio = body.stainRatio,
+            soakRatio = soakRatio,
+            freshness = mapFreshness(body),
+            selected = selected,
+            onClick = onClick,
+            onDoubleClick = onDoubleClick
+        )
+    }
+
+    private fun mapFreshness(body: Body): Double {
+        val freshnessInfluencers = buildSet {
+            addAll(body.stainSubstance.parts)
+            if (body is Soakable) {
+                addAll(body.soakedSubstance.parts)
+            }
+        }.filterNot { it.type.evaporates }
+
+        val amount = freshnessInfluencers.sumOf { it.amount }
+
+        val fresheningPotential = freshnessInfluencers.fold(0.0) { acc: Double, part ->
+            val ratio = part.amount / amount
+            val effectivePower = part.type.fresheningPotential * ratio
+            acc + effectivePower
         }
+
+        return run {
+            fresheningPotential * (body.stainSubstance.amount / (0.5 * milliliters)) / (body.volume / (100 * milliliters))
+        }.coerceAtMost(1.0)
     }
 }

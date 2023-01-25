@@ -6,8 +6,7 @@ import altline.appliance.substance.MutableSubstance
 import altline.appliance.substance.Soakable
 import altline.appliance.substance.Substance
 import altline.appliance.substance.TemperatureEqualizer
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.div
+import io.nacular.measured.units.*
 import java.util.*
 
 abstract class Fabric(
@@ -15,8 +14,6 @@ abstract class Fabric(
 ) : Body, Soakable {
 
     override val id: UUID = UUID.randomUUID()
-
-    override var freshness: Double = 0.0
 
     private val _stainSubstance = MutableSubstance()
     override val stainSubstance = _stainSubstance as Substance
