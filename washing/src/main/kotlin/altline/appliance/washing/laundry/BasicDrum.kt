@@ -73,7 +73,8 @@ class BasicDrum(
     private fun soakLaundry() {
         load.forEach { piece ->
             if (piece is Soakable) {
-                piece.soak(storedSubstance)
+                val soakAmount = 0.01 * (piece.volume - piece.soakedSubstance.amount)
+                piece.soak(storedSubstance.extract(soakAmount))
             }
         }
     }
