@@ -1,8 +1,13 @@
 package altline.appliance.ui.component.washer
 
+import altline.appliance.audio.Audio
+import altline.appliance.audio.PlayingSound
+import altline.appliance.audio.SoundSet
 import altline.appliance.common.SpeedModifier
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
+import altline.appliance.measure.isNegligible
+import altline.appliance.measure.isNotNegligible
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.util.animateRpmAsState
 import altline.appliance.ui.util.lerpCoerced
@@ -29,14 +34,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 
 @Composable
 fun Drum(data: DrumUi) {
     val directionModifier = if (data.reverseDirection) -1 else 1
-    val rpm = (data.spinSpeed `in` rpm).toFloat()
-    val rawInertRpm by animateRpmAsState(rpm)
+    val speedRpm = (data.spinSpeed `in` rpm).toFloat()
+    val rawInertRpm by animateRpmAsState(speedRpm)
     val inertRpm = rawInertRpm * SpeedModifier
 
     val fastRpmThreshold = 100
@@ -62,6 +66,21 @@ fun Drum(data: DrumUi) {
 
     LaunchedEffect(tick) {
         rotation += 0.1f * inertRpm * directionModifier
+    }
+
+    var prevSpeed by remember { mutableStateOf(0 * rpm) }
+    var tumbleSound by remember { mutableStateOf<PlayingSound?>(null) }
+    LaunchedEffect(data.spinSpeed) {
+        when {
+            prevSpeed.isNegligible() && data.spinSpeed.isNotNegligible() -> {
+                tumbleSound = Audio.play(SoundSet.Tumble)
+            }
+            prevSpeed.isNotNegligible() && data.spinSpeed.isNegligible() -> {
+                tumbleSound?.let { Audio.stop(it) }
+            }
+        }
+
+        prevSpeed = data.spinSpeed
     }
 
     Surface(

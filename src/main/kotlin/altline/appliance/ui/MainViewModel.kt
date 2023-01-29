@@ -1,5 +1,7 @@
 package altline.appliance.ui
 
+import altline.appliance.audio.Audio
+import altline.appliance.audio.Sound
 import altline.appliance.common.AmbientTemperature
 import altline.appliance.common.Body
 import altline.appliance.common.RefreshPeriod
@@ -21,7 +23,7 @@ import altline.appliance.washing.laundry.SlottedDispenser
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.nacular.measured.units.Measure
+import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -181,6 +183,9 @@ class MainViewModel(
     }
 
     private fun togglePower() {
+        if (washer.poweredOn) Audio.play(Sound.PowerOff)
+        else Audio.play(Sound.PowerOn)
+
         washer.togglePower()
         updateWasherData()
     }

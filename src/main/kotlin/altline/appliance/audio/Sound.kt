@@ -3,14 +3,20 @@ package altline.appliance.audio
 import com.adonax.audiocue.AudioCue
 
 enum class Sound(
-    fileName: String
+    fileName: String,
+    polyphony: Int = 1
 ) {
 
-    TumbleStart("tumble_start");
+    PowerOn("power_on"),
+    PowerOff("power_off"),
 
-    val clip: AudioCue = getSound(fileName)
+    TumbleStart("tumble_start"),
+    TumbleStop("tumble_stop"),
+    TumbleLoop("tumble_loop");
 
-    private fun getSound(name: String, polyphony: Int = 1): AudioCue {
+    val clip: AudioCue = getSound(fileName, polyphony)
+
+    private fun getSound(name: String, polyphony: Int): AudioCue {
         return AudioCue.makeStereoCue(javaClass.getResource("/sounds/$name.wav"), polyphony)
     }
 }
