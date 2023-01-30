@@ -5,9 +5,7 @@ import altline.appliance.electricity.transit.ElectricalDrainPort
 import altline.appliance.measure.Power
 import altline.appliance.util.logger
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 
 class BasicController(
@@ -78,39 +76,43 @@ class BasicController(
         activeWashCycle = null
     }
 
-    override fun increaseTemperature() {
-        if (cycleRunning) return
+    override fun increaseTemperature(): Boolean {
+        if (cycleRunning) return false
 
         with(selectedWashCycle) {
             if (selectedTemperatureSettingIndex == temperatureSettings.lastIndex)
-                return
+                return false
             selectedTemperatureSettingIndex = selectedTemperatureSettingIndex?.plus(1)
         }
+        return true
     }
 
-    override fun decreaseTemperature() {
-        if (cycleRunning) return
+    override fun decreaseTemperature(): Boolean {
+        if (cycleRunning) return false
 
         with(selectedWashCycle) {
             if (selectedTemperatureSettingIndex == 0)
-                return
+                return false
             selectedTemperatureSettingIndex = selectedTemperatureSettingIndex?.minus(1)
         }
+        return true
     }
 
-    override fun increaseSpinSpeed() {
+    override fun increaseSpinSpeed(): Boolean {
         with(selectedWashCycle) {
             if (selectedSpinSpeedSettingIndex == spinSpeedSettings.lastIndex)
-                return
+                return false
             selectedSpinSpeedSettingIndex = selectedSpinSpeedSettingIndex?.plus(1)
         }
+        return true
     }
 
-    override fun decreaseSpinSpeed() {
+    override fun decreaseSpinSpeed(): Boolean {
         with(selectedWashCycle) {
             if (selectedSpinSpeedSettingIndex == 0)
-                return
+                return false
             selectedSpinSpeedSettingIndex = selectedSpinSpeedSettingIndex?.minus(1)
         }
+        return true
     }
 }

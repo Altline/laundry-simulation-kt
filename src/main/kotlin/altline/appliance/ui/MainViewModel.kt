@@ -170,6 +170,10 @@ class MainViewModel(
     }
 
     private fun selectNextCycle(reverse: Boolean) {
+        Audio.play(
+            if (washer.poweredOn) Sound.CycleSelect
+            else Sound.CycleSelectOff
+        )
         with(washer) {
             val currentCycleIndex = washCycles.indexOf(selectedWashCycle)
             val nextCycleIndex = kotlin.run {
@@ -183,35 +187,60 @@ class MainViewModel(
     }
 
     private fun togglePower() {
-        if (washer.poweredOn) Audio.play(Sound.PowerOff)
-        else Audio.play(Sound.PowerOn)
-
+        Audio.play(
+            if (washer.poweredOn) Sound.PowerOff
+            else Sound.PowerOn
+        )
         washer.togglePower()
         updateWasherData()
     }
 
     private fun toggleCycleRun() {
+        Audio.play(
+            if (washer.running) Sound.OptionNegative
+            else Sound.OptionPositive
+        )
         washer.toggleCycleRun()
         updateWasherData()
     }
 
     private fun increaseTemperature() {
-        washer.increaseTemperature()
+        washer.increaseTemperature().also { success ->
+            Audio.play(
+                if (success) Sound.OptionHigh
+                else Sound.OptionDenied
+            )
+        }
         updateWasherData()
     }
 
     private fun decreaseTemperature() {
-        washer.decreaseTemperature()
+        washer.decreaseTemperature().also { success ->
+            Audio.play(
+                if (success) Sound.OptionLow
+                else Sound.OptionDenied
+            )
+        }
         updateWasherData()
     }
 
     private fun increaseSpinSpeed() {
-        washer.increaseSpinSpeed()
+        washer.increaseSpinSpeed().also { success ->
+            Audio.play(
+                if (success) Sound.OptionHigh
+                else Sound.OptionDenied
+            )
+        }
         updateWasherData()
     }
 
     private fun decreaseSpinSpeed() {
-        washer.decreaseSpinSpeed()
+        washer.decreaseSpinSpeed().also { success ->
+            Audio.play(
+                if (success) Sound.OptionLow
+                else Sound.OptionDenied
+            )
+        }
         updateWasherData()
     }
 

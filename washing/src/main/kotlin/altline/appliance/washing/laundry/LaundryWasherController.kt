@@ -22,8 +22,8 @@ interface LaundryWasherController: ElectricalDevice {
     fun startCycle(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope)
     fun stopCycle()
 
-    fun increaseTemperature()
-    fun decreaseTemperature()
-    fun increaseSpinSpeed()
-    fun decreaseSpinSpeed()
+    fun increaseTemperature(): Boolean
+    fun decreaseTemperature(): Boolean
+    fun increaseSpinSpeed(): Boolean
+    fun decreaseSpinSpeed(): Boolean
 }
