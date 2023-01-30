@@ -19,6 +19,14 @@ enum class Sound(
     CycleSelect("cycle_select", 2),
     CycleSelectOff("cycle_select_off", 2),
 
+    DispenserOpen("dispenser_open"),
+    DispenserClose("dispenser_close"),
+
+    ThickLiquidAdd("thick_liquid_add", 3),
+    ThickLiquidRemove("thick_liquid_remove", 3),
+    ThinLiquidAdd("thin_liquid_add", 3),
+    ThinLiquidRemove("thin_liquid_remove", 3),
+
     TumbleStart("tumble_start"),
     TumbleStop("tumble_stop"),
     TumbleLoop("tumble_loop");

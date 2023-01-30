@@ -21,6 +21,8 @@ interface Substance : Flowable<Volume> {
     override val amount: Measure<Volume>
         get() = synchronized(this) { parts.sumOf { it.amount } }
 
+    val largestPart: Part
+
     interface Part {
         val type: SubstanceType
         val amount: Measure<Volume>
@@ -64,6 +66,9 @@ class MutableSubstance(
             }
             field = value
         }
+
+    override val largestPart: Substance.Part
+        get() = parts.maxBy { it.amount }
 
     override fun add(other: MutableFlowable<Volume>) = synchronized(this) {
         require(other is MutableSubstance)

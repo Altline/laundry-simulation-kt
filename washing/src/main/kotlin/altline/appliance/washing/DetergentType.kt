@@ -3,6 +3,7 @@ package altline.appliance.washing
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.substance.CommonSubstanceTypes
+import altline.appliance.substance.SubstanceConsistency
 import altline.appliance.substance.SubstanceType
 import altline.appliance.substance.calcNominal
 import io.nacular.measured.units.*
@@ -13,7 +14,8 @@ interface DetergentType : SubstanceType {
 }
 
 enum class CommonDetergents(
-    override val cleaningPower: Double
+    override val cleaningPower: Double,
+    override val consistency: SubstanceConsistency = SubstanceConsistency.ThickLiquid
 ) : DetergentType {
 
     ULTIMATE_DETERGENT(convertDiluted(1.0)),

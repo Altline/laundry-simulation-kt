@@ -7,8 +7,11 @@ import altline.appliance.common.Body
 import altline.appliance.common.RefreshPeriod
 import altline.appliance.data.World
 import altline.appliance.measure.Volume
+import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.repeatPeriodically
 import altline.appliance.substance.MutableSubstance
+import altline.appliance.substance.SubstanceConsistency.ThickLiquid
+import altline.appliance.substance.SubstanceConsistency.ThinLiquid
 import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
@@ -126,16 +129,26 @@ class MainViewModel(
     }
 
     private fun openDispenser() {
+        Audio.play(Sound.DispenserOpen)
         washer.openDispenserTray()
         updateDispenser()
     }
 
     private fun closeDispenser() {
+        Audio.play(Sound.DispenserClose)
         uiState = uiState?.copy(dispenserTray = null)
         washer.closeDispenserTray()
     }
 
     private fun addDispenserAdditive(slot: SlottedDispenser.Tray.Slot, amount: Measure<Volume>) {
+        if (slot.additive.amount == slot.capacity) return
+
+        Audio.play(
+            when (selectedAdditive.consistency) {
+                ThinLiquid -> Sound.ThinLiquidAdd
+                ThickLiquid -> Sound.ThickLiquidAdd
+            }
+        )
         slot.fill(
             MutableSubstance(
                 type = selectedAdditive,
@@ -147,6 +160,14 @@ class MainViewModel(
     }
 
     private fun removeDispenserAdditive(slot: SlottedDispenser.Tray.Slot, amount: Measure<Volume>) {
+        if (slot.additive.amount == 0 * liters) return
+
+        Audio.play(
+            when (slot.additive.largestPart.type.consistency) {
+                ThinLiquid -> Sound.ThinLiquidRemove
+                ThickLiquid -> Sound.ThickLiquidRemove
+            }
+        )
         slot.empty(amount)
         updateDispenser()
     }

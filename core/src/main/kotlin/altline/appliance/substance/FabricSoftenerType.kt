@@ -5,7 +5,8 @@ interface FabricSoftenerType : SubstanceType {
 }
 
 enum class CommonFabricSofteners(
-    override val fresheningPotential: Double
+    override val fresheningPotential: Double,
+    override val consistency: SubstanceConsistency = SubstanceConsistency.ThickLiquid
 ) : FabricSoftenerType {
 
     ULTIMATE_SOFTENER(1.0),
