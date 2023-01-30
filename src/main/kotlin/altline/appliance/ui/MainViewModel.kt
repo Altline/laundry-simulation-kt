@@ -1,7 +1,7 @@
 package altline.appliance.ui
 
 import altline.appliance.audio.Audio
-import altline.appliance.audio.Sound
+import altline.appliance.audio.SoundClip
 import altline.appliance.common.AmbientTemperature
 import altline.appliance.common.Body
 import altline.appliance.common.RefreshPeriod
@@ -129,13 +129,13 @@ class MainViewModel(
     }
 
     private fun openDispenser() {
-        Audio.play(Sound.DispenserOpen)
+        Audio.play(SoundClip.DispenserOpen)
         washer.openDispenserTray()
         updateDispenser()
     }
 
     private fun closeDispenser() {
-        Audio.play(Sound.DispenserClose)
+        Audio.play(SoundClip.DispenserClose)
         uiState = uiState?.copy(dispenserTray = null)
         washer.closeDispenserTray()
     }
@@ -145,8 +145,8 @@ class MainViewModel(
 
         Audio.play(
             when (selectedAdditive.consistency) {
-                ThinLiquid -> Sound.ThinLiquidAdd
-                ThickLiquid -> Sound.ThickLiquidAdd
+                ThinLiquid -> SoundClip.ThinLiquidAdd
+                ThickLiquid -> SoundClip.ThickLiquidAdd
             }
         )
         slot.fill(
@@ -164,8 +164,8 @@ class MainViewModel(
 
         Audio.play(
             when (slot.additive.largestPart.type.consistency) {
-                ThinLiquid -> Sound.ThinLiquidRemove
-                ThickLiquid -> Sound.ThickLiquidRemove
+                ThinLiquid -> SoundClip.ThinLiquidRemove
+                ThickLiquid -> SoundClip.ThickLiquidRemove
             }
         )
         slot.empty(amount)
@@ -192,8 +192,8 @@ class MainViewModel(
 
     private fun selectNextCycle(reverse: Boolean) {
         Audio.play(
-            if (washer.poweredOn) Sound.CycleSelect
-            else Sound.CycleSelectOff
+            if (washer.poweredOn) SoundClip.CycleSelect
+            else SoundClip.CycleSelectOff
         )
         with(washer) {
             val currentCycleIndex = washCycles.indexOf(selectedWashCycle)
@@ -209,8 +209,8 @@ class MainViewModel(
 
     private fun togglePower() {
         Audio.play(
-            if (washer.poweredOn) Sound.PowerOff
-            else Sound.PowerOn
+            if (washer.poweredOn) SoundClip.PowerOff
+            else SoundClip.PowerOn
         )
         washer.togglePower()
         updateWasherData()
@@ -218,8 +218,8 @@ class MainViewModel(
 
     private fun toggleCycleRun() {
         Audio.play(
-            if (washer.running) Sound.OptionNegative
-            else Sound.OptionPositive
+            if (washer.running) SoundClip.OptionNegative
+            else SoundClip.OptionPositive
         )
         washer.toggleCycleRun()
         updateWasherData()
@@ -228,8 +228,8 @@ class MainViewModel(
     private fun increaseTemperature() {
         washer.increaseTemperature().also { success ->
             Audio.play(
-                if (success) Sound.OptionHigh
-                else Sound.OptionDenied
+                if (success) SoundClip.OptionHigh
+                else SoundClip.OptionDenied
             )
         }
         updateWasherData()
@@ -238,8 +238,8 @@ class MainViewModel(
     private fun decreaseTemperature() {
         washer.decreaseTemperature().also { success ->
             Audio.play(
-                if (success) Sound.OptionLow
-                else Sound.OptionDenied
+                if (success) SoundClip.OptionLow
+                else SoundClip.OptionDenied
             )
         }
         updateWasherData()
@@ -248,8 +248,8 @@ class MainViewModel(
     private fun increaseSpinSpeed() {
         washer.increaseSpinSpeed().also { success ->
             Audio.play(
-                if (success) Sound.OptionHigh
-                else Sound.OptionDenied
+                if (success) SoundClip.OptionHigh
+                else SoundClip.OptionDenied
             )
         }
         updateWasherData()
@@ -258,8 +258,8 @@ class MainViewModel(
     private fun decreaseSpinSpeed() {
         washer.decreaseSpinSpeed().also { success ->
             Audio.play(
-                if (success) Sound.OptionLow
-                else Sound.OptionDenied
+                if (success) SoundClip.OptionLow
+                else SoundClip.OptionDenied
             )
         }
         updateWasherData()

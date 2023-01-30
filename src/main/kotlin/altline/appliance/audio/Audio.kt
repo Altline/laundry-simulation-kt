@@ -12,20 +12,27 @@ object Audio {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     fun init() {
-        Sound.values().forEach {
-            it.clip.open()
+        SoundClip.values().forEach {
+            it.cue.open()
         }
     }
 
     fun close() {
-        Sound.values().forEach {
-            it.clip.close()
+        SoundClip.values().forEach {
+            it.cue.close()
         }
     }
 
     fun play(sound: Sound): PlayingSound {
-        val instanceId = sound.clip.play()
-        return PlayingSound.Single(sound, instanceId)
+        return when (sound) {
+            is SoundClip -> play(sound)
+            is SoundSet -> play(sound)
+        }
+    }
+
+    fun play(soundClip: SoundClip): PlayingSound {
+        val instanceId = soundClip.cue.play()
+        return PlayingSound.Single(soundClip, instanceId)
     }
 
     fun play(soundSet: SoundSet, skipStartSound: Boolean = false): PlayingSound {
@@ -48,7 +55,7 @@ object Audio {
         when (playingSound) {
             is PlayingSound.Single -> {
                 playingSound.instanceId.takeIf { it != -1 }?.let { id ->
-                    with(playingSound.sound.clip) {
+                    with(playingSound.sound.cue) {
                         if (getIsPlaying(id)) {
                             stop(id)
                             releaseInstance(id)
@@ -70,18 +77,18 @@ object Audio {
         }
     }
 
-    private suspend fun playAndWait(sound: Sound, loop: Boolean = false) {
-        val instanceId = sound.clip.play(1.0, 0.0, 1.0, if (loop) -1 else 0)
+    private suspend fun playAndWait(sound: SoundClip, loop: Boolean = false) {
+        val instanceId = sound.cue.play(1.0, 0.0, 1.0, if (loop) -1 else 0)
         if (instanceId != -1) awaitSound(sound, instanceId)
 
     }
 
-    private suspend fun awaitSound(sound: Sound, instanceId: Int) {
+    private suspend fun awaitSound(sound: SoundClip, instanceId: Int) {
         suspendCancellableCoroutine { cont ->
             val audioCueListener = object : AudioCueListener {
                 override fun instanceEventOccurred(event: AudioCueInstanceEvent?) {
                     if (event?.type == AudioCueInstanceEvent.Type.STOP_INSTANCE && event.instanceID == instanceId) {
-                        sound.clip.removeAudioCueListener(this)
+                        sound.cue.removeAudioCueListener(this)
                         cont.resume(Unit)
                     }
                 }
@@ -95,12 +102,12 @@ object Audio {
                 }
             }
 
-            sound.clip.addAudioCueListener(audioCueListener)
+            sound.cue.addAudioCueListener(audioCueListener)
 
             cont.invokeOnCancellation {
-                sound.clip.removeAudioCueListener(audioCueListener)
-                sound.clip.stop(instanceId)
-                sound.clip.releaseInstance(instanceId)
+                sound.cue.removeAudioCueListener(audioCueListener)
+                sound.cue.stop(instanceId)
+                sound.cue.releaseInstance(instanceId)
             }
         }
     }

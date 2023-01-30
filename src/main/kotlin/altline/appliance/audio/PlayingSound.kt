@@ -2,7 +2,7 @@ package altline.appliance.audio
 
 sealed interface PlayingSound {
     class Single(
-        val sound: Sound,
+        val sound: SoundClip,
         val instanceId: Int
     ) : PlayingSound
 
