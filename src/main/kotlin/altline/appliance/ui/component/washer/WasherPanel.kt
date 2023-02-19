@@ -26,25 +26,7 @@ fun WasherPanel(
     data: WasherPanelUi,
     modifier: Modifier = Modifier
 ) {
-    val playingSounds = remember { mutableListOf<Pair<Sound, PlayingSound>>() }
-    LaunchedEffect(data.sounds) {
-        val toPlay = data.sounds.toMutableList()
-
-        playingSounds.iterator().run {
-            while (hasNext()) {
-                val (sound, playingSound) = next()
-                if (sound in data.sounds) toPlay.remove(sound)
-                else {
-                    Audio.stop(playingSound)
-                    remove()
-                }
-            }
-        }
-
-        toPlay.forEach { sound ->
-            playingSounds += sound to Audio.play(sound)
-        }
-    }
+    handleSounds(data.sounds)
 
     // Reference size of the panel. The subcomponents can safely assume that this is always the actual size
     // because the whole thing is scaled in post
@@ -115,6 +97,31 @@ private fun BoxScope.FilterDoor() {
         shape = RoundedCornerShape(10),
         border = BorderStroke(1.dp, Color(0xffe0e0e0))
     ) {}
+}
+
+@Composable
+private fun handleSounds(
+    sounds: List<Sound>
+) {
+    val playingSounds = remember { mutableListOf<Pair<Sound, PlayingSound>>() }
+    LaunchedEffect(sounds) {
+        val toPlay = sounds.toMutableList()
+
+        playingSounds.iterator().run {
+            while (hasNext()) {
+                val (sound, playingSound) = next()
+                if (sound in sounds) toPlay.remove(sound)
+                else {
+                    Audio.stop(playingSound)
+                    remove()
+                }
+            }
+        }
+
+        toPlay.forEach { sound ->
+            playingSounds += sound to Audio.play(sound)
+        }
+    }
 }
 
 data class WasherPanelUi(

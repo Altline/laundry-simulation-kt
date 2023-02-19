@@ -1,31 +1,33 @@
 package altline.appliance.audio
 
+import altline.appliance.audio.SoundClip.*
+
 enum class SoundSet(
     val mainSound: SoundClip,
     val startSound: SoundClip? = null,
     val stopSound: SoundClip? = null
 ) : Sound {
     PreFill(
-        mainSound = SoundClip.PreFillLoop,
-        startSound = SoundClip.PreFillStart,
-        stopSound = SoundClip.PreFillStop
+        mainSound = PreFillLoop,
+        startSound = PreFillStart,
+        stopSound = PreFillStop
     ),
 
     MainFill(
-        mainSound = SoundClip.MainFillLoop,
-        startSound = SoundClip.MainFillStart,
-        stopSound = SoundClip.MainFillStop
+        mainSound = MainFillLoop,
+        startSound = MainFillStart,
+        stopSound = MainFillStop
     ),
 
     SoftenerFill(
-        mainSound = SoundClip.SoftenerFillLoop,
-        startSound = SoundClip.SoftenerFillStart,
-        stopSound = SoundClip.SoftenerFillStop
+        mainSound = SoftenerFillLoop,
+        startSound = SoftenerFillStart,
+        stopSound = SoftenerFillStop
     ),
 
     Tumble(
-        mainSound = SoundClip.TumbleLoop,
-        startSound = SoundClip.TumbleStart,
-        stopSound = SoundClip.TumbleStop
+        mainSound = TumbleLoop,
+        startSound = TumbleStart,
+        stopSound = TumbleStop
     )
 }

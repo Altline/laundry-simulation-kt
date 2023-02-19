@@ -25,8 +25,8 @@ object Audio {
 
     fun play(sound: Sound): PlayingSound {
         return when (sound) {
-            is SoundClip -> play(sound)
-            is SoundSet -> play(sound)
+            is SoundClip -> play(soundClip = sound)
+            is SoundSet -> play(soundSet = sound)
         }
     }
 
