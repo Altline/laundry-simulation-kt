@@ -38,6 +38,20 @@ enum class SoundClip(
     SoftenerFillStop("softener_fill_stop"),
     SoftenerFillLoop("softener_fill_loop"),
 
+    DrainFlowStart("drain_flow_start"),
+    DrainFlowStop("drain_flow_stop"),
+    DrainFlowLoop("drain_flow_loop"),
+
+    DrainMainStart("drain_main_start"),
+    DrainMainStop("drain_main_stop"),
+    DrainMainLoop("drain_main_loop"),
+    DrainMainTransition("drain_main_transition"),
+
+    DrainDryStart("drain_dry_start"),
+    DrainDryStop("drain_dry_stop"),
+    DrainDryLoop("drain_dry_loop"),
+    DrainDryTransition("drain_dry_transition"),
+
     TumbleStart("tumble_start"),
     TumbleStop("tumble_stop"),
     TumbleLoop("tumble_loop");

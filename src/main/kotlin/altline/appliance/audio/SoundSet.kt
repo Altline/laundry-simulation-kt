@@ -25,6 +25,24 @@ enum class SoundSet(
         stopSound = SoftenerFillStop
     ),
 
+    DrainFlow(
+        mainSound = DrainFlowLoop,
+        startSound = DrainFlowStart,
+        stopSound = DrainFlowStop
+    ),
+
+    DrainMain(
+        mainSound = DrainMainLoop,
+        startSound = DrainMainStart,
+        stopSound = DrainMainStop
+    ),
+
+    DrainDry(
+        mainSound = DrainDryLoop,
+        startSound = DrainDryStart,
+        stopSound = DrainDryStop
+    ),
+
     Tumble(
         mainSound = TumbleLoop,
         startSound = TumbleStart,

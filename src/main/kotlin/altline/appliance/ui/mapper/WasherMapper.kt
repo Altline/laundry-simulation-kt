@@ -18,6 +18,7 @@ import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import altline.appliance.washing.laundry.washCycle.RinseCycle
 import altline.appliance.washing.laundry.washCycle.SpinCycle
 import altline.appliance.washing.laundry.washCycle.phase.DetergentFillPhase
+import altline.appliance.washing.laundry.washCycle.phase.DrainPhase
 import altline.appliance.washing.laundry.washCycle.phase.SoftenerFillPhase
 import io.nacular.measured.units.*
 import kotlin.math.roundToInt
@@ -65,10 +66,20 @@ class WasherMapper(
                 reverseDirection = washer.scanner?.reverseSpinDirection ?: false
             ),
             sounds = buildList {
-                when (washer.selectedWashCycle.activeStage?.activePhase) {
-                    is DetergentFillPhase -> add(SoundSet.MainFill)
-                    is SoftenerFillPhase -> add(SoundSet.SoftenerFill)
+                val phaseBasedSound: SoundSet? = when (val phase = washer.selectedWashCycle.activeStage?.activePhase) {
+                    is DetergentFillPhase -> SoundSet.MainFill
+                    is SoftenerFillPhase -> SoundSet.SoftenerFill
+                    is DrainPhase -> {
+                        when (phase.sections.find { it.active }) {
+                            is DrainPhase.FocusedDrainSection -> SoundSet.DrainFlow
+                            is DrainPhase.WashDrainSection -> SoundSet.DrainMain
+                            else -> null
+                        }
+                    }
+
+                    else -> null
                 }
+                phaseBasedSound?.let { add(it) }
             }
         )
     }
