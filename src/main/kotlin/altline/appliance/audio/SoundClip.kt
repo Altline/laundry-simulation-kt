@@ -54,7 +54,15 @@ enum class SoundClip(
 
     TumbleStart("tumble_start"),
     TumbleStop("tumble_stop"),
-    TumbleLoop("tumble_loop");
+    TumbleLoop("tumble_loop"),
+
+    SpinSlowStart("spin_slow_start"),
+    SpinSlowStop("spin_slow_stop"),
+    SpinSlowLoop("spin_slow_loop"),
+
+    SpinFastTransition("spin_fast_transition"),
+    SpinFastStop("spin_fast_stop"),
+    SpinFastLoop("spin_fast_loop");
 
     val cue: AudioCue = getSound(fileName, polyphony)
 

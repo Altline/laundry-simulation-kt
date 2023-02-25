@@ -1,9 +1,7 @@
 package altline.appliance.ui.mapper
 
-import altline.appliance.audio.SoundSet
 import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.measure.Volume
-import altline.appliance.measure.isNotNegligible
 import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.washer.*
 import altline.appliance.ui.resources.get
@@ -18,9 +16,6 @@ import altline.appliance.washing.laundry.washCycle.CottonCycle
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import altline.appliance.washing.laundry.washCycle.RinseCycle
 import altline.appliance.washing.laundry.washCycle.SpinCycle
-import altline.appliance.washing.laundry.washCycle.phase.DetergentFillPhase
-import altline.appliance.washing.laundry.washCycle.phase.DrainPhase
-import altline.appliance.washing.laundry.washCycle.phase.SoftenerFillPhase
 import io.nacular.measured.units.*
 import kotlin.math.roundToInt
 
@@ -64,26 +59,7 @@ class WasherMapper(
             drumUi = DrumUi(
                 spinSpeed = washer.scanner?.spinSpeed ?: (0 * rpm),
                 reverseDirection = washer.scanner?.reverseSpinDirection ?: false
-            ),
-            sounds = buildList {
-                val phaseBasedSound: SoundSet? = when (val phase = washer.selectedWashCycle.activeStage?.activePhase) {
-                    is DetergentFillPhase -> SoundSet.MainFill
-                    is SoftenerFillPhase -> SoundSet.SoftenerFill
-                    is DrainPhase -> {
-                        when (phase.sections.find { it.active }) {
-                            is DrainPhase.FocusedDrainSection -> SoundSet.DrainFlow
-                            is DrainPhase.WashDrainSection -> SoundSet.DrainMain
-                            else -> null
-                        }
-                    }
-
-                    else -> null
-                }
-                phaseBasedSound?.let { add(it) }
-
-                val currentSpinSpeed = washer.scanner?.spinSpeed ?: (0 * rpm)
-                if (currentSpinSpeed.isNotNegligible()) add(SoundSet.Tumble)
-            }
+            )
         )
     }
 

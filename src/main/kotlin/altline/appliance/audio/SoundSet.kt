@@ -47,5 +47,17 @@ enum class SoundSet(
         mainSound = TumbleLoop,
         startSound = TumbleStart,
         stopSound = TumbleStop
+    ),
+
+    SpinSlow(
+        mainSound = SpinSlowLoop,
+        startSound = SpinSlowStart,
+        stopSound = SpinSlowStop
+    ),
+
+    SpinFast(
+        mainSound = SpinFastLoop,
+        startSound = SpinFastTransition,
+        stopSound = SpinFastStop
     )
 }

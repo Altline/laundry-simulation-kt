@@ -1,8 +1,5 @@
 package altline.appliance.ui.component.washer
 
-import altline.appliance.audio.Audio
-import altline.appliance.audio.PlayingSound
-import altline.appliance.audio.Sound
 import altline.appliance.ui.component.VerticalDivider
 import altline.appliance.ui.theme.AppTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
@@ -13,8 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -26,8 +21,6 @@ fun WasherPanel(
     data: WasherPanelUi,
     modifier: Modifier = Modifier
 ) {
-    handleSounds(data.sounds)
-
     // Reference size of the panel. The subcomponents can safely assume that this is always the actual size
     // because the whole thing is scaled in post
     val refWidth = 600.dp
@@ -99,37 +92,11 @@ private fun BoxScope.FilterDoor() {
     ) {}
 }
 
-@Composable
-private fun handleSounds(
-    sounds: List<Sound>
-) {
-    val playingSounds = remember { mutableListOf<Pair<Sound, PlayingSound>>() }
-    LaunchedEffect(sounds) {
-        val toPlay = sounds.toMutableList()
-
-        playingSounds.iterator().run {
-            while (hasNext()) {
-                val (sound, playingSound) = next()
-                if (sound in sounds) toPlay.remove(sound)
-                else {
-                    Audio.stop(playingSound)
-                    remove()
-                }
-            }
-        }
-
-        toPlay.forEach { sound ->
-            playingSounds += sound to Audio.play(sound)
-        }
-    }
-}
-
 data class WasherPanelUi(
     val dispenserPanelUi: DispenserPanelUi,
     val controlPanelUi: ControlPanelUi,
     val statusPanelUi: StatusPanelUi?,
-    val drumUi: DrumUi,
-    val sounds: List<Sound>
+    val drumUi: DrumUi
 ) {
     companion object {
         @Composable
@@ -137,8 +104,7 @@ data class WasherPanelUi(
             dispenserPanelUi = DispenserPanelUi.preview(),
             controlPanelUi = ControlPanelUi.preview(),
             statusPanelUi = StatusPanelUi.preview(),
-            drumUi = DrumUi.preview(),
-            sounds = emptyList()
+            drumUi = DrumUi.preview()
         )
     }
 }

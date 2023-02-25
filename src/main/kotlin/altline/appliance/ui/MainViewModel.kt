@@ -1,6 +1,5 @@
 package altline.appliance.ui
 
-import altline.appliance.audio.Audio
 import altline.appliance.audio.SoundClip
 import altline.appliance.common.AmbientTemperature
 import altline.appliance.common.Body
@@ -36,7 +35,8 @@ class MainViewModel(
     private val world: World,
     private val laundryMapper: LaundryMapper,
     private val washerMapper: WasherMapper,
-    private val washerInfoMapper: WasherInfoMapper
+    private val washerInfoMapper: WasherInfoMapper,
+    private val soundPlayer: WasherSoundPlayer
 ) {
 
     var uiState by mutableStateOf<MainUiState?>(null)
@@ -68,6 +68,7 @@ class MainViewModel(
             delay(1000)
             repeatPeriodically(RefreshPeriod) {
                 updateData()
+                soundPlayer.updateSounds(washer)
             }
         }
     }
@@ -129,13 +130,13 @@ class MainViewModel(
     }
 
     private fun openDispenser() {
-        Audio.play(SoundClip.DispenserOpen)
+        soundPlayer.playClip(SoundClip.DispenserOpen)
         washer.openDispenserTray()
         updateDispenser()
     }
 
     private fun closeDispenser() {
-        Audio.play(SoundClip.DispenserClose)
+        soundPlayer.playClip(SoundClip.DispenserClose)
         uiState = uiState?.copy(dispenserTray = null)
         washer.closeDispenserTray()
     }
@@ -143,7 +144,7 @@ class MainViewModel(
     private fun addDispenserAdditive(slot: SlottedDispenser.Tray.Slot, amount: Measure<Volume>) {
         if (slot.additive.amount == slot.capacity) return
 
-        Audio.play(
+        soundPlayer.playClip(
             when (selectedAdditive.consistency) {
                 ThinLiquid -> SoundClip.ThinLiquidAdd
                 ThickLiquid -> SoundClip.ThickLiquidAdd
@@ -162,7 +163,7 @@ class MainViewModel(
     private fun removeDispenserAdditive(slot: SlottedDispenser.Tray.Slot, amount: Measure<Volume>) {
         if (slot.additive.amount == 0 * liters) return
 
-        Audio.play(
+        soundPlayer.playClip(
             when (slot.additive.largestPart.type.consistency) {
                 ThinLiquid -> SoundClip.ThinLiquidRemove
                 ThickLiquid -> SoundClip.ThickLiquidRemove
@@ -191,7 +192,7 @@ class MainViewModel(
     }
 
     private fun selectNextCycle(reverse: Boolean) {
-        Audio.play(
+        soundPlayer.playClip(
             if (washer.poweredOn) SoundClip.CycleSelect
             else SoundClip.CycleSelectOff
         )
@@ -208,7 +209,7 @@ class MainViewModel(
     }
 
     private fun togglePower() {
-        Audio.play(
+        soundPlayer.playClip(
             if (washer.poweredOn) SoundClip.PowerOff
             else SoundClip.PowerOn
         )
@@ -217,7 +218,7 @@ class MainViewModel(
     }
 
     private fun toggleCycleRun() {
-        Audio.play(
+        soundPlayer.playClip(
             if (washer.running) SoundClip.OptionNegative
             else SoundClip.OptionPositive
         )
@@ -227,7 +228,7 @@ class MainViewModel(
 
     private fun increaseTemperature() {
         washer.increaseTemperature().also { success ->
-            Audio.play(
+            soundPlayer.playClip(
                 if (success) SoundClip.OptionHigh
                 else SoundClip.OptionDenied
             )
@@ -237,7 +238,7 @@ class MainViewModel(
 
     private fun decreaseTemperature() {
         washer.decreaseTemperature().also { success ->
-            Audio.play(
+            soundPlayer.playClip(
                 if (success) SoundClip.OptionLow
                 else SoundClip.OptionDenied
             )
@@ -247,7 +248,7 @@ class MainViewModel(
 
     private fun increaseSpinSpeed() {
         washer.increaseSpinSpeed().also { success ->
-            Audio.play(
+            soundPlayer.playClip(
                 if (success) SoundClip.OptionHigh
                 else SoundClip.OptionDenied
             )
@@ -257,7 +258,7 @@ class MainViewModel(
 
     private fun decreaseSpinSpeed() {
         washer.decreaseSpinSpeed().also { success ->
-            Audio.play(
+            soundPlayer.playClip(
                 if (success) SoundClip.OptionLow
                 else SoundClip.OptionDenied
             )
