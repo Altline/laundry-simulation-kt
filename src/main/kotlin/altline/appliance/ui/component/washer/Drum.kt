@@ -1,13 +1,8 @@
 package altline.appliance.ui.component.washer
 
-import altline.appliance.audio.Audio
-import altline.appliance.audio.PlayingSound
-import altline.appliance.audio.SoundSet
 import altline.appliance.common.SpeedModifier
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
-import altline.appliance.measure.isNegligible
-import altline.appliance.measure.isNotNegligible
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.util.animateRpmAsState
 import altline.appliance.ui.util.lerpCoerced
@@ -66,21 +61,6 @@ fun Drum(data: DrumUi) {
 
     LaunchedEffect(tick) {
         rotation += 0.1f * inertRpm * directionModifier
-    }
-
-    var prevSpeed by remember { mutableStateOf(0 * rpm) }
-    var tumbleSound by remember { mutableStateOf<PlayingSound?>(null) }
-    LaunchedEffect(data.spinSpeed) {
-        when {
-            prevSpeed.isNegligible() && data.spinSpeed.isNotNegligible() -> {
-                tumbleSound = Audio.play(SoundSet.Tumble)
-            }
-            prevSpeed.isNotNegligible() && data.spinSpeed.isNegligible() -> {
-                tumbleSound?.let { Audio.stop(it) }
-            }
-        }
-
-        prevSpeed = data.spinSpeed
     }
 
     Surface(

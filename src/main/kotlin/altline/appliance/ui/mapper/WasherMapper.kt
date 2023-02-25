@@ -3,6 +3,7 @@ package altline.appliance.ui.mapper
 import altline.appliance.audio.SoundSet
 import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.measure.Volume
+import altline.appliance.measure.isNotNegligible
 import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.washer.*
 import altline.appliance.ui.resources.get
@@ -26,7 +27,6 @@ import kotlin.math.roundToInt
 class WasherMapper(
     private val colorMapper: ColorMapper
 ) {
-
     fun mapToWasherPanel(
         washer: StandardLaundryWasherBase,
         onDispenserClick: () -> Unit,
@@ -80,6 +80,9 @@ class WasherMapper(
                     else -> null
                 }
                 phaseBasedSound?.let { add(it) }
+
+                val currentSpinSpeed = washer.scanner?.spinSpeed ?: (0 * rpm)
+                if (currentSpinSpeed.isNotNegligible()) add(SoundSet.Tumble)
             }
         )
     }
