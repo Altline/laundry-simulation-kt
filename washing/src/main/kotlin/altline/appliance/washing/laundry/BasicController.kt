@@ -38,6 +38,10 @@ class BasicController(
         }
 
     override var activeWashCycle: LaundryWashCycle? = null
+        get() {
+            if (field?.running == false) field = null
+            return field
+        }
         private set
 
     override val poweredOn: Boolean
