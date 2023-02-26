@@ -112,6 +112,6 @@ class World {
 
         washer.load(laundry.first())
 
-        washer.scanner = WasherStateScanner()
+        washer.scanner = HouseholdLaundryWasherScanner()
     }
 }

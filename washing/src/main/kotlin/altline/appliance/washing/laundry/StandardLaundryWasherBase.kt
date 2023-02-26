@@ -17,10 +17,7 @@ import altline.appliance.washing.laundry.washCycle.CentrifugeParams
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import altline.appliance.washing.laundry.washCycle.WashParams
 import altline.appliance.washing.laundry.washCycle.phase.SpinPhase
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
-import io.nacular.measured.units.div
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -102,20 +99,32 @@ abstract class StandardLaundryWasherBase(
             if (value != field) {
                 field = value
                 scanningJob?.cancel()
-                if (value != null) {
-                    value.washLiquid = drum.excessLiquid
-                    scanningJob = machineScope.launch { scan() }
-                }
+                scanningJob =
+                    if (value != null) machineScope.launch { startScan() }
+                    else null
             }
         }
 
-    private suspend fun scan() {
+    private suspend fun startScan() {
+        scanner?.washLiquid = drum.excessLiquid
+
         repeatPeriodically(RefreshPeriod) {
-            scanner?.run {
-                scanDrumMotor(drumMotor)
+            scanner?.let { scanner ->
+                baseScan(scanner)
+                scanState(scanner)
             }
         }
     }
+
+    private fun baseScan(scanner: WasherStateScanner) {
+        with(scanner) {
+            scanDispenser(dispenser)
+            scanDrainPump(pump)
+            scanDrumMotor(drumMotor)
+        }
+    }
+
+    protected abstract fun scanState(scanner: WasherStateScanner)
 
     override fun load(vararg items: Body) = drum.load(*items)
     override fun unload(vararg items: Body) = drum.unload(*items)

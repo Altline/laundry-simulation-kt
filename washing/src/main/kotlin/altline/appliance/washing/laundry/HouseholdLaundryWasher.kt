@@ -15,6 +15,11 @@ open class HouseholdLaundryWasher(
     val dispenserTray: PreWashSlottedDispenser.Tray
         get() = dispenser.tray
 
+    override fun scanState(scanner: WasherStateScanner) {
+        if (scanner !is HouseholdLaundryWasherScanner) return
+        scanner.scanPreWashDispenser(dispenser)
+    }
+
     fun openDispenserTray(): PreWashSlottedDispenser.Tray {
         dispenser.openTray()
         return dispenserTray
