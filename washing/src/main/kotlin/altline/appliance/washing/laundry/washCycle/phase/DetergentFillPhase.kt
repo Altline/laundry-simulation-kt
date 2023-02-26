@@ -6,7 +6,7 @@ import io.nacular.measured.units.*
 
 class DetergentFillPhase(fillToAmount: Measure<Volume>) : FillPhase(fillToAmount) {
 
-    override suspend fun doExecute(washer: StandardLaundryWasherBase) {
+    override suspend fun executeFill(washer: StandardLaundryWasherBase) {
         washer.fillThroughDetergent(fillToAmount)
     }
 }

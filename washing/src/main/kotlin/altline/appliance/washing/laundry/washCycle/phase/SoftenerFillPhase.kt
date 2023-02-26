@@ -6,7 +6,7 @@ import io.nacular.measured.units.*
 
 class SoftenerFillPhase(fillToAmount: Measure<Volume>) : FillPhase(fillToAmount) {
 
-    override suspend fun doExecute(washer: StandardLaundryWasherBase) {
+    override suspend fun executeFill(washer: StandardLaundryWasherBase) {
         washer.fillThroughSoftener(fillToAmount)
     }
 }
