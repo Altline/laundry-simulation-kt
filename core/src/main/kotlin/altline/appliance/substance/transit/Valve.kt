@@ -2,6 +2,7 @@ package altline.appliance.substance.transit
 
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.VolumetricFlow
+import altline.appliance.measure.isNegligible
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
@@ -10,6 +11,9 @@ class Valve(
     inputCount: Int = 1,
     outputCount: Int = 1
 ) : BasicSubstanceConduit(maxFlowRate, inputCount, outputCount) {
+
+    override var realInputFlowRate = 0.0 * liters / seconds
+    override var realOutputFlowRate = 0.0 * liters / seconds
 
     val maxFlowRate: Measure<VolumetricFlow>
         get() = minOf(maxInputFlowRate, maxOutputFlowRate)
@@ -21,8 +25,8 @@ class Valve(
             realOutputFlowRate = value
         }
 
-    override var realInputFlowRate = 0.0 * liters / seconds
-    override var realOutputFlowRate = 0.0 * liters / seconds
+    val isClosed: Boolean
+        get() = realFlowRate.isNegligible()
 
     fun open(flowRate: Measure<VolumetricFlow> = maxFlowRate) {
         realFlowRate = flowRate.coerceIn(0.0 * liters / seconds, maxFlowRate)

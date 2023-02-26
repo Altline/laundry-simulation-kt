@@ -8,8 +8,7 @@ import altline.appliance.substance.transit.BasicSubstanceConduit
 import altline.appliance.substance.transit.SubstanceConduit
 import altline.appliance.substance.transit.Valve
 import altline.appliance.washing.WashDispenser
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
+import io.nacular.measured.units.*
 
 abstract class SlottedDispenser(
     protected val config: LaundryWasherConfig
@@ -39,7 +38,11 @@ abstract class SlottedDispenser(
     protected inner class Channel(
         private val index: Int
     ) : WashDispenser.Channel {
+
         private val valve = Valve(config.intakeFlowRate)
+
+        override val isDispensing: Boolean
+            get() = !valve.isClosed
 
         init {
             solventInputJunction.outputs[index] connectTo valve.inputs[0]

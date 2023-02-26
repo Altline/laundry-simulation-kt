@@ -20,6 +20,15 @@ class PreWashSlottedDispenser(
     private val mainDetergentChannel = Channel(1)
     private val mainSoftenerChannel = Channel(2)
 
+    val isDispensingPreWashDetergent: Boolean
+        get() = preWashDetergentChannel.isDispensing
+
+    override val isDispensingMainDetergent: Boolean
+        get() = mainDetergentChannel.isDispensing
+
+    override val isDispensingMainSoftener: Boolean
+        get() = mainSoftenerChannel.isDispensing
+
     override fun refreshTrayConnections() {
         preWashDetergentChannel.refreshTrayConnections()
         mainDetergentChannel.refreshTrayConnections()

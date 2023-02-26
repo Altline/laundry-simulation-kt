@@ -18,6 +18,12 @@ class SimpleSlottedDispenser(
     private val mainDetergentChannel = Channel(0)
     private val mainSoftenerChannel = Channel(1)
 
+    override val isDispensingMainDetergent: Boolean
+        get() = mainDetergentChannel.isDispensing
+
+    override val isDispensingMainSoftener: Boolean
+        get() = mainSoftenerChannel.isDispensing
+
     override fun refreshTrayConnections() {
         mainDetergentChannel.refreshTrayConnections()
         mainSoftenerChannel.refreshTrayConnections()
