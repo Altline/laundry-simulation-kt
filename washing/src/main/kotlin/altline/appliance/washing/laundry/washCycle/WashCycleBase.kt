@@ -63,6 +63,7 @@ abstract class WashCycleBase : LaundryWashCycle {
                 drainUntilEmpty()
                 delay(2 * seconds)
                 stages.forEach { it.execute(washer) }
+                delay(2 * seconds)
                 unlockDoor()
             }
         }

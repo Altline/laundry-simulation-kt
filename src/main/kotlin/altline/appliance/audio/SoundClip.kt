@@ -17,6 +17,7 @@ enum class SoundClip(
 
     CycleSelect("cycle_select", 2),
     CycleSelectOff("cycle_select_off", 2),
+    CycleFinish("cycle_finish"),
 
     DispenserOpen("dispenser_open"),
     DispenserClose("dispenser_close"),
