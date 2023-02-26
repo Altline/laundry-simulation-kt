@@ -8,6 +8,7 @@ import altline.appliance.electricity.transit.BasicElectricalConduit
 import altline.appliance.electricity.transit.ElectricalDrainPort
 import altline.appliance.measure.*
 import altline.appliance.measure.Temperature.Companion.celsius
+import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.spin.ElectricMotor
 import altline.appliance.substance.transit.BasicSubstanceConduit
 import altline.appliance.substance.transit.ElectricPump
@@ -186,6 +187,7 @@ abstract class StandardLaundryWasherBase(
     }
 
     internal open suspend fun drainUntilEmpty() {
+        if ((drum.excessLiquidAmount `in` liters) < 1) return
         startDrain()
         trackLiquidUntil { it.isNegligible() }
         stopDrain()
