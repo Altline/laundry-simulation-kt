@@ -78,6 +78,9 @@ abstract class StandardLaundryWasherBase(
     val runningTime: Measure<Time>?
         get() = controller.cycleRunningTime
 
+    var doorLocked: Boolean = false
+        private set
+
     override val load: Set<Body>
         get() = drum.load
 
@@ -126,9 +129,18 @@ abstract class StandardLaundryWasherBase(
 
     protected abstract fun scanState(scanner: WasherStateScanner)
 
-    override fun load(vararg items: Body) = drum.load(*items)
-    override fun unload(vararg items: Body) = drum.unload(*items)
-    override fun unloadAll(): List<Body> = drum.unloadAll()
+    override fun load(vararg items: Body) {
+        if (!doorLocked) drum.load(*items)
+    }
+
+    override fun unload(vararg items: Body) {
+        if (!doorLocked) drum.unload(*items)
+    }
+
+    override fun unloadAll(): List<Body> {
+        return if (!doorLocked) drum.unloadAll() else emptyList()
+    }
+
     override fun start() = controller.startCycle(this, machineScope)
     override fun stop() = controller.stopCycle()
 
@@ -151,6 +163,14 @@ abstract class StandardLaundryWasherBase(
         if (activeWashCycle?.activePhase is SpinPhase) {
             drumMotor.speedSetting = activeWashCycle!!.selectedSpinSpeedSetting!!
         }
+    }
+
+    internal fun lockDoor() {
+        doorLocked = true
+    }
+
+    internal fun unlockDoor() {
+        doorLocked = false
     }
 
     internal open suspend fun fillThroughDetergent(amount: Measure<Volume>) {

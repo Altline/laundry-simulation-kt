@@ -18,6 +18,7 @@ class LaundryMapper(
         potentialLaundry: Set<Body>,
         loadedLaundry: Set<Body>,
         selectedLaundryItem: Body?,
+        doorLocked: Boolean,
         onItemClick: (Body) -> Unit,
         onItemDoubleClick: (Body) -> Unit,
         onTransferClick: () -> Unit
@@ -33,7 +34,7 @@ class LaundryMapper(
         return LaundryPanelUi(
             potentialLaundry = potentialLaundry.map(bodyToListItem),
             loadedLaundry = loadedLaundry.map(bodyToListItem),
-            onTransferClick = if (selectedLaundryItem != null) onTransferClick else null
+            onTransferClick = if (!doorLocked && selectedLaundryItem != null) onTransferClick else null
         )
     }
 

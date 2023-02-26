@@ -93,6 +93,7 @@ class MainViewModel(
             potentialLaundry = potentialLaundry,
             loadedLaundry = loadedLaundry,
             selectedLaundryItem = selectedLaundryItem,
+            doorLocked = washer.doorLocked,
             onItemClick = this::selectLaundryItem,
             onItemDoubleClick = { transferLaundryItem(it, selectNext = false) },
             onTransferClick = { selectedLaundryItem?.let { transferLaundryItem(it, selectNext = true) } }
