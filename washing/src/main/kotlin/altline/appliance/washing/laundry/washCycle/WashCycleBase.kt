@@ -2,9 +2,11 @@ package altline.appliance.washing.laundry.washCycle
 
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Temperature
+import altline.appliance.measure.delay
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.phase.CyclePhase
 import io.nacular.measured.units.*
+import io.nacular.measured.units.Time.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import org.koitharu.pausingcoroutinedispatcher.PausingJob
 import org.koitharu.pausingcoroutinedispatcher.launchPausing
@@ -54,8 +56,15 @@ abstract class WashCycleBase : LaundryWashCycle {
 
     override fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
         job = coroutineScope.launchPausing {
-            ensureStartingConditions(washer)
-            stages.forEach { it.execute(washer) }
+            with(washer) {
+                delay(0.5 * seconds)
+                lockDoor()
+                delay(0.5 * seconds)
+                drainUntilEmpty()
+                delay(2 * seconds)
+                stages.forEach { it.execute(washer) }
+                unlockDoor()
+            }
         }
     }
 
@@ -66,10 +75,6 @@ abstract class WashCycleBase : LaundryWashCycle {
     override fun togglePause() {
         if (paused) job?.resume()
         else job?.pause()
-    }
-
-    private suspend fun ensureStartingConditions(washer: StandardLaundryWasherBase) {
-        washer.drainUntilEmpty()
     }
 
     protected fun addStage(init: CycleStage.() -> Unit): CycleStage {
