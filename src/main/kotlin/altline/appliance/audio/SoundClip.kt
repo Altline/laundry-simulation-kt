@@ -21,6 +21,9 @@ enum class SoundClip(
     DispenserOpen("dispenser_open"),
     DispenserClose("dispenser_close"),
 
+    DoorLock("door_lock"),
+    DoorUnlock("door_unlock"),
+
     ThickLiquidAdd("thick_liquid_add", 3),
     ThickLiquidRemove("thick_liquid_remove", 3),
     ThinLiquidAdd("thin_liquid_add", 3),
