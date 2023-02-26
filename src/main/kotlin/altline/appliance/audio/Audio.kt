@@ -31,7 +31,7 @@ object Audio {
     }
 
     fun play(soundClip: SoundClip): PlayingSound {
-        val instanceId = soundClip.cue.play()
+        val instanceId = soundClip.cue.play(1.0, 0.0, 1.1, 0)
         return PlayingSound.Single(soundClip, instanceId)
     }
 
@@ -78,9 +78,8 @@ object Audio {
     }
 
     private suspend fun playAndWait(sound: SoundClip, loop: Boolean = false) {
-        val instanceId = sound.cue.play(1.0, 0.0, 1.0, if (loop) -1 else 0)
+        val instanceId = sound.cue.play(1.0, 0.0, 1.1, if (loop) -1 else 0)
         if (instanceId != -1) awaitSound(sound, instanceId)
-
     }
 
     private suspend fun awaitSound(sound: SoundClip, instanceId: Int) {
