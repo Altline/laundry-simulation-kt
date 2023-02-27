@@ -76,6 +76,9 @@ abstract class StandardLaundryWasherBase(
     override val running: Boolean
         get() = controller.cycleRunning
 
+    val paused: Boolean
+        get() = controller.cyclePaused
+
     val runningTime: Measure<Time>?
         get() = controller.cycleRunningTime
 
@@ -146,13 +149,18 @@ abstract class StandardLaundryWasherBase(
     override fun stop() = controller.stopCycle()
 
     fun togglePower() {
-        if (controller.poweredOn) controller.powerOff()
-        else controller.powerOn()
+        when {
+            controller.cycleRunning -> controller.stopCycle()
+            controller.poweredOn -> controller.powerOff()
+            else -> controller.powerOn()
+        }
     }
 
     fun toggleCycleRun() {
-        if (controller.cycleRunning) controller.toggleCyclePause()
-        else start()
+        if (controller.cycleRunning) {
+            controller.toggleCyclePause()
+            if (paused) doPause()
+        } else start()
     }
 
     fun increaseTemperature() = controller.increaseTemperature()
@@ -172,6 +180,13 @@ abstract class StandardLaundryWasherBase(
 
     internal fun unlockDoor() {
         doorLocked = false
+    }
+
+    protected open fun doPause() {
+        dispenser.haltMainDetergent()
+        dispenser.haltMainSoftener()
+        drumMotor.stop()
+        pump.stop()
     }
 
     internal open suspend fun fillThroughDetergent(amount: Measure<Volume>) {

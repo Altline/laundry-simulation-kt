@@ -20,6 +20,11 @@ open class HouseholdLaundryWasher(
         scanner.scanPreWashDispenser(dispenser)
     }
 
+    override fun doPause() {
+        super.doPause()
+        dispenser.haltPreWashDetergent()
+    }
+
     fun openDispenserTray(): PreWashSlottedDispenser.Tray {
         dispenser.openTray()
         return dispenserTray

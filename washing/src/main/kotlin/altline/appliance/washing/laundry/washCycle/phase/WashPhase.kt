@@ -20,8 +20,19 @@ class WashPhase : CyclePhaseBase() {
         get() = sections.sumOf { it.duration } + endDelay
 
     override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-        sections.forEach { it.execute(washer) }
+        var durationSum = 0 * seconds
+        sections.forEach {
+            durationSum += it.duration
+            if (runningTime < durationSum) {
+                it.execute(washer)
+            }
+        }
         delay(endDelay)
+    }
+
+    override fun reset() {
+        super.reset()
+        sections.forEach { it.reset() }
     }
 
     fun section(
@@ -53,7 +64,13 @@ class WashPhase : CyclePhaseBase() {
             get() = timedWrapper.active
 
         suspend fun execute(washer: StandardLaundryWasherBase) {
-            timedWrapper.executeTimed { washer.wash(washParams) }
+            timedWrapper.executeTimed {
+                washer.wash(washParams.copy(duration = duration - runningTime))
+            }
+        }
+
+        fun reset() {
+            timedWrapper.reset()
         }
     }
 }

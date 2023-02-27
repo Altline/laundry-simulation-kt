@@ -26,6 +26,11 @@ class DrainPhase(
         delay(endDelay)
     }
 
+    override fun reset() {
+        super.reset()
+        sections.forEach { it.reset() }
+    }
+
     sealed class Section {
         private val timedWrapper = TimedWrapper()
 
@@ -40,6 +45,10 @@ class DrainPhase(
         }
 
         protected abstract suspend fun doExecute(washer: StandardLaundryWasherBase)
+
+        fun reset() {
+            timedWrapper.reset()
+        }
     }
 
     class FocusedDrainSection : Section() {
@@ -50,11 +59,9 @@ class DrainPhase(
 
     class WashDrainSection(val spinParams: WashParams) : Section() {
         override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-            with(washer) {
-                startDrain()
-                wash(spinParams)
-                stopDrain()
-            }
+            washer.startDrain()
+            washer.wash(spinParams.copy(duration = spinParams.duration - runningTime))
+            washer.stopDrain()
         }
     }
 }

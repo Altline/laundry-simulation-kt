@@ -21,8 +21,24 @@ class CycleStage {
     val runningTime: Measure<Time>
         get() = phases.sumOf { it.runningTime }
 
+    private var resumingPhase: CyclePhase? = null
+
     suspend fun execute(washer: StandardLaundryWasherBase) {
-        phases.forEach { it.execute(washer) }
+        phases.forEach {
+            if (resumingPhase == null || it == resumingPhase) {
+                it.execute(washer)
+                resumingPhase = null
+            }
+        }
+    }
+
+    fun onPause() {
+        resumingPhase = activePhase
+    }
+
+    fun reset() {
+        resumingPhase = null
+        phases.forEach { it.reset() }
     }
 
     fun detergentFillPhase(fillToAmount: Measure<Volume>): DetergentFillPhase {

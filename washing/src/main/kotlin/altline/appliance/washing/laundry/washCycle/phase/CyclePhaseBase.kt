@@ -5,10 +5,8 @@ import altline.appliance.common.TimeFactor
 import altline.appliance.measure.repeatPeriodically
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.WashCycleDsl
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
+import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
-import io.nacular.measured.units.times
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -29,6 +27,10 @@ abstract class CyclePhaseBase : CyclePhase {
 
     protected abstract suspend fun doExecute(washer: StandardLaundryWasherBase)
 
+    override fun reset() {
+        timedWrapper.reset()
+    }
+
     class TimedWrapper {
         var runningTime: Measure<Time> = 0 * seconds
             private set
@@ -37,7 +39,6 @@ abstract class CyclePhaseBase : CyclePhase {
             private set
 
         suspend fun executeTimed(block: suspend () -> Unit) {
-            runningTime = 0 * seconds
             coroutineScope {
                 val timerJob = launch {
                     repeatPeriodically(RefreshPeriod) {
@@ -49,6 +50,11 @@ abstract class CyclePhaseBase : CyclePhase {
                 active = false
                 timerJob.cancel()
             }
+        }
+
+        fun reset() {
+            runningTime = 0 * seconds
+            active = false
         }
     }
 }

@@ -8,8 +8,8 @@ import altline.appliance.washing.laundry.washCycle.phase.CyclePhase
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
-import org.koitharu.pausingcoroutinedispatcher.PausingJob
-import org.koitharu.pausingcoroutinedispatcher.launchPausing
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @DslMarker
 annotation class WashCycleDsl
@@ -46,36 +46,76 @@ abstract class WashCycleBase : LaundryWashCycle {
             onSpinSpeedChanged(selectedSpinSpeedSetting)
         }
 
-    private var job: PausingJob? = null
+    private var job: Job? = null
+    private var washer: StandardLaundryWasherBase? = null
+    private var coroutineScope: CoroutineScope? = null
+    private var resumingStage: CycleStage? = null
 
     final override val running: Boolean
-        get() = job?.isActive ?: false
+        get() = paused || (job?.isActive ?: false)
 
-    final override val paused: Boolean
-        get() = job?.isPaused ?: false
+    final override var paused: Boolean = false
+        private set
 
     override fun start(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
-        job = coroutineScope.launchPausing {
-            with(washer) {
+        this.washer = washer
+        this.coroutineScope = coroutineScope
+        job = coroutineScope.launch {
+            if (resumingStage == null) {
                 delay(0.5 * seconds)
-                lockDoor()
+                washer.lockDoor()
                 delay(0.5 * seconds)
-                drainUntilEmpty()
+                washer.drainUntilEmpty()
                 delay(2 * seconds)
-                stages.forEach { it.execute(washer) }
-                delay(2 * seconds)
-                unlockDoor()
             }
+
+            stages.forEach {
+                if (resumingStage == null || it == resumingStage) {
+                    it.execute(washer)
+                    resumingStage = null
+                }
+            }
+
+            delay(2 * seconds)
+            washer.unlockDoor()
+
+            reset()
         }
     }
 
     override fun stop() {
-        job?.cancel()
+        reset()
     }
 
     override fun togglePause() {
-        if (paused) job?.resume()
-        else job?.pause()
+        if (paused) resume()
+        else pause()
+    }
+
+    private fun pause() {
+        // Only enable pausing when we have entered a stage
+        activeStage?.let { activeStage ->
+            paused = true
+            activeStage.onPause()
+            resumingStage = activeStage
+            job?.cancel()
+            job = null
+        }
+    }
+
+    private fun resume() {
+        paused = false
+        start(washer!!, coroutineScope!!)
+    }
+
+    private fun reset() {
+        paused = false
+        washer = null
+        coroutineScope = null
+        resumingStage = null
+        stages.forEach { it.reset() }
+        job?.cancel()
+        job = null
     }
 
     protected fun addStage(init: CycleStage.() -> Unit): CycleStage {

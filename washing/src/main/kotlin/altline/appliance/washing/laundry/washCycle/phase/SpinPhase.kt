@@ -20,8 +20,8 @@ class SpinPhase(
 
     override suspend fun doExecute(washer: StandardLaundryWasherBase) {
         if (params.spinSpeed != 0 * rpm) {
-            washer.centrifuge(params)
-            delay(endDelay)
+            washer.centrifuge(params.copy(duration = params.duration - runningTime))
+            delay(duration - runningTime)
         }
     }
 }

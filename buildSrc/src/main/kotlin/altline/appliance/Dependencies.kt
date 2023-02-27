@@ -15,11 +15,6 @@ object Libs {
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
     }
 
-    object PausingCoroutineDispatcher {
-        const val version = "ee40ae5035"
-        const val pausingCoroutineDispatcher = "com.github.Koitharu.pausing-coroutine-dispatcher:pausing-coroutine-dispatcher-jvm:$version"
-    }
-
     object Koin {
         const val version = "3.2.2"
         const val core = "io.insert-koin:koin-core:$version"

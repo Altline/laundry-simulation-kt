@@ -12,4 +12,6 @@ interface CyclePhase {
     val active: Boolean
 
     suspend fun execute(washer: StandardLaundryWasherBase)
+
+    fun reset()
 }
