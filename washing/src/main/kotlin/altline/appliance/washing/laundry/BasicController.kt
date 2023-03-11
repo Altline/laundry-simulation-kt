@@ -65,11 +65,12 @@ class BasicController(
     }
 
     override fun toggleCyclePause() {
+        if (!poweredOn) return
         activeWashCycle?.togglePause()
     }
 
     override fun startCycle(washer: StandardLaundryWasherBase, coroutineScope: CoroutineScope) {
-        if (cycleRunning || !poweredOn) return
+        if (!poweredOn || cycleRunning) return
         activeWashCycle = selectedWashCycle
         selectedWashCycle.start(washer, coroutineScope)
     }
@@ -81,7 +82,7 @@ class BasicController(
     }
 
     override fun increaseTemperature(): Boolean {
-        if (cycleRunning) return false
+        if (!poweredOn || cycleRunning) return false
 
         with(selectedWashCycle) {
             if (selectedTemperatureSettingIndex == temperatureSettings.lastIndex)
@@ -92,7 +93,7 @@ class BasicController(
     }
 
     override fun decreaseTemperature(): Boolean {
-        if (cycleRunning) return false
+        if (!poweredOn || cycleRunning) return false
 
         with(selectedWashCycle) {
             if (selectedTemperatureSettingIndex == 0)
@@ -103,6 +104,8 @@ class BasicController(
     }
 
     override fun increaseSpinSpeed(): Boolean {
+        if (!poweredOn) return false
+
         with(selectedWashCycle) {
             if (selectedSpinSpeedSettingIndex == spinSpeedSettings.lastIndex)
                 return false
@@ -112,6 +115,8 @@ class BasicController(
     }
 
     override fun decreaseSpinSpeed(): Boolean {
+        if (!poweredOn) return false
+
         with(selectedWashCycle) {
             if (selectedSpinSpeedSettingIndex == 0)
                 return false
