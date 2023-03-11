@@ -90,8 +90,11 @@ class WasherSoundPlayer {
                         spinSpeed < SpinSlowRpmCutoff -> addSound(SoundSet.SpinSlow)
                         else -> {
                             if (System.currentTimeMillis() < spinStartTime + SoundClip.SpinSlowStart.cue.microsecondLength / 1000) {
-                                addSound(SoundSet.SpinSlow, skipStopSound = true)
+                                addSound(SoundSet.SpinSlow)
                             } else {
+                                playingSounds.find { it.first.soundSet == SoundSet.SpinSlow }?.first?.let { soundOrder ->
+                                    soundOrder.skipStopSound = true
+                                }
                                 addSound(SoundSet.SpinFast)
                             }
                         }
@@ -123,6 +126,6 @@ class WasherSoundPlayer {
 
     private data class SoundOrder(
         val soundSet: SoundSet,
-        val skipStopSound: Boolean = false
+        var skipStopSound: Boolean = false
     )
 }
