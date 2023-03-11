@@ -220,7 +220,7 @@ class MainViewModel(
 
     private fun toggleCycleRun() {
         soundPlayer.playClip(
-            if (washer.running) SoundClip.OptionNegative
+            if (washer.running && !washer.paused) SoundClip.OptionNegative
             else SoundClip.OptionPositive
         )
         washer.toggleCycleRun()
