@@ -220,51 +220,57 @@ class MainViewModel(
 
     private fun toggleCycleRun() {
         soundPlayer.playClip(
-            if (washer.running && !washer.paused) SoundClip.OptionNegative
-            else SoundClip.OptionPositive
+            if (washer.poweredOn) {
+                if (washer.running && !washer.paused) SoundClip.OptionNegative
+                else SoundClip.OptionPositive
+            } else SoundClip.LargeButtonPress
         )
         washer.toggleCycleRun()
         updateWasherData()
     }
 
     private fun increaseTemperature() {
-        washer.increaseTemperature().also { success ->
-            soundPlayer.playClip(
+        val success = washer.increaseTemperature()
+        updateWasherData()
+        soundPlayer.playClip(
+            if (washer.poweredOn) {
                 if (success) SoundClip.OptionHigh
                 else SoundClip.OptionDenied
-            )
-        }
-        updateWasherData()
+            } else SoundClip.SmallButtonPress
+        )
     }
 
     private fun decreaseTemperature() {
-        washer.decreaseTemperature().also { success ->
-            soundPlayer.playClip(
+        val success = washer.decreaseTemperature()
+        updateWasherData()
+        soundPlayer.playClip(
+            if (washer.poweredOn) {
                 if (success) SoundClip.OptionLow
                 else SoundClip.OptionDenied
-            )
-        }
-        updateWasherData()
+            } else SoundClip.SmallButtonPress
+        )
     }
 
     private fun increaseSpinSpeed() {
-        washer.increaseSpinSpeed().also { success ->
-            soundPlayer.playClip(
+        val success = washer.increaseSpinSpeed()
+        updateWasherData()
+        soundPlayer.playClip(
+            if (washer.poweredOn) {
                 if (success) SoundClip.OptionHigh
                 else SoundClip.OptionDenied
-            )
-        }
-        updateWasherData()
+            } else SoundClip.SmallButtonPress
+        )
     }
 
     private fun decreaseSpinSpeed() {
-        washer.decreaseSpinSpeed().also { success ->
-            soundPlayer.playClip(
+        val success = washer.decreaseSpinSpeed()
+        updateWasherData()
+        soundPlayer.playClip(
+            if (washer.poweredOn) {
                 if (success) SoundClip.OptionLow
                 else SoundClip.OptionDenied
-            )
-        }
-        updateWasherData()
+            } else SoundClip.SmallButtonPress
+        )
     }
 
     /**

@@ -6,6 +6,10 @@ enum class SoundClip(
     fileName: String,
     polyphony: Int = 1
 ) : Sound {
+
+    SmallButtonPress("small_button_press"),
+    LargeButtonPress("large_button_press"),
+
     PowerOn("power_on"),
     PowerOff("power_off"),
 
