@@ -19,6 +19,7 @@ import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
 import altline.appliance.washing.laundry.washCycle.WashParams
 import altline.appliance.washing.laundry.washCycle.phase.SpinPhase
 import io.nacular.measured.units.*
+import io.nacular.measured.units.Time.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -112,6 +113,11 @@ abstract class StandardLaundryWasherBase(
             }
         }
 
+    /**
+     * A short-running job that operates after a cycle is paused of stopped to ensure the right conditions.
+     */
+    private var sideJob: Job? = null
+
     private suspend fun startScan() {
         scanner?.washLiquid = drum.excessLiquid
 
@@ -145,21 +151,52 @@ abstract class StandardLaundryWasherBase(
         return if (!doorLocked) drum.unloadAll() else emptyList()
     }
 
-    override fun start() = controller.startCycle(this, machineScope)
-    override fun stop() = controller.stopCycle()
+    override fun start() {
+        if (sideJob != null) return
+        controller.startCycle(this, machineScope)
+    }
+
+    override fun stop() {
+        if (sideJob != null) return
+
+        stopAllActivities()
+        controller.stopCycle()
+        sideJob = machineScope.launch {
+            delay(1 * seconds)
+            drainUntilEmpty()
+            delay(1 * seconds)
+            unlockDoor()
+            sideJob = null
+        }
+    }
 
     fun togglePower() {
+        if (sideJob != null) return
+
         when {
-            controller.cycleRunning -> controller.stopCycle()
-            controller.poweredOn -> controller.powerOff()
+            running -> stop()
+            poweredOn -> controller.powerOff()
             else -> controller.powerOn()
         }
     }
 
     fun toggleCycleRun() {
+        if (sideJob != null) return
+
         if (controller.cycleRunning) {
             controller.toggleCyclePause()
-            if (paused) doPause()
+            if (paused) {
+                stopAllActivities()
+                if (drum.excessLiquidAmount <= config.doorSafeWaterLevel) {
+                    sideJob = machineScope.launch {
+                        delay(1 * seconds)
+                        unlockDoor()
+                        sideJob = null
+                    }
+                }
+            } else {
+                lockDoor()
+            }
         } else start()
     }
 
@@ -182,7 +219,7 @@ abstract class StandardLaundryWasherBase(
         doorLocked = false
     }
 
-    protected open fun doPause() {
+    protected open fun stopAllActivities() {
         dispenser.haltMainDetergent()
         dispenser.haltMainSoftener()
         drumMotor.stop()

@@ -20,8 +20,8 @@ open class HouseholdLaundryWasher(
         scanner.scanPreWashDispenser(dispenser)
     }
 
-    override fun doPause() {
-        super.doPause()
+    override fun stopAllActivities() {
+        super.stopAllActivities()
         dispenser.haltPreWashDetergent()
     }
 
