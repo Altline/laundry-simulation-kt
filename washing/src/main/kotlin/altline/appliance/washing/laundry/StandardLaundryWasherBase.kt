@@ -10,6 +10,7 @@ import altline.appliance.measure.*
 import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.spin.ElectricMotor
+import altline.appliance.spin.SpinDirection
 import altline.appliance.substance.transit.BasicSubstanceConduit
 import altline.appliance.substance.transit.ElectricPump
 import altline.appliance.substance.transit.SubstanceConduit
@@ -262,6 +263,7 @@ abstract class StandardLaundryWasherBase(
 
             val cycleCount = (duration / (spinPeriod + restPeriod)).roundToInt()
             repeat(cycleCount) { i ->
+                val direction = if (i % 2 == 0) SpinDirection.Positive else SpinDirection.Negative
                 val currentTemperature = drum.excessLiquid.temperature
                 if (setTemperature != null && currentTemperature != null) {
                     thermostat.check(currentTemperature)
@@ -269,7 +271,7 @@ abstract class StandardLaundryWasherBase(
                     drum.heater.stop()
                 }
 
-                spin(spinSpeed, reverseDirection = i % 2 != 0, spinPeriod)
+                spin(direction, spinSpeed, spinPeriod)
                 delay(restPeriod / SpeedModifier)
             }
 
@@ -280,14 +282,14 @@ abstract class StandardLaundryWasherBase(
     internal open suspend fun centrifuge(params: CentrifugeParams) {
         with(params) {
             pump.start()
-            spin(spinSpeed, reverseDirection = false, duration)
+            spin(SpinDirection.Positive, spinSpeed, duration)
             pump.stop()
         }
     }
 
-    private suspend fun spin(speed: Measure<Spin>, reverseDirection: Boolean, duration: Measure<Time>) {
+    private suspend fun spin(direction: SpinDirection, speed: Measure<Spin>, duration: Measure<Time>) {
         drumMotor.speedSetting = speed
-        drumMotor.reverseDirection = reverseDirection
+        drumMotor.spinDirection = direction
         drumMotor.start()
         delay(duration / SpeedModifier)
         drumMotor.stop()

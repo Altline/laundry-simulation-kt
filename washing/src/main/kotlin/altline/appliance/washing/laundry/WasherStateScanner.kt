@@ -3,6 +3,7 @@ package altline.appliance.washing.laundry
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.spin.ElectricMotor
+import altline.appliance.spin.SpinDirection
 import altline.appliance.substance.Substance
 import altline.appliance.substance.transit.ElectricPump
 import io.nacular.measured.units.*
@@ -27,7 +28,7 @@ open class WasherStateScanner {
     var spinSpeed: Measure<Spin> = 0 * rpm
         private set
 
-    var reverseSpinDirection: Boolean = false
+    var spinDirection: SpinDirection = SpinDirection.Positive
         private set
 
     var washLiquid: Substance? = null
@@ -44,6 +45,6 @@ open class WasherStateScanner {
 
     internal fun scanDrumMotor(drumMotor: ElectricMotor) {
         spinSpeed = drumMotor.currentSpeed
-        reverseSpinDirection = drumMotor.reverseDirection
+        spinDirection = drumMotor.spinDirection
     }
 }

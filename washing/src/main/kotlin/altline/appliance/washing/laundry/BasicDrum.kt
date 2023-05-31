@@ -8,6 +8,7 @@ import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.liters
+import altline.appliance.spin.SpinDirection
 import altline.appliance.substance.*
 import altline.appliance.substance.transit.Reservoir
 import altline.appliance.washing.cleaningPower
@@ -79,7 +80,7 @@ class BasicDrum(
         }
     }
 
-    override fun spin(speed: Measure<Spin>, duration: Measure<Time>) {
+    override fun spin(direction: SpinDirection, speed: Measure<Spin>, duration: Measure<Time>) {
         for (piece in load) {
             if (speed < config.centrifugeThreshold) wash(piece, speed, duration `in` seconds)
             else dry(piece, speed, duration `in` seconds)

@@ -3,6 +3,7 @@ package altline.appliance.ui.component.washer
 import altline.appliance.common.SpeedModifier
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
+import altline.appliance.spin.SpinDirection
 import altline.appliance.ui.theme.AppTheme
 import altline.appliance.ui.util.animateRpmAsState
 import altline.appliance.ui.util.lerpCoerced
@@ -33,7 +34,7 @@ import io.nacular.measured.units.*
 
 @Composable
 fun Drum(data: DrumUi) {
-    val directionModifier = if (data.reverseDirection) -1 else 1
+    val directionFactor = if (data.spinDirection == SpinDirection.Positive) 1 else -1
     val speedRpm = (data.spinSpeed `in` rpm).toFloat()
     val rawInertRpm by animateRpmAsState(speedRpm)
     val inertRpm = rawInertRpm * SpeedModifier
@@ -60,7 +61,7 @@ fun Drum(data: DrumUi) {
     )
 
     LaunchedEffect(tick) {
-        rotation += 0.1f * inertRpm * directionModifier
+        rotation += 0.1f * inertRpm * directionFactor
     }
 
     Surface(
@@ -128,13 +129,13 @@ fun Drum(data: DrumUi) {
 
 data class DrumUi(
     val spinSpeed: Measure<Spin>,
-    val reverseDirection: Boolean
+    val spinDirection: SpinDirection
 ) {
     companion object {
         @Composable
         fun preview() = DrumUi(
             spinSpeed = 60 * rpm,
-            reverseDirection = false
+            spinDirection = SpinDirection.Positive
         )
     }
 }

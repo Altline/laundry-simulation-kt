@@ -2,6 +2,7 @@ package altline.appliance.ui.mapper
 
 import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.measure.Volume
+import altline.appliance.spin.SpinDirection
 import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.washer.*
 import altline.appliance.ui.resources.get
@@ -58,7 +59,7 @@ class WasherMapper(
             } else null,
             drumUi = DrumUi(
                 spinSpeed = washer.scanner?.spinSpeed ?: (0 * rpm),
-                reverseDirection = washer.scanner?.reverseSpinDirection ?: false
+                spinDirection = washer.scanner?.spinDirection ?: SpinDirection.Positive
             )
         )
     }

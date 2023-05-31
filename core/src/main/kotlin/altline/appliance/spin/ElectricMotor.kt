@@ -13,7 +13,7 @@ class ElectricMotor(
 
     var connectedLoad: Spinnable? = null
 
-    var reverseDirection: Boolean = false
+    var spinDirection: SpinDirection = SpinDirection.Positive
 
     var speedSetting: Measure<Spin> = maxSpeed
         set(value) {
@@ -34,7 +34,7 @@ class ElectricMotor(
         if (availableEnergy != null) {
             val energyRatio = availableEnergy / requiredEnergy
             currentSpeed = speedSetting * energyRatio
-            connectedLoad?.spin(currentSpeed, timeFactor)
+            connectedLoad?.spin(spinDirection, currentSpeed, timeFactor)
         }
     }
 }
