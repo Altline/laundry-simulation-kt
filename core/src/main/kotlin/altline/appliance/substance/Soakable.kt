@@ -7,6 +7,8 @@ interface Soakable {
     val soakedSubstance: Substance
     val soakRatio: Double
 
+    val temperatureEqualizer: TemperatureEqualizer
+
     fun soak(substance: MutableSubstance)
     fun resoakWith(substance: MutableSubstance, amount: Measure<Volume>)
     fun dry(amount: Measure<Volume>): MutableSubstance
