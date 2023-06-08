@@ -1,9 +1,7 @@
 package altline.appliance.washing.laundry
 
 import altline.appliance.electricity.ElectricHeater
-import altline.appliance.measure.Spin
-import altline.appliance.measure.Volume
-import altline.appliance.measure.watts
+import altline.appliance.measure.*
 import altline.appliance.spin.ElectricMotor
 import altline.appliance.substance.transit.ElectricPump
 import altline.appliance.washing.laundry.washCycle.CottonCycle
@@ -48,6 +46,17 @@ class HouseholdLaundryWasherFactory {
             inputCount = 1,
             outputCount = 1
         )
+        val thermostat = MeasuringTrigger<Temperature>(
+            triggerSetting = 20 * Temperature.celsius,
+            tolerance = 5 * Temperature.celsius,
+            onRiseAbove = { drum.heater.stop() }
+        )
+
+        controller.dispenser = dispenser
+        controller.drum = drum
+        controller.drumMotor = drumMotor
+        controller.pump = pump
+        controller.thermostat = thermostat
 
         drumMotor.connectedLoad = drum
 
