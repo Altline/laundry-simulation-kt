@@ -21,11 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WashCycleSection(data: WashCycleSectionUi) {
-    Column {
+fun WashCycleSection(
+    data: WashCycleSectionUi,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
         TextRow(
             leftText = data.cycleName,
             rightText = data.timer,
@@ -41,11 +45,19 @@ fun WashCycleSection(data: WashCycleSectionUi) {
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            for (phase in data.phases) {
-                CyclePhase(phase)
+            for (stage in data.stages) {
+                CycleStage(stage)
             }
         }
-        Divider()
+    }
+}
+
+@Composable
+private fun CycleStage(data: CycleStageUi) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        for (phase in data.phases) {
+            CyclePhase(phase)
+        }
     }
 }
 
@@ -86,13 +98,16 @@ private fun CyclePhase(data: CyclePhaseUi) {
                 }
             }
 
+            val textRowSettings = TextRowSettings.default(
+                style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.SemiBold),
+                verticalAlignment = Alignment.CenterVertically
+            )
+
             TextRow(
                 leftText = data.name,
                 rightText = data.timer,
-                textSettings = TextRowSettings.default(
-                    style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.SemiBold),
-                    verticalAlignment = Alignment.CenterVertically
-                )
+                leftTextSettings = if (data.disabled) textRowSettings.copy(decoration = TextDecoration.LineThrough) else textRowSettings,
+                rightTextSettings = textRowSettings
             )
         }
         for (section in data.sections) {
@@ -115,47 +130,36 @@ private fun PhaseSection(data: PhaseSectionUi) {
             )
         }
         if (data.params != null) {
-            WashParams(data.params)
+            Column(
+                Modifier.padding(start = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                for (param in data.params) {
+                    TextRow(
+                        leftText = param.name,
+                        rightText = param.value,
+                        textSettings = TextRowSettings.default(
+                            color = modifiedColor(alpha = ContentAlpha.medium),
+                            style = MaterialTheme.typography.caption
+                        ),
+                        fillWhitespace = true
+                    )
+                }
+            }
         }
     }
 }
 
-@Composable
-private fun WashParams(data: WashParamsUi) {
-    Column(
-        Modifier.padding(start = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        val textRowSettings = TextRowSettings.default(
-            color = modifiedColor(alpha = ContentAlpha.medium),
-            style = MaterialTheme.typography.caption
-        )
-        TextRow(
-            leftText = strings["washParams_spinPeriod"],
-            rightText = data.spinPeriod,
-            textSettings = textRowSettings,
-            fillWhitespace = true
-        )
-        TextRow(
-            leftText = strings["washParams_restPeriod"],
-            rightText = data.restPeriod,
-            textSettings = textRowSettings,
-            fillWhitespace = true
-        )
-        TextRow(
-            leftText = strings["washParams_spinSpeed"],
-            rightText = data.spinSpeed,
-            textSettings = textRowSettings,
-            fillWhitespace = true
-        )
-    }
-}
+data class CycleStageUi(
+    val phases: List<CyclePhaseUi>
+)
 
 data class CyclePhaseUi(
     val name: String,
     val timer: String,
     val sections: List<PhaseSectionUi>,
-    val active: ActiveState
+    val active: ActiveState,
+    val disabled: Boolean
 ) {
     enum class ActiveState {
         NOT_EXECUTED, ACTIVE, EXECUTED
@@ -165,59 +169,72 @@ data class CyclePhaseUi(
 data class PhaseSectionUi(
     val name: String,
     val timer: String,
-    val params: WashParamsUi?,
+    val params: List<SectionParamUi>?,
     val active: Boolean
 )
 
-data class WashParamsUi(
-    val spinPeriod: String,
-    val restPeriod: String,
-    val spinSpeed: String
+data class SectionParamUi(
+    val name: String,
+    val value: String
 )
 
 data class WashCycleSectionUi(
     val cycleName: String,
     val timer: String,
-    val phases: List<CyclePhaseUi>
+    val stages: List<CycleStageUi>
 ) {
     companion object {
         @Composable
         fun preview() = WashCycleSectionUi(
             cycleName = "Cotton cycle",
             timer = "0:00:13 / 0:01:42",
-            phases = listOf(
-                CyclePhaseUi(
-                    name = "Fill",
-                    timer = "0:01:35 / -",
-                    sections = emptyList(),
-                    active = NOT_EXECUTED
-                ),
-                CyclePhaseUi(
-                    name = "Wash",
-                    timer = "0:02:45 / 0:47:30",
-                    sections = listOf(
-                        PhaseSectionUi(
-                            name = "Section 1",
-                            timer = "0:10:30",
-                            params = WashParamsUi(
-                                spinPeriod = "5 s",
-                                restPeriod = "5 s",
-                                spinSpeed = "60 rpm",
-                            ),
-                            active = false
+            stages = listOf(
+                CycleStageUi(
+                    phases = listOf(
+                        CyclePhaseUi(
+                            name = "Fill",
+                            timer = "0:01:35 / -",
+                            sections = emptyList(),
+                            active = NOT_EXECUTED,
+                            disabled = false
                         ),
-                        PhaseSectionUi(
-                            name = "Section 2",
-                            timer = "0:02:45 / 0:37:00",
-                            params = WashParamsUi(
-                                spinPeriod = "14 s",
-                                restPeriod = "7 s",
-                                spinSpeed = "50 rpm",
+                        CyclePhaseUi(
+                            name = "Wash",
+                            timer = "0:02:45 / 0:47:30",
+                            sections = listOf(
+                                PhaseSectionUi(
+                                    name = "Section 1",
+                                    timer = "0:10:30",
+                                    params = listOf(
+                                        SectionParamUi(
+                                            name = "name",
+                                            value = "value"
+                                        )
+                                    ),
+                                    active = false
+                                ),
+                                PhaseSectionUi(
+                                    name = "Section 2",
+                                    timer = "0:02:45 / 0:37:00",
+                                    params = null,
+                                    active = true
+                                )
                             ),
-                            active = true
+                            active = ACTIVE,
+                            disabled = false
                         )
-                    ),
-                    active = ACTIVE
+                    )
+                ),
+                CycleStageUi(
+                    phases = listOf(
+                        CyclePhaseUi(
+                            name = "Fill",
+                            timer = "0:01:35 / -",
+                            sections = emptyList(),
+                            active = NOT_EXECUTED,
+                            disabled = true
+                        )
+                    )
                 )
             )
         )

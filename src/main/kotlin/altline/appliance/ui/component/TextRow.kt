@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -44,6 +45,7 @@ fun TextRow(
             modifier = leftTextSettings.verticalAlignment?.let { Modifier.align(it) } ?: Modifier,
             color = leftTextSettings.color,
             style = leftTextSettings.style,
+            textDecoration = leftTextSettings.decoration,
             textAlign = TextAlign.Left,
             maxLines = 2
         )
@@ -62,6 +64,7 @@ fun TextRow(
             modifier = rightTextSettings.verticalAlignment?.let { Modifier.align(it) } ?: Modifier,
             color = rightTextSettings.color,
             style = rightTextSettings.style,
+            textDecoration = rightTextSettings.decoration,
             textAlign = TextAlign.Right
         )
     }
@@ -70,6 +73,7 @@ fun TextRow(
 data class TextRowSettings(
     val color: Color,
     val style: TextStyle,
+    val decoration: TextDecoration,
     val verticalAlignment: Alignment.Vertical?
 ) {
     companion object {
@@ -77,8 +81,9 @@ data class TextRowSettings(
         fun default(
             color: Color = MaterialTheme.colors.onSurface,
             style: TextStyle = MaterialTheme.typography.body2,
+            decoration: TextDecoration = TextDecoration.None,
             verticalAlignment: Alignment.Vertical? = null
-        ) = TextRowSettings(color, style, verticalAlignment)
+        ) = TextRowSettings(color, style, decoration, verticalAlignment)
     }
 }
 

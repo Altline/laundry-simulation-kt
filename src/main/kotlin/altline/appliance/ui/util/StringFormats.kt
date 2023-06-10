@@ -2,6 +2,7 @@ package altline.appliance.ui.util
 
 import altline.appliance.measure.toLocalTime
 import io.nacular.measured.units.*
+import io.nacular.measured.units.Time.Companion.milliseconds
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
@@ -38,10 +39,17 @@ fun <T : Units> Measure<T>.optionalDecimal(
 fun Measure<Time>.clockFormat(
     showSeconds: Boolean = true
 ): String {
-    return toLocalTime().format(
-        if (showSeconds) clockTimeFormat_hms
-        else clockTimeFormat_hm
-    )
+    return buildString {
+        if (this@clockFormat < 0 * milliseconds) {
+            append("-")
+        }
+        append(
+            toLocalTime().format(
+                if (showSeconds) clockTimeFormat_hms
+                else clockTimeFormat_hm
+            )
+        )
+    }
 }
 
 fun Measure<Time>.unitFormat(minimized: Boolean = true): String {

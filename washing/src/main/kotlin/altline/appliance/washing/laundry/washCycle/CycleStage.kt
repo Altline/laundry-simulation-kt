@@ -1,9 +1,9 @@
 package altline.appliance.washing.laundry.washCycle
 
 import altline.appliance.measure.Spin
+import altline.appliance.measure.Temperature
 import altline.appliance.measure.Volume
 import altline.appliance.measure.sumOf
-import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.phase.*
 import io.nacular.measured.units.*
 
@@ -12,44 +12,35 @@ class CycleStage {
     var phases: List<CyclePhase> = emptyList()
         private set
 
-    val activePhase: CyclePhase?
-        get() = phases.find { it.active }
-
-    val estimatedDuration: Measure<Time>
+    val duration: Measure<Time>
         get() = phases.sumOf { it.duration }
 
-    val runningTime: Measure<Time>
-        get() = phases.sumOf { it.runningTime }
-
-    private var resumingPhase: CyclePhase? = null
-
-    suspend fun execute(washer: StandardLaundryWasherBase) {
-        phases.forEach {
-            if (resumingPhase == null || it == resumingPhase) {
-                it.execute(washer)
-                resumingPhase = null
-            }
-        }
+    fun setTemperature(temperature: Measure<Temperature>?) {
+        phases.filterIsInstance<WashPhase>()
+            .forEach { it.setTemperature(temperature) }
     }
 
-    fun onPause() {
-        resumingPhase = activePhase
+    fun setSpinSpeed(spinSpeed: Measure<Spin>?) {
+        phases.filterIsInstance<SpinPhase>()
+            .forEach { it.setSpinSpeed(spinSpeed) }
     }
 
-    fun reset() {
-        resumingPhase = null
-        phases.forEach { it.reset() }
-    }
-
-    fun detergentFillPhase(fillToAmount: Measure<Volume>): DetergentFillPhase {
-        return DetergentFillPhase(fillToAmount).also {
+    fun fillPhase(init: FillPhase.() -> Unit): FillPhase {
+        return FillPhase().also {
+            it.init()
             phases += it
         }
     }
 
-    fun softenerFillPhase(fillToAmount: Measure<Volume>): SoftenerFillPhase {
-        return SoftenerFillPhase(fillToAmount).also {
-            phases += it
+    fun detergentFillPhase(fillToAmount: Measure<Volume>): FillPhase {
+        return fillPhase {
+            detergentFillSection(fillToAmount)
+        }
+    }
+
+    fun softenerFillPhase(fillToAmount: Measure<Volume>): FillPhase {
+        return fillPhase {
+            softenerFillSection(fillToAmount)
         }
     }
 
@@ -73,14 +64,20 @@ class CycleStage {
         }
     }
 
+    fun spinPhase(init: SpinPhase.() -> Unit): SpinPhase {
+        return SpinPhase().also {
+            it.init()
+            phases += it
+        }
+    }
+
     fun spinPhase(
         duration: Measure<Time>,
-        spinSpeed: Measure<Spin>
+        spinSpeed: Measure<Spin>,
+        endDelay: Measure<Time>
     ): SpinPhase {
-        return SpinPhase(
-            CentrifugeParams(duration, spinSpeed)
-        ).also {
-            phases += it
+        return spinPhase {
+            section(duration, spinSpeed, endDelay)
         }
     }
 }

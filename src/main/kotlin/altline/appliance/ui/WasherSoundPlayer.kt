@@ -55,9 +55,9 @@ class WasherSoundPlayer {
             }
         }
 
-        val lastPhase = washer.activeWashCycle?.stages?.last()?.phases?.last()
-        if (lastPhase != null && lastPhase.active) {
-            wasAtCycleEnd = lastPhase.runningTime > lastPhase.duration - (2 * Time.seconds)
+        val lastSection = washer.selectedCycleStatus.last().phases.last().sections.last()
+        if (lastSection.active) {
+            wasAtCycleEnd = lastSection.runningTime > lastSection.section.duration - (2 * Time.seconds)
         } else if (wasAtCycleEnd) {
             playClip(SoundClip.CycleFinish)
             wasAtCycleEnd = false

@@ -13,14 +13,14 @@ import altline.appliance.substance.transit.ElectricPump
 import altline.appliance.substance.transit.SubstanceConduit
 import altline.appliance.washing.Washer
 import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
-import altline.appliance.washing.laundry.washCycle.phase.SpinPhase
+import altline.appliance.washing.laundry.washCycle.StageStatus
 import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-abstract class StandardLaundryWasherBase(
+abstract class StandardLaundryWasherBase internal constructor(
     protected open val controller: LaundryWasherController,
     protected open val dispenser: LaundryWashDispenser,
     protected open val drum: Drum,
@@ -32,11 +32,11 @@ abstract class StandardLaundryWasherBase(
     private val machineScope = CoroutineScope(Dispatchers.Default)
 
     override val power: Measure<Power>
-        get() = TODO("Not yet implemented")
+        get() = controller.power + drum.heater.power + drumMotor.power + pump.power
 
     private val powerInletConduit by lazy {
         BasicElectricalConduit(
-            maxFlowRate = controller.power + drum.heater.power + drumMotor.power + pump.power,
+            maxFlowRate = power,
             inputCount = 1,
             outputCount = 4
         ).apply {
@@ -47,7 +47,7 @@ abstract class StandardLaundryWasherBase(
         }
     }
 
-    override val powerInlet: ElectricalDrainPort
+    final override val powerInlet: ElectricalDrainPort
         get() = powerInletConduit.inputs[0]
 
     open val fluidIntake: SubstanceConduit by lazy {
@@ -70,23 +70,29 @@ abstract class StandardLaundryWasherBase(
     val runningTime: Measure<Time>?
         get() = controller.cycleRunningTime
 
+    val remainingTime: Measure<Time>?
+        get() = controller.cycleRemainingTime
+
+    val washCycles: List<LaundryWashCycle>
+        get() = controller.washCycles
+
+    var selectedCycle: LaundryWashCycle
+        get() = controller.selectedCycle
+        set(value) {
+            controller.selectedCycle = value
+        }
+
+    val selectedCycleStatus: List<StageStatus>
+        get() = controller.selectedCycleStatus
+
+    val activeCycle: LaundryWashCycle?
+        get() = controller.activeCycle
+
     val doorLocked: Boolean
         get() = controller.doorLocked
 
     override val load: Set<Body>
         get() = drum.load
-
-    val washCycles: List<LaundryWashCycle>
-        get() = controller.washCycles
-
-    var selectedWashCycle: LaundryWashCycle
-        get() = controller.selectedWashCycle
-        set(value) {
-            controller.selectedWashCycle = value
-        }
-
-    val activeWashCycle: LaundryWashCycle?
-        get() = controller.activeWashCycle
 
     private var scanningJob: Job? = null
     var scanner: WasherStateScanner? = null
@@ -133,8 +139,15 @@ abstract class StandardLaundryWasherBase(
         return if (!doorLocked) drum.unloadAll() else emptyList()
     }
 
-    override fun start() = controller.startCycle(this, machineScope)
-    override fun stop() = controller.stopCycle(machineScope)
+    override fun start() = controller.startCycle(machineScope)
+
+    override fun stop() {
+        machineScope.launch { controller.stopCycle() }
+    }
+
+    fun pause() {
+        machineScope.launch { controller.pauseCycle() }
+    }
 
     fun togglePower() = when {
         running -> stop()
@@ -142,16 +155,14 @@ abstract class StandardLaundryWasherBase(
         else -> controller.powerOn()
     }
 
-    fun toggleCycleRun() = controller.toggleCyclePause(this, machineScope)
+    fun toggleCycleRun() = when {
+        paused -> start()
+        running -> pause()
+        else -> start()
+    }
 
     fun increaseTemperature() = controller.increaseTemperature()
     fun decreaseTemperature() = controller.decreaseTemperature()
-    fun increaseSpinSpeed() = controller.increaseSpinSpeed().also { updateCentrifugeSpeed() }
-    fun decreaseSpinSpeed() = controller.decreaseSpinSpeed().also { updateCentrifugeSpeed() }
-
-    private fun updateCentrifugeSpeed() {
-        if (activeWashCycle?.activePhase is SpinPhase) {
-            drumMotor.speedSetting = activeWashCycle!!.selectedSpinSpeedSetting!!
-        }
-    }
+    fun increaseSpinSpeed() = controller.increaseSpinSpeed()
+    fun decreaseSpinSpeed() = controller.decreaseSpinSpeed()
 }

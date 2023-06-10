@@ -4,6 +4,7 @@ import altline.appliance.common.Body
 import altline.appliance.fabric.Clothing
 import altline.appliance.fabric.Fabric
 import altline.appliance.fabric.Shirt
+import altline.appliance.measure.sumOf
 import altline.appliance.substance.CommonFabricSofteners
 import altline.appliance.substance.CommonSubstanceTypes
 import altline.appliance.substance.SubstanceType
@@ -73,19 +74,28 @@ class StringMapper {
                 }
             )
             if (phase is FillPhase) {
-                append(" (")
-                append(
-                    when (phase) {
-                        is DetergentFillPhase -> strings["cyclePhase_fill_detergent"]
-                        is SoftenerFillPhase -> strings["cyclePhase_fill_softener"]
-                        else -> ""
-                    }
-                )
-                append("; ${phase.fillToAmount.optionalDecimal()})")
+                if (phase.sections.size == 1) {
+                    append(" - ${mapFillSectionName(phase.sections.first()).lowercase()}")
+                } else {
+                    append(" (${phase.sections.sumOf { it.fillToAmount }.optionalDecimal()})")
+                }
             }
-            if (phase is SpinPhase) {
-                append(" (${phase.params.spinSpeed.optionalDecimal()})")
+            if (phase is SpinPhase && !phase.disabled) {
+                append(" (${phase.sections.maxOf { it.params.spinSpeed }.optionalDecimal()})")
             }
+        }
+    }
+
+    fun mapFillSectionName(section: FillPhase.Section): String {
+        return buildString {
+            append(
+                when (section) {
+                    is FillPhase.DetergentFillSection -> strings["cyclePhase_fill_detergent"]
+                    is FillPhase.SoftenerFillSection -> strings["cyclePhase_fill_softener"]
+                    else -> ""
+                }
+            )
+            append(" (${section.fillToAmount})")
         }
     }
 }

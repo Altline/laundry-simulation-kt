@@ -5,31 +5,25 @@ import altline.appliance.measure.Temperature
 import io.nacular.measured.units.*
 
 class SpinCycle : WashCycleBase() {
-    override val temperatureSettings: List<Measure<Temperature>> = listOf()
-    override val spinSpeedSettings: List<Measure<Spin>> = (600..1400 step 200)
+    override val temperatureSettings: List<Measure<Temperature>> = emptyList()
+    override val spinSpeedSettings: List<Measure<Spin>> = listOf(600, 800, 1000, 1200, 1400, 1600)
         .map { it * Spin.rpm }.toList()
-
-    private lateinit var spinPhaseParams: CentrifugeParams
 
     init {
         addStage {
-            spinPhase(
-                duration = 5 * Time.minutes,
-                spinSpeed = 0 * Spin.rpm
-            ).also {
-                this@SpinCycle.spinPhaseParams = it.params
+            spinPhase {
+                section(
+                    duration = 0.1 * Time.minutes,
+                    spinSpeed = 500 * Spin.rpm
+                )
+                section(
+                    duration = 1 * Time.minutes,
+                    endDelay = 32 * Time.seconds
+                )
             }
         }
 
         selectedTemperatureSettingIndex = null
         selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
-    }
-
-    override fun onTemperatureChanged(value: Measure<Temperature>?) {
-        /* no-op (temperature not expected to change) */
-    }
-
-    override fun onSpinSpeedChanged(value: Measure<Spin>?) {
-        spinPhaseParams.spinSpeed = value ?: (0 * Spin.rpm)
     }
 }

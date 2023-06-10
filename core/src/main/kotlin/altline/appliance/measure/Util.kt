@@ -15,6 +15,7 @@ import io.nacular.measured.units.Time.Companion.minutes
 import io.nacular.measured.units.Time.Companion.seconds
 import mu.KotlinLogging
 import java.time.LocalTime
+import kotlin.math.absoluteValue
 import kotlin.reflect.typeOf
 
 /**
@@ -44,16 +45,16 @@ fun Measure<Frequency>.toPeriod() = (1 / (this `in` hertz)) * seconds
 fun Measure<Time>.toFrequency() = (1 / (this `in` seconds)) * hertz
 
 fun Measure<Time>.toLocalTime(): LocalTime {
-    val hour = (this `in` hours).toInt().also {
+    val hour = (this `in` hours).absoluteValue.toInt().also {
         if (it > 23) {
             KotlinLogging.logger("Util")
-                .warn("Time measure exceeds 23 hours. The resulting LocalTime hour field will be capped at 23!")
+                .warn("Time measure exceeds 23 hours. The resulting LocalTime hour field will wrap back to 0!")
         }
     }
     return LocalTime.of(
         hour % 24,
-        (this `in` minutes).toInt() % 60,
-        (this `in` seconds).toInt() % 60
+        (this `in` minutes).absoluteValue.toInt() % 60,
+        (this `in` seconds).absoluteValue.toInt() % 60
     )
 }
 

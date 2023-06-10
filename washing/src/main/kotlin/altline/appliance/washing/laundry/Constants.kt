@@ -16,6 +16,6 @@ val StandardOutputFlowRate = (0.35 * liters / seconds)
 
 /**
  * Reference constant for an estimated time it takes a laundry washer to drain a loaded drum.
- * Used for calculating estimations.
+ * Used for estimations.
  */
 val StandardFullFlowDrainTime = 20 * seconds

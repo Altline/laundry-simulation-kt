@@ -3,8 +3,8 @@ package altline.appliance.washing.laundry
 import altline.appliance.spin.ElectricMotor
 import altline.appliance.substance.transit.ElectricPump
 
-open class HouseholdLaundryWasher(
-    override val controller: LaundryWasherController,
+open class HouseholdLaundryWasher internal constructor(
+    override val controller: HouseholdLaundryWasherController,
     override val dispenser: PreWashSlottedDispenser,
     override val drum: BasicDrum,
     override val drumMotor: ElectricMotor,
@@ -18,11 +18,6 @@ open class HouseholdLaundryWasher(
     override fun scanState(scanner: WasherStateScanner) {
         if (scanner !is HouseholdLaundryWasherScanner) return
         scanner.scanPreWashDispenser(dispenser)
-    }
-
-    override fun stopAllActivities() {
-        super.stopAllActivities()
-        dispenser.haltPreWashDetergent()
     }
 
     fun openDispenserTray(): PreWashSlottedDispenser.Tray {

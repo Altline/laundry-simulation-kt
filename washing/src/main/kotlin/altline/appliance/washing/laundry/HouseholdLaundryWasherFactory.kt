@@ -13,15 +13,6 @@ class HouseholdLaundryWasherFactory {
 
     fun createHouseholdLaundryWasher(): HouseholdLaundryWasher {
         val config = LaundryWasherConfig()
-        val controller = BasicController(
-            washCycles = listOf(
-                CottonCycle(),
-                RinseCycle(),
-                SpinCycle()
-            ),
-            power = 5 * watts,
-            config = config
-        )
         val dispenser = PreWashSlottedDispenser(
             preWashDetergentCapacity = 150 * Volume.milliliters,
             mainDetergentCapacity = 300 * Volume.milliliters,
@@ -46,17 +37,25 @@ class HouseholdLaundryWasherFactory {
             inputCount = 1,
             outputCount = 1
         )
-        val thermostat = MeasuringTrigger<Temperature>(
+        val thermostat = Thermostat(
             triggerSetting = 20 * Temperature.celsius,
             tolerance = 5 * Temperature.celsius,
             onRiseAbove = { drum.heater.stop() }
         )
-
-        controller.dispenser = dispenser
-        controller.drum = drum
-        controller.drumMotor = drumMotor
-        controller.pump = pump
-        controller.thermostat = thermostat
+        val controller = HouseholdLaundryWasherController(
+            washCycles = listOf(
+                CottonCycle(),
+                RinseCycle(),
+                SpinCycle()
+            ),
+            power = 5 * watts,
+            dispenser = dispenser,
+            drum = drum,
+            drumMotor = drumMotor,
+            pump = pump,
+            thermostat = thermostat,
+            config = config
+        )
 
         drumMotor.connectedLoad = drum
 

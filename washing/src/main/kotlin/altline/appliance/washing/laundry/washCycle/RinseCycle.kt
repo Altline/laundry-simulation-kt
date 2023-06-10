@@ -9,10 +9,9 @@ import io.nacular.measured.units.Time.Companion.minutes
 import io.nacular.measured.units.Time.Companion.seconds
 
 class RinseCycle : WashCycleBase() {
-    override val temperatureSettings: List<Measure<Temperature>> = listOf()
-    override val spinSpeedSettings: List<Measure<Spin>> = (600..1400 step 200).map { it * rpm }.toList()
-
-    private lateinit var spinPhaseParams: CentrifugeParams
+    override val temperatureSettings: List<Measure<Temperature>> = emptyList()
+    override val spinSpeedSettings: List<Measure<Spin>> = listOf(0, 600, 800, 1000, 1200, 1400, 1600)
+        .map { it * rpm }
 
     init {
         addStage {
@@ -32,22 +31,13 @@ class RinseCycle : WashCycleBase() {
                 spinSpeed = 60 * rpm
             )
             spinPhase(
-                duration = 5 * minutes,
-                spinSpeed = 0 * rpm
-            ).also {
-                this@RinseCycle.spinPhaseParams = it.params
-            }
+                duration = 1 * minutes,
+                spinSpeed = 0 * rpm,
+                endDelay = 32 * seconds
+            )
         }
 
         selectedTemperatureSettingIndex = null
         selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
-    }
-
-    override fun onTemperatureChanged(value: Measure<Temperature>?) {
-        /* no-op (temperature not expected to change) */
-    }
-
-    override fun onSpinSpeedChanged(value: Measure<Spin>?) {
-        spinPhaseParams.spinSpeed = value ?: (0 * rpm)
     }
 }

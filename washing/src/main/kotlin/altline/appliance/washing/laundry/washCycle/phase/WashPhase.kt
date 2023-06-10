@@ -2,37 +2,24 @@ package altline.appliance.washing.laundry.washCycle.phase
 
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Temperature
-import altline.appliance.measure.delay
 import altline.appliance.measure.sumOf
-import altline.appliance.washing.laundry.StandardLaundryWasherBase
+import altline.appliance.washing.laundry.washCycle.WashCycleDsl
 import altline.appliance.washing.laundry.washCycle.WashParams
+import altline.appliance.washing.laundry.washCycle.phase.DrainPhase.Section.FocusedDrain.endDelay
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
-class WashPhase : CyclePhaseBase() {
+@WashCycleDsl
+class WashPhase : CyclePhase {
 
-    private val endDelay = 1 * seconds
-
-    var sections: List<Section> = emptyList()
+    override var sections: List<Section> = emptyList()
         private set
 
     override val duration: Measure<Time>
         get() = sections.sumOf { it.duration } + endDelay
 
-    override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-        var durationSum = 0 * seconds
-        sections.forEach {
-            durationSum += it.duration
-            if (runningTime < durationSum) {
-                it.execute(washer)
-            }
-        }
-        delay(endDelay)
-    }
-
-    override fun reset() {
-        super.reset()
-        sections.forEach { it.reset() }
+    fun setTemperature(temperature: Measure<Temperature>?) {
+        sections.forEach { it.setTemperature(temperature) }
     }
 
     fun section(
@@ -43,34 +30,24 @@ class WashPhase : CyclePhaseBase() {
         temperature: Measure<Temperature>? = null
     ): Section {
         return Section(
-            WashParams(duration, spinPeriod, restPeriod, spinSpeed, temperature)
+            params = WashParams(duration, spinPeriod, restPeriod, spinSpeed, temperature),
+            adjustableTemperature = temperature == null
         ).also {
             sections += it
         }
     }
 
-    class Section(
-        val washParams: WashParams
-    ) {
-        val duration: Measure<Time>
-            get() = washParams.duration
+    data class Section(
+        val params: WashParams,
+        val adjustableTemperature: Boolean
+    ) : PhaseSection {
+        override val endDelay = 1 * seconds
 
-        private val timedWrapper = TimedWrapper()
+        override val duration: Measure<Time>
+            get() = params.duration + endDelay
 
-        val runningTime: Measure<Time>
-            get() = timedWrapper.runningTime
-
-        val active: Boolean
-            get() = timedWrapper.active
-
-        suspend fun execute(washer: StandardLaundryWasherBase) {
-            timedWrapper.executeTimed {
-                washer.wash(washParams.copy(duration = duration - runningTime))
-            }
-        }
-
-        fun reset() {
-            timedWrapper.reset()
+        fun setTemperature(temperature: Measure<Temperature>?) {
+            if (adjustableTemperature) params.temperature = temperature
         }
     }
 }

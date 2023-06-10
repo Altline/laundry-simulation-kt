@@ -1,25 +1,41 @@
 package altline.appliance.washing.laundry.washCycle.phase
 
 import altline.appliance.measure.Volume
-import altline.appliance.measure.delay
+import altline.appliance.measure.sumOf
 import altline.appliance.washing.laundry.StandardIntakeFlowRate
-import altline.appliance.washing.laundry.StandardLaundryWasherBase
+import altline.appliance.washing.laundry.washCycle.WashCycleDsl
+import altline.appliance.washing.laundry.washCycle.phase.DrainPhase.Section.FocusedDrain.endDelay
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
-abstract class FillPhase(
-    val fillToAmount: Measure<Volume>
-) : CyclePhaseBase() {
+@WashCycleDsl
+class FillPhase : CyclePhase {
 
-    private val endDelay = 1 * seconds
+    override var sections: List<Section> = emptyList()
+        private set
 
     override val duration: Measure<Time>
-        get() = fillToAmount / StandardIntakeFlowRate + endDelay
+        get() = sections.sumOf { it.duration } + endDelay
 
-    override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-        executeFill(washer)
-        delay(endDelay)
+    fun detergentFillSection(fillToAmount: Measure<Volume>): DetergentFillSection {
+        return DetergentFillSection(fillToAmount).also {
+            sections += it
+        }
     }
 
-    protected abstract suspend fun executeFill(washer: StandardLaundryWasherBase)
+    fun softenerFillSection(fillToAmount: Measure<Volume>): SoftenerFillSection {
+        return SoftenerFillSection(fillToAmount).also {
+            sections += it
+        }
+    }
+
+    data class DetergentFillSection(override val fillToAmount: Measure<Volume>) : Section(fillToAmount)
+    data class SoftenerFillSection(override val fillToAmount: Measure<Volume>) : Section(fillToAmount)
+
+    abstract class Section(open val fillToAmount: Measure<Volume>) : PhaseSection {
+        override val endDelay = 1 * seconds
+
+        override val duration: Measure<Time>
+            get() = fillToAmount / StandardIntakeFlowRate + endDelay
+    }
 }

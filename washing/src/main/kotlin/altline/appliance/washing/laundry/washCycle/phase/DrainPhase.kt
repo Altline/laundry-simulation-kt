@@ -1,67 +1,26 @@
 package altline.appliance.washing.laundry.washCycle.phase
 
-import altline.appliance.measure.delay
+import altline.appliance.measure.sumOf
 import altline.appliance.washing.laundry.StandardFullFlowDrainTime
-import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.WashParams
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
-class DrainPhase(
-    val spinParams: WashParams
-) : CyclePhaseBase() {
+class DrainPhase(spinParams: WashParams) : CyclePhase {
 
-    private val endDelay = 2 * seconds
-
-    val sections = listOf(
-        FocusedDrainSection(),
-        WashDrainSection(spinParams)
+    override val sections = listOf(
+        Section.FocusedDrain,
+        Section.WashDrain(spinParams)
     )
 
     override val duration: Measure<Time>
-        get() = StandardFullFlowDrainTime + spinParams.duration + endDelay
+        get() = sections.sumOf { it.duration }
 
-    override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-        sections.forEach { it.execute(washer) }
-        delay(endDelay)
-    }
+    sealed class Section(duration: Measure<Time>) : PhaseSection {
+        final override val endDelay: Measure<Time> = 0 * seconds
+        final override val duration: Measure<Time> = duration + endDelay
 
-    override fun reset() {
-        super.reset()
-        sections.forEach { it.reset() }
-    }
-
-    sealed class Section {
-        private val timedWrapper = TimedWrapper()
-
-        val runningTime: Measure<Time>
-            get() = timedWrapper.runningTime
-
-        val active: Boolean
-            get() = timedWrapper.active
-
-        suspend fun execute(washer: StandardLaundryWasherBase) {
-            timedWrapper.executeTimed { doExecute(washer) }
-        }
-
-        protected abstract suspend fun doExecute(washer: StandardLaundryWasherBase)
-
-        fun reset() {
-            timedWrapper.reset()
-        }
-    }
-
-    class FocusedDrainSection : Section() {
-        override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-            washer.drainUntilEmpty()
-        }
-    }
-
-    class WashDrainSection(val spinParams: WashParams) : Section() {
-        override suspend fun doExecute(washer: StandardLaundryWasherBase) {
-            washer.startDrain()
-            washer.wash(spinParams.copy(duration = spinParams.duration - runningTime))
-            washer.stopDrain()
-        }
+        object FocusedDrain : Section(StandardFullFlowDrainTime)
+        data class WashDrain(val spinParams: WashParams) : Section(spinParams.duration)
     }
 }

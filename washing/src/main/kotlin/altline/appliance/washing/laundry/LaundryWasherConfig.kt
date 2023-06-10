@@ -5,6 +5,8 @@ import altline.appliance.measure.Frequency
 import altline.appliance.measure.Frequency.Companion.hertz
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
+import altline.appliance.measure.Volume
+import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.VolumetricFlow
 import io.nacular.measured.units.*
 
@@ -23,4 +25,6 @@ data class LaundryWasherConfig(
     val upperSoakRatio: Double = 1.25,
 
     val nominalResoakFactor: Double = 0.5,
+
+    val doorSafeWaterLevel: Measure<Volume> = 5 * liters
 )

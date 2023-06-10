@@ -9,14 +9,16 @@ import altline.appliance.ui.resources.strings
 import altline.appliance.ui.util.clockFormat
 import altline.appliance.ui.util.optionalDecimal
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
+import altline.appliance.washing.laundry.washCycle.CentrifugeParams
+import altline.appliance.washing.laundry.washCycle.PhaseStatus
+import altline.appliance.washing.laundry.washCycle.SectionStatus
 import altline.appliance.washing.laundry.washCycle.WashParams
-import altline.appliance.washing.laundry.washCycle.phase.CyclePhase
 import altline.appliance.washing.laundry.washCycle.phase.DrainPhase
+import altline.appliance.washing.laundry.washCycle.phase.FillPhase
+import altline.appliance.washing.laundry.washCycle.phase.SpinPhase
 import altline.appliance.washing.laundry.washCycle.phase.WashPhase
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
+import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
-import io.nacular.measured.units.times
 
 class WasherInfoMapper(
     private val washerMapper: WasherMapper,
@@ -32,9 +34,9 @@ class WasherInfoMapper(
 
     private fun mapToParamsSection(washer: StandardLaundryWasherBase): WashCycleSectionUi {
         with(washer) {
-            val duration = selectedWashCycle.estimatedDuration.clockFormat()
+            val duration = selectedCycle.duration.clockFormat()
             val timer = buildString {
-                if (selectedWashCycle == activeWashCycle) {
+                if (selectedCycle == activeCycle) {
                     runningTime?.let {
                         append("${it.clockFormat()} / ")
                     }
@@ -42,73 +44,102 @@ class WasherInfoMapper(
                 append(duration)
             }
             return WashCycleSectionUi(
-                cycleName = washerMapper.mapToWashCycleName(selectedWashCycle),
+                cycleName = washerMapper.mapToWashCycleName(selectedCycle),
                 timer = timer,
-                phases = mapPhases(selectedWashCycle.stages.flatMap { it.phases })
+                stages = washer.selectedCycleStatus.map { stage ->
+                    CycleStageUi(
+                        phases = mapPhases(stage.phases)
+                    )
+                }
             )
         }
     }
 
-    private fun mapPhases(phases: List<CyclePhase>): List<CyclePhaseUi> {
-        return phases.map { phase ->
+    private fun mapPhases(phases: List<PhaseStatus>): List<CyclePhaseUi> {
+        return phases.map { phaseStatus ->
+            val phase = phaseStatus.phase
             CyclePhaseUi(
                 name = stringMapper.mapPhaseName(phase),
-                timer = mapToTimer(phase.runningTime, phase.duration),
-                sections = when (phase) {
-                    is WashPhase -> {
-                        phase.sections.mapIndexed { index, section ->
-                            PhaseSectionUi(
-                                name = "${strings["cyclePhaseSection"]} ${index + 1}",
-                                timer = mapToTimer(section.runningTime, section.duration),
-                                params = mapWashParams(section.washParams),
-                                active = section.active
-                            )
-                        }
-                    }
-
-                    is DrainPhase -> {
-                        phase.sections.map { section ->
-                            val name: String
-                            val timer: String
-                            val params: WashParamsUi?
-                            when (section) {
-                                is DrainPhase.FocusedDrainSection -> {
-                                    name = strings["cyclePhaseSection_fullFlow"]
-                                    timer = mapToTimer(section.runningTime)
-                                    params = null
-                                }
-
-                                is DrainPhase.WashDrainSection -> {
-                                    name = strings["cyclePhaseSection_washDrain"]
-                                    timer = mapToTimer(section.runningTime, section.spinParams.duration)
-                                    params = mapWashParams(section.spinParams)
-                                }
-                            }
-                            PhaseSectionUi(
-                                name = name,
-                                timer = timer,
-                                params = params,
-                                active = section.active
-                            )
-                        }
-                    }
-
-                    else -> emptyList()
-                },
-                active = mapToPhaseActiveState(phases, phase)
+                timer = mapToTimer(phaseStatus.runningTime, phase.duration),
+                sections = mapSections(phaseStatus.sections, phaseStatus),
+                active = mapToPhaseActiveState(phases, phaseStatus),
+                disabled = (phase as? SpinPhase)?.disabled == true
             )
         }
     }
 
-    private fun mapWashParams(washParams: WashParams): WashParamsUi {
-        return WashParamsUi(
-            spinPeriod = washParams.spinPeriod.optionalDecimal(),
-            restPeriod = washParams.restPeriod.optionalDecimal(),
-            spinSpeed = washParams.spinSpeed.optionalDecimal()
-        )
+    private fun mapSections(sections: List<SectionStatus>, phaseStatus: PhaseStatus): List<PhaseSectionUi> {
+        return sections.mapIndexedNotNull { index, sectionStatus ->
+            val indexInPhase = phaseStatus.sections.indexOf(sectionStatus)
+            val phase = phaseStatus.phase
+
+            when (val section = sectionStatus.section) {
+                is FillPhase.Section -> {
+                    // If there is more than one fill section in a fill phase, then show them,
+                    // otherwise collapse the section into the phase.
+                    if (sections.getOrNull(index - 1) is FillPhase.Section ||
+                        sections.getOrNull(index + 1) is FillPhase.Section
+                    ) {
+                        PhaseSectionUi(
+                            name = stringMapper.mapFillSectionName(section),
+                            timer = mapToTimer(sectionStatus.runningTime, section.duration),
+                            params = null,
+                            active = sectionStatus.active
+                        )
+                    } else null
+                }
+
+                is WashPhase.Section -> {
+                    PhaseSectionUi(
+                        name = "${strings["cyclePhaseSection"]} ${indexInPhase + 1}",
+                        timer = mapToTimer(sectionStatus.runningTime, section.duration),
+                        params = mapWashParams(section.params),
+                        active = sectionStatus.active
+                    )
+                }
+
+                is DrainPhase.Section.FocusedDrain -> {
+                    PhaseSectionUi(
+                        name = strings["cyclePhaseSection_fullFlow"],
+                        timer = mapToTimer(sectionStatus.runningTime, section.duration),
+                        params = null,
+                        active = sectionStatus.active
+                    )
+                }
+
+                is DrainPhase.Section.WashDrain -> {
+                    PhaseSectionUi(
+                        name = strings["cyclePhaseSection_washDrain"],
+                        timer = mapToTimer(sectionStatus.runningTime, section.duration),
+                        params = mapWashParams(section.spinParams),
+                        active = sectionStatus.active
+                    )
+                }
+
+                is SpinPhase.Section -> {
+                    if ((phase as? SpinPhase)?.disabled == true) null
+                    else {
+                        PhaseSectionUi(
+                            name = "${strings["cyclePhaseSection"]} ${indexInPhase + 1}",
+                            timer = mapToTimer(sectionStatus.runningTime, section.duration),
+                            params = mapCentrifugeParams(section.params),
+                            active = sectionStatus.active
+                        )
+                    }
+                }
+
+                else -> null
+            }
+        }
     }
 
-    private fun mapToPhaseActiveState(allPhases: List<CyclePhase>, phase: CyclePhase): CyclePhaseUi.ActiveState {
+    private fun mapToTimer(runningTime: Measure<Time>, duration: Measure<Time>? = null): String {
+        val durationString = duration?.clockFormat() ?: "-"
+        return if (runningTime == 0 * seconds) durationString
+        else "${runningTime.clockFormat()} / $durationString"
+    }
+
+    private fun mapToPhaseActiveState(allPhases: List<PhaseStatus>, phase: PhaseStatus): CyclePhaseUi.ActiveState {
         if (phase.active) return ACTIVE
 
         val phaseIndex = allPhases.indexOf(phase)
@@ -117,10 +148,43 @@ class WasherInfoMapper(
         else NOT_EXECUTED
     }
 
-    private fun mapToTimer(runningTime: Measure<Time>, duration: Measure<Time>? = null): String {
-        val durationString = duration?.clockFormat() ?: "-"
-        return if (runningTime == 0 * seconds) durationString
-        else "${runningTime.clockFormat()} / $durationString"
+    private fun mapWashParams(washParams: WashParams): List<SectionParamUi> {
+        return listOf(
+            SectionParamUi(
+                name = strings["washParams_spinPeriod"],
+                value = washParams.spinPeriod.optionalDecimal()
+            ),
+            SectionParamUi(
+                name = strings["washParams_restPeriod"],
+                value = washParams.restPeriod.optionalDecimal()
+            ),
+            SectionParamUi(
+                name = strings["washParams_spinSpeed"],
+                value = washParams.spinSpeed.optionalDecimal()
+            )
+        ).run {
+            washParams.temperature?.let {
+                plus(
+                    SectionParamUi(
+                        name = strings["washParams_temperature"],
+                        value = it.optionalDecimal()
+                    )
+                )
+            } ?: this
+        }
+    }
+
+    private fun mapCentrifugeParams(centrifugeParams: CentrifugeParams): List<SectionParamUi> {
+        return listOf(
+            SectionParamUi(
+                name = strings["washParams_spinSpeed"],
+                value = centrifugeParams.spinSpeed.optionalDecimal()
+            ),
+            SectionParamUi(
+                name = strings["washParams_duration"],
+                value = centrifugeParams.duration.optionalDecimal()
+            )
+        )
     }
 
     private fun mapToWasherStateSection(washer: StandardLaundryWasherBase): WasherStateSectionUi? {

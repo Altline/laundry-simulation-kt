@@ -198,13 +198,13 @@ class MainViewModel(
             else SoundClip.CycleSelectOff
         )
         with(washer) {
-            val currentCycleIndex = washCycles.indexOf(selectedWashCycle)
+            val currentCycleIndex = washCycles.indexOf(selectedCycle)
             val nextCycleIndex = kotlin.run {
                 if (reverse) currentCycleIndex - 1
                 else currentCycleIndex + 1
             }.wrapAround(washCycles.indices)
 
-            selectedWashCycle = washCycles[nextCycleIndex]
+            selectedCycle = washCycles[nextCycleIndex]
         }
         updateWasherData()
     }

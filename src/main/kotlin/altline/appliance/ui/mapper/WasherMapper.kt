@@ -34,14 +34,14 @@ class WasherMapper(
         onRpmUp: () -> Unit,
         onRpmDown: () -> Unit
     ): WasherPanelUi {
-        val shownWashCycle = washer.activeWashCycle ?: washer.selectedWashCycle
+        val shownWashCycle = washer.activeCycle ?: washer.selectedCycle
         return WasherPanelUi(
             dispenserPanelUi = DispenserPanelUi(
                 onClick = onDispenserClick
             ),
             controlPanelUi = ControlPanelUi(
                 washCycles = washer.washCycles.map(this::mapToWashCycleName),
-                selectedCycle = mapToWashCycleName(washer.selectedWashCycle),
+                selectedCycle = mapToWashCycleName(washer.selectedCycle),
                 onSelectNextCycle = onSelectNextCycle,
                 onPowerOnOff = onPowerOnOff,
                 onStartPause = onStartPause,
@@ -52,7 +52,8 @@ class WasherMapper(
             ),
             statusPanelUi = if (washer.poweredOn) {
                 StatusPanelUi(
-                    timer = shownWashCycle.estimatedDuration.clockFormat(showSeconds = false),
+                    timer = washer.remainingTime?.clockFormat(showSeconds = false)
+                        ?: shownWashCycle.duration.clockFormat(showSeconds = false),
                     temperature = shownWashCycle.selectedTemperatureSetting?.optionalDecimal() ?: "-",
                     spinSpeed = "${shownWashCycle.selectedSpinSpeedSetting?.`in`(rpm)?.roundToInt() ?: "-"}"
                 )
