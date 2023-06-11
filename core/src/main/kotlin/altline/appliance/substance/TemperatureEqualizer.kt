@@ -1,13 +1,12 @@
 package altline.appliance.substance
 
-import altline.appliance.common.AmbientTemperature
+import altline.appliance.common.DefaultAmbientTemperature
 import altline.appliance.common.RefreshPeriod
 import altline.appliance.common.TimeFactor
 import altline.appliance.measure.Temperature
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.repeatPeriodically
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.Time
+import io.nacular.measured.units.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,7 +15,7 @@ import kotlinx.coroutines.launch
  * A manager for substances that need to passively equalize their temperature to the given [ambientTemperature].
  */
 class TemperatureEqualizer(
-    var ambientTemperature: Measure<Temperature> = AmbientTemperature,
+    var ambientTemperature: Measure<Temperature> = DefaultAmbientTemperature,
     var overridingAmbientSubstance: Substance? = null
 ) {
     /**

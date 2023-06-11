@@ -1,6 +1,7 @@
 package altline.appliance.data
 
 import altline.appliance.common.Body
+import altline.appliance.common.DefaultAmbientTemperature
 import altline.appliance.electricity.transit.InfiniteElectricalSource
 import altline.appliance.fabric.Clothing
 import altline.appliance.fabric.Shirt
@@ -18,6 +19,8 @@ import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
 class World {
+
+    val ambientTemperature = DefaultAmbientTemperature
 
     val washer: HouseholdLaundryWasher
     val laundry: Set<Body>

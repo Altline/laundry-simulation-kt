@@ -1,7 +1,6 @@
 package altline.appliance.ui
 
 import altline.appliance.audio.SoundClip
-import altline.appliance.common.AmbientTemperature
 import altline.appliance.common.Body
 import altline.appliance.common.RefreshPeriod
 import altline.appliance.data.World
@@ -155,7 +154,7 @@ class MainViewModel(
             MutableSubstance(
                 type = selectedAdditive,
                 amount = amount,
-                temperature = AmbientTemperature
+                temperature = world.ambientTemperature
             )
         )
         updateDispenser()

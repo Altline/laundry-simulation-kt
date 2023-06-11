@@ -1,6 +1,6 @@
 package altline.appliance.common
 
 import altline.appliance.measure.Temperature.Companion.celsius
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 
-val AmbientTemperature = 20 * celsius
+val DefaultAmbientTemperature = 20 * celsius
