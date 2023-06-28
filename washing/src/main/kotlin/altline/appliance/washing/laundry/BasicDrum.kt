@@ -95,13 +95,14 @@ class BasicDrum(
                 body.soak(storedSubstance)
             }
 
-            val resoakAmount = minOf(body.soakedSubstance.amount, excessLiquidAmount) *
-                    config.nominalResoakFactor * spinEffectiveness * seconds
+            val maxResoakAmount = minOf(body.soakedSubstance.amount, excessLiquidAmount)
+            val resoakFactor = config.nominalResoakFactor * spinEffectiveness
+            val resoakAmount = calcGrowth(maxResoakAmount, resoakFactor, seconds)
             body.resoakWith(storedSubstance, resoakAmount)
         }
 
         val effectiveCleaningPower = calcCleaningPower(body) * spinEffectiveness
-        val stainAmountToClear = body.stainSubstance.amount * effectiveCleaningPower * seconds
+        val stainAmountToClear = calcGrowth(body.stainSubstance.amount, effectiveCleaningPower, seconds)
         val clearedStain = body.clearStain(stainAmountToClear)
         storedSubstance.add(clearedStain)
     }
@@ -129,7 +130,8 @@ class BasicDrum(
     private fun dry(body: Body, spinSpeed: Measure<Spin>, seconds: Double) {
         if (body !is Soakable) return
 
-        val amountToDry = body.soakedSubstance.amount * (spinSpeed `in` rpm) * seconds / 600000
+        val dryingRate = (spinSpeed `in` rpm) / 600000
+        val amountToDry = calcGrowth(body.soakedSubstance.amount, dryingRate, seconds)
         val driedSubstance = body.dry(amountToDry)
         storedSubstance.add(driedSubstance)
     }
