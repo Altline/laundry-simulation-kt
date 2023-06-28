@@ -2,7 +2,11 @@ package altline.appliance.washing
 
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.Volume.Companion.milliliters
-import altline.appliance.substance.*
+import altline.appliance.substance.CommonSubstanceTypes
+import altline.appliance.substance.Substance
+import altline.appliance.substance.SubstanceType
+import altline.appliance.substance.calcNominal
+import altline.appliance.washing.laundry.CommonFabricSofteners
 import io.nacular.measured.units.*
 
 /** The part of a basic stain substance able to be removed in one second of washing. */

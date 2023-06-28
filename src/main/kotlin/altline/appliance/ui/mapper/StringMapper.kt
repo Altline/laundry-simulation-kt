@@ -5,13 +5,13 @@ import altline.appliance.fabric.Clothing
 import altline.appliance.fabric.Fabric
 import altline.appliance.fabric.Shirt
 import altline.appliance.measure.sumOf
-import altline.appliance.substance.CommonFabricSofteners
 import altline.appliance.substance.CommonSubstanceTypes
 import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.util.optionalDecimal
 import altline.appliance.washing.CommonDetergents
+import altline.appliance.washing.laundry.CommonFabricSofteners
 import altline.appliance.washing.laundry.washCycle.phase.*
 
 class StringMapper {

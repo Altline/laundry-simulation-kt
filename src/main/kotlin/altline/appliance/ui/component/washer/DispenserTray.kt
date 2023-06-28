@@ -4,7 +4,6 @@ import altline.appliance.data.AllSubstanceTypes
 import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.measure.divSameUnit
-import altline.appliance.substance.CommonFabricSofteners
 import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.SubstancePicker
 import altline.appliance.ui.component.SubstanceTile
@@ -14,6 +13,7 @@ import altline.appliance.ui.theme.SubstanceColors
 import altline.appliance.ui.util.modifiedColor
 import altline.appliance.ui.util.optionalDecimal
 import altline.appliance.washing.CommonDetergents
+import altline.appliance.washing.laundry.CommonFabricSofteners
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,8 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.nacular.measured.units.Measure
-import io.nacular.measured.units.times
+import io.nacular.measured.units.*
 
 @Composable
 fun DispenserTray(data: DispenserTrayUi) {

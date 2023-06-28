@@ -5,9 +5,9 @@ import altline.appliance.fabric.Clothing
 import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.measure.sumOf
 import altline.appliance.substance.Soakable
-import altline.appliance.substance.fresheningPotential
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
+import altline.appliance.washing.laundry.fresheningPotential
 import io.nacular.measured.units.*
 
 class LaundryMapper(

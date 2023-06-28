@@ -1,9 +1,13 @@
 package altline.appliance.ui.mapper
 
 import altline.appliance.measure.Volume.Companion.milliliters
-import altline.appliance.substance.*
+import altline.appliance.substance.CommonSubstanceTypes
+import altline.appliance.substance.Substance
+import altline.appliance.substance.SubstanceType
+import altline.appliance.substance.isNotEmpty
 import altline.appliance.ui.theme.SubstanceColors
 import altline.appliance.washing.CommonDetergents
+import altline.appliance.washing.laundry.CommonFabricSofteners
 import androidx.compose.ui.graphics.Color
 
 class ColorMapper {

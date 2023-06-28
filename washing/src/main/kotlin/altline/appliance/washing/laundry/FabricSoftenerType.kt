@@ -1,4 +1,7 @@
-package altline.appliance.substance
+package altline.appliance.washing.laundry
+
+import altline.appliance.substance.SubstanceConsistency
+import altline.appliance.substance.SubstanceType
 
 interface FabricSoftenerType : SubstanceType {
     val fresheningPotential: Double

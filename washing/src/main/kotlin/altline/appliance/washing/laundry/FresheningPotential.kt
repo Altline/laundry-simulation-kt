@@ -1,5 +1,7 @@
-package altline.appliance.substance
+package altline.appliance.washing.laundry
 
+import altline.appliance.substance.Substance
+import altline.appliance.substance.SubstanceType
 import io.nacular.measured.units.*
 
 val Substance.fresheningPotential: Double
