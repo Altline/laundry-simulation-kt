@@ -61,8 +61,8 @@ class BasicDrum(
         }
     }
 
-    override fun unloadAll(): List<Body> {
-        return ArrayList(load).also { _load.clear() }
+    override fun unloadAll(): Set<Body> {
+        return load.toSet().also { _load.clear() }
     }
 
     override fun pushFlow(flowable: MutableSubstance, timeFrame: Measure<Time>, flowId: Long): Measure<Volume> {

@@ -21,5 +21,5 @@ interface Drum : Spinnable {
 
     fun load(vararg items: Body)
     fun unload(vararg items: Body)
-    fun unloadAll(): List<Body>
+    fun unloadAll(): Set<Body>
 }

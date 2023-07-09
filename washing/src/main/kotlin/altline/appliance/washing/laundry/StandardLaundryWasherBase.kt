@@ -135,8 +135,8 @@ abstract class StandardLaundryWasherBase internal constructor(
         if (!doorLocked) drum.unload(*items)
     }
 
-    override fun unloadAll(): List<Body> {
-        return if (!doorLocked) drum.unloadAll() else emptyList()
+    override fun unloadAll(): Set<Body> {
+        return if (!doorLocked) drum.unloadAll() else emptySet()
     }
 
     override fun start() = controller.startCycle(machineScope)
