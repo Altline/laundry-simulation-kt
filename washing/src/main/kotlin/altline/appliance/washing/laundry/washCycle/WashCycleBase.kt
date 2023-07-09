@@ -10,9 +10,6 @@ annotation class WashCycleDsl
 @WashCycleDsl
 abstract class WashCycleBase : LaundryWashCycle {
 
-    final override var stages: List<CycleStage> = emptyList()
-        private set
-
     override val selectedTemperatureSetting: Measure<Temperature>?
         get() = selectedTemperatureSettingIndex?.let { temperatureSettings[it] }
 
@@ -20,7 +17,6 @@ abstract class WashCycleBase : LaundryWashCycle {
         set(value) {
             require(value in temperatureSettings.indices || value == null)
             field = value
-            stages.forEach { it.setTemperature(selectedTemperatureSetting) }
         }
 
     override val selectedSpinSpeedSetting: Measure<Spin>?
@@ -30,13 +26,25 @@ abstract class WashCycleBase : LaundryWashCycle {
         set(value) {
             require(value in spinSpeedSettings.indices || value == null)
             field = value
-            stages.forEach { it.setSpinSpeed(selectedSpinSpeedSetting) }
         }
 
-    protected fun addStage(init: CycleStage.() -> Unit): CycleStage {
-        return CycleStage().also {
-            it.init()
-            stages += it
+    protected fun buildCycle(recipe: StageBuilder.() -> Unit): List<CycleStage> {
+        return StageBuilder().apply(recipe).get()
+    }
+
+    @WashCycleDsl
+    protected class StageBuilder {
+        private val stages = mutableListOf<CycleStage>()
+
+        fun stage(init: CycleStage.() -> Unit): CycleStage {
+            return CycleStage().also {
+                it.init()
+                stages += it
+            }
+        }
+
+        fun get(): List<CycleStage> {
+            return stages.toList()
         }
     }
 }

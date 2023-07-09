@@ -9,5 +9,5 @@ data class WashParams(
     val spinPeriod: Measure<Time>,
     val restPeriod: Measure<Time>,
     val spinSpeed: Measure<Spin>,
-    var temperature: Measure<Temperature>? = null
+    val temperature: Measure<Temperature>? = null
 )

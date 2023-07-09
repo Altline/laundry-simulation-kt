@@ -14,30 +14,34 @@ class RinseCycle : WashCycleBase() {
         .map { it * rpm }
 
     init {
-        addStage {
-            detergentFillPhase(15 * liters)
-            washPhase {
-                section(
-                    duration = 10 * minutes,
+        selectedTemperatureSettingIndex = null
+        selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
+    }
+
+    override fun getStages(): List<CycleStage> {
+        return buildCycle {
+            stage {
+                detergentFillPhase(15 * liters)
+                washPhase {
+                    section(
+                        duration = 10 * minutes,
+                        spinPeriod = 5 * seconds,
+                        restPeriod = 5 * seconds,
+                        spinSpeed = 60 * rpm
+                    )
+                }
+                drainPhase(
+                    duration = 1.5 * minutes,
                     spinPeriod = 5 * seconds,
                     restPeriod = 5 * seconds,
                     spinSpeed = 60 * rpm
                 )
+                spinPhase(
+                    duration = 1 * minutes,
+                    spinSpeed = 0 * rpm,
+                    endDelay = 32 * seconds
+                )
             }
-            drainPhase(
-                duration = 1.5 * minutes,
-                spinPeriod = 5 * seconds,
-                restPeriod = 5 * seconds,
-                spinSpeed = 60 * rpm
-            )
-            spinPhase(
-                duration = 1 * minutes,
-                spinSpeed = 0 * rpm,
-                endDelay = 32 * seconds
-            )
         }
-
-        selectedTemperatureSettingIndex = null
-        selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
     }
 }

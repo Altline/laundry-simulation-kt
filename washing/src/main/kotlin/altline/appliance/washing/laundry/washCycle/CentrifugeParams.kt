@@ -5,5 +5,5 @@ import io.nacular.measured.units.*
 
 data class CentrifugeParams(
     val duration: Measure<Time>,
-    var spinSpeed: Measure<Spin>
+    val spinSpeed: Measure<Spin>
 )

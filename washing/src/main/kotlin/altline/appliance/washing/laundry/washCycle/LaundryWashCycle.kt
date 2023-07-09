@@ -6,10 +6,8 @@ import altline.appliance.measure.sumOf
 import io.nacular.measured.units.*
 
 interface LaundryWashCycle {
-    val stages: List<CycleStage>
-
     val duration: Measure<Time>
-        get() = stages.sumOf { it.duration }
+        get() = getStages().sumOf { it.duration }
 
     val temperatureSettings: List<Measure<Temperature>>
     val selectedTemperatureSetting: Measure<Temperature>?
@@ -18,4 +16,6 @@ interface LaundryWashCycle {
     val spinSpeedSettings: List<Measure<Spin>>
     val selectedSpinSpeedSetting: Measure<Spin>?
     var selectedSpinSpeedSettingIndex: Int?
+
+    fun getStages(): List<CycleStage>
 }

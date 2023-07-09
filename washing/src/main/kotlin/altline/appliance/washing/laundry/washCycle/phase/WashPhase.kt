@@ -5,7 +5,6 @@ import altline.appliance.measure.Temperature
 import altline.appliance.measure.sumOf
 import altline.appliance.washing.laundry.washCycle.WashCycleDsl
 import altline.appliance.washing.laundry.washCycle.WashParams
-import altline.appliance.washing.laundry.washCycle.phase.DrainPhase.Section.FocusedDrain.endDelay
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
@@ -16,11 +15,7 @@ class WashPhase : CyclePhase {
         private set
 
     override val duration: Measure<Time>
-        get() = sections.sumOf { it.duration } + endDelay
-
-    fun setTemperature(temperature: Measure<Temperature>?) {
-        sections.forEach { it.setTemperature(temperature) }
-    }
+        get() = sections.sumOf { it.duration }
 
     fun section(
         duration: Measure<Time>,
@@ -45,9 +40,5 @@ class WashPhase : CyclePhase {
 
         override val duration: Measure<Time>
             get() = params.duration + endDelay
-
-        fun setTemperature(temperature: Measure<Temperature>?) {
-            if (adjustableTemperature) params.temperature = temperature
-        }
     }
 }

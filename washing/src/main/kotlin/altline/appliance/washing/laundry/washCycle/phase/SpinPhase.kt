@@ -2,6 +2,7 @@ package altline.appliance.washing.laundry.washCycle.phase
 
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
+import altline.appliance.measure.isNegligible
 import altline.appliance.measure.sumOf
 import altline.appliance.washing.laundry.washCycle.CentrifugeParams
 import altline.appliance.washing.laundry.washCycle.WashCycleDsl
@@ -15,16 +16,10 @@ class SpinPhase : CyclePhase {
         private set
 
     override val duration: Measure<Time>
-        get() = if (disabled) 0 * seconds
-        else sections.sumOf { it.duration }
+        get() = sections.sumOf { it.duration }
 
-    var disabled: Boolean = false
-        private set
-
-    fun setSpinSpeed(spinSpeed: Measure<Spin>?) {
-        disabled = spinSpeed == 0 * rpm
-        sections.forEach { it.setSpinSpeed(spinSpeed) }
-    }
+    val disabled: Boolean
+        get() = duration.isNegligible()
 
     fun section(
         duration: Measure<Time>,
@@ -48,9 +43,5 @@ class SpinPhase : CyclePhase {
         override val duration: Measure<Time>
             get() = if (params.spinSpeed != 0 * rpm) params.duration + endDelay
             else 0 * seconds
-
-        fun setSpinSpeed(spinSpeed: Measure<Spin>?) {
-            if (adjustableSpeed) params.spinSpeed = spinSpeed ?: (0 * rpm)
-        }
     }
 }

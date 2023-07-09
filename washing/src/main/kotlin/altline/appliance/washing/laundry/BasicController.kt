@@ -62,12 +62,12 @@ open class BasicController(
             if (value in washCycles) {
                 selectedCycleStatus =
                     if (value == activeCycle) activeCycleStatus!!
-                    else value.stages.map { it.toStatusObject() }
+                    else value.getStages().map { it.toStatusObject() }
                 field = value
             } else log.warn("The given wash cycle does not exist for the current washer ($value).")
         }
 
-    final override var selectedCycleStatus: List<StageStatus> = selectedCycle.stages.map { it.toStatusObject() }
+    final override var selectedCycleStatus: List<StageStatus> = selectedCycle.getStages().map { it.toStatusObject() }
         private set
 
     private var activeCycleStatus: List<StageStatus>? = null
@@ -285,21 +285,19 @@ open class BasicController(
 
     private suspend fun wash(params: WashParams) {
         with(params) {
-            val setTemperature = temperature
-            if (setTemperature != null) {
-                thermostat.triggerSetting = setTemperature
-            }
 
             val cycleCount = (duration / (spinPeriod + restPeriod)).roundToInt()
             repeat(cycleCount) { i ->
-                val direction = if (i % 2 == 0) SpinDirection.Positive else SpinDirection.Negative
+                val setTemperature = activeCycle?.selectedTemperatureSetting
                 val currentTemperature = drum.excessLiquid.temperature
                 if (setTemperature != null && currentTemperature != null) {
+                    thermostat.triggerSetting = setTemperature
                     thermostat.check(currentTemperature)
                 } else if (drum.heater.running) {
                     drum.heater.stop()
                 }
 
+                val direction = if (i % 2 == 0) SpinDirection.Positive else SpinDirection.Negative
                 spin(direction, spinSpeed, spinPeriod)
                 delay(restPeriod / SpeedModifier)
             }

@@ -16,41 +16,45 @@ class CottonCycle : WashCycleBase() {
         .map { it * rpm }
 
     init {
-        addStage {
-            detergentFillPhase(1 * liters)
-            washPhase {
-                section(
-                    duration = 0.2 * minutes,
-                    spinPeriod = 5 * seconds,
-                    restPeriod = 5 * seconds,
-                    spinSpeed = 50 * rpm
-                )
-                section(
-                    duration = 0.2 * minutes,
-                    spinPeriod = 5 * seconds,
-                    restPeriod = 5 * seconds,
-                    spinSpeed = 50 * rpm
-                )
-            }
-            drainPhase(
-                duration = 0.1 * minutes,
-                spinPeriod = 5 * seconds,
-                restPeriod = 5 * seconds,
-                spinSpeed = 60 * rpm
-            )
-            spinPhase {
-                section(
-                    duration = 0.1 * minutes,
-                    spinSpeed = 500 * rpm
-                )
-                section(
-                    duration = 1 * minutes,
-                    endDelay = 32 * seconds
-                )
-            }
-        }
-
         selectedTemperatureSettingIndex = 0
         selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
+    }
+
+    override fun getStages(): List<CycleStage> {
+        return buildCycle {
+            stage {
+                detergentFillPhase(1 * liters)
+                washPhase {
+                    section(
+                        duration = 0.2 * minutes,
+                        spinPeriod = 5 * seconds,
+                        restPeriod = 5 * seconds,
+                        spinSpeed = 50 * rpm
+                    )
+                    section(
+                        duration = 0.2 * minutes,
+                        spinPeriod = 5 * seconds,
+                        restPeriod = 5 * seconds,
+                        spinSpeed = 50 * rpm
+                    )
+                }
+                drainPhase(
+                    duration = 0.1 * minutes,
+                    spinPeriod = 5 * seconds,
+                    restPeriod = 5 * seconds,
+                    spinSpeed = 60 * rpm
+                )
+                spinPhase {
+                    section(
+                        duration = 0.1 * minutes,
+                        spinSpeed = 500 * rpm
+                    )
+                    section(
+                        duration = 1 * minutes,
+                        endDelay = 32 * seconds
+                    )
+                }
+            }
+        }
     }
 }

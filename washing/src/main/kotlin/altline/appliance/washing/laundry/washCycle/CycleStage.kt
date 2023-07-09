@@ -1,7 +1,6 @@
 package altline.appliance.washing.laundry.washCycle
 
 import altline.appliance.measure.Spin
-import altline.appliance.measure.Temperature
 import altline.appliance.measure.Volume
 import altline.appliance.measure.sumOf
 import altline.appliance.washing.laundry.washCycle.phase.*
@@ -14,16 +13,6 @@ class CycleStage {
 
     val duration: Measure<Time>
         get() = phases.sumOf { it.duration }
-
-    fun setTemperature(temperature: Measure<Temperature>?) {
-        phases.filterIsInstance<WashPhase>()
-            .forEach { it.setTemperature(temperature) }
-    }
-
-    fun setSpinSpeed(spinSpeed: Measure<Spin>?) {
-        phases.filterIsInstance<SpinPhase>()
-            .forEach { it.setSpinSpeed(spinSpeed) }
-    }
 
     fun fillPhase(init: FillPhase.() -> Unit): FillPhase {
         return FillPhase().also {
