@@ -17,6 +17,12 @@ class FillPhase : CyclePhase {
     override val duration: Measure<Time>
         get() = sections.sumOf { it.duration } + endDelay
 
+    fun preWashFillSection(fillToAmount: Measure<Volume>): PreWashFillSection {
+        return PreWashFillSection(fillToAmount).also {
+            sections += it
+        }
+    }
+
     fun detergentFillSection(fillToAmount: Measure<Volume>): DetergentFillSection {
         return DetergentFillSection(fillToAmount).also {
             sections += it
@@ -29,6 +35,7 @@ class FillPhase : CyclePhase {
         }
     }
 
+    data class PreWashFillSection(override val fillToAmount: Measure<Volume>) : Section(fillToAmount)
     data class DetergentFillSection(override val fillToAmount: Measure<Volume>) : Section(fillToAmount)
     data class SoftenerFillSection(override val fillToAmount: Measure<Volume>) : Section(fillToAmount)
 

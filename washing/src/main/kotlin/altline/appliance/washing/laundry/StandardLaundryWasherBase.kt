@@ -161,6 +161,7 @@ abstract class StandardLaundryWasherBase internal constructor(
         else -> start()
     }
 
+    fun togglePreWash() = controller.togglePreWash()
     fun increaseTemperature() = controller.increaseTemperature()
     fun decreaseTemperature() = controller.decreaseTemperature()
     fun increaseSpinSpeed() = controller.increaseSpinSpeed()

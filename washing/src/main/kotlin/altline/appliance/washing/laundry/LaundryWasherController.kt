@@ -22,6 +22,7 @@ interface LaundryWasherController: ElectricalDevice {
     fun powerOn()
     fun powerOff()
 
+    fun togglePreWash(): Boolean
     fun increaseTemperature(): Boolean
     fun decreaseTemperature(): Boolean
     fun increaseSpinSpeed(): Boolean

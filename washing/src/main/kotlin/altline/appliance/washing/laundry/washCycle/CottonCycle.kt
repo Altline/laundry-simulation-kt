@@ -9,11 +9,13 @@ import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.minutes
 import io.nacular.measured.units.Time.Companion.seconds
 
-class CottonCycle : WashCycleBase() {
-    override val temperatureSettings: List<Measure<Temperature>> = listOf(20, 30, 40, 60, 90)
-        .map { it * celsius }
-    override val spinSpeedSettings: List<Measure<Spin>> = listOf(0, 600, 800, 1000, 1200, 1400, 1600)
-        .map { it * rpm }
+class CottonCycle : WashCycleBase(), PreWashCapable {
+    override val temperatureSettings: List<Measure<Temperature>> =
+        listOf(20, 30, 40, 60, 90).map { it * celsius }
+    override val spinSpeedSettings: List<Measure<Spin>> =
+        listOf(0, 600, 800, 1000, 1200, 1400, 1600).map { it * rpm }
+
+    override var preWash: Boolean = false
 
     init {
         selectedTemperatureSettingIndex = 0
@@ -22,6 +24,25 @@ class CottonCycle : WashCycleBase() {
 
     override fun getStages(): List<CycleStage> {
         return buildCycle {
+            if (preWash) {
+                stage {
+                    preWashFillPhase(1 * liters)
+                    washPhase {
+                        section(
+                            duration = 0.2 * minutes,
+                            spinPeriod = 5 * seconds,
+                            restPeriod = 5 * seconds,
+                            spinSpeed = 50 * rpm
+                        )
+                    }
+                    drainPhase(
+                        duration = 0.1 * minutes,
+                        spinPeriod = 5 * seconds,
+                        restPeriod = 5 * seconds,
+                        spinSpeed = 60 * rpm
+                    )
+                }
+            }
             stage {
                 detergentFillPhase(1 * liters)
                 washPhase {

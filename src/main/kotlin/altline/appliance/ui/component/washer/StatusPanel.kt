@@ -1,6 +1,7 @@
 package altline.appliance.ui.component.washer
 
 import altline.appliance.ui.resources.AppIcons
+import altline.appliance.ui.resources.appicons.PreWash
 import altline.appliance.ui.resources.appicons.Spin
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
@@ -35,6 +36,13 @@ fun StatusPanel(
             .padding(12.dp)
     ) {
         if (data != null) {
+            if (data.preWash) {
+                Icon(
+                    imageVector = AppIcons.PreWash,
+                    contentDescription = strings["preWash_contentDesc"]
+                )
+            }
+
             Text(
                 text = data.timer,
                 Modifier.align(Alignment.TopEnd),
@@ -49,12 +57,12 @@ fun StatusPanel(
             ) {
                 Indicator(
                     icon = Icons.Default.DeviceThermostat,
-                    contentDescription = strings["temperature_content_desc"],
+                    contentDescription = strings["temperature_contentDesc"],
                     value = data.temperature
                 )
                 Indicator(
                     icon = AppIcons.Spin,
-                    contentDescription = strings["spinSpeed_content_desc"],
+                    contentDescription = strings["spinSpeed_contentDesc"],
                     value = data.spinSpeed
                 )
             }
@@ -78,14 +86,15 @@ data class StatusPanelUi(
     val timer: String,
     val temperature: String,
     val spinSpeed: String,
-
-    ) {
+    val preWash: Boolean
+) {
     companion object {
         @Composable
         fun preview() = StatusPanelUi(
             timer = "3:20",
             temperature = "40°C",
-            spinSpeed = "1000"
+            spinSpeed = "1000",
+            preWash = true
         )
     }
 }

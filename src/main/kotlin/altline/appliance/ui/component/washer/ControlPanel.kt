@@ -2,6 +2,7 @@ package altline.appliance.ui.component.washer
 
 import altline.appliance.ui.resources.AppIcons
 import altline.appliance.ui.resources.appicons.PlayPause
+import altline.appliance.ui.resources.appicons.PreWash
 import altline.appliance.ui.resources.appicons.Spin
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
@@ -24,7 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.unit.dp
 
@@ -46,7 +49,7 @@ fun ControlPanel(
                 washCycles, selectedCycle, onSelectNextCycle
             )
             RightButtons(
-                onTempUp, onTempDown, onRpmUp, onRpmDown
+                onPreWashClick, onTempUp, onTempDown, onRpmUp, onRpmDown
             )
         }
 
@@ -58,81 +61,89 @@ private fun LeftButtons(
     onPowerOnOff: () -> Unit,
     onStartPause: () -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ControlButton(
-                icon = Icons.Default.PowerSettingsNew,
-                contentDescription = strings["controlPanel_power_contentDesc"],
-                onClick = onPowerOnOff,
-                Modifier.size(16.dp, 60.dp),
-            )
-            ControlButton(
-                icon = AppIcons.PlayPause,
-                contentDescription = strings["controlPanel_start_contentDesc"],
-                onClick = onStartPause,
-                Modifier.size(16.dp, 60.dp),
-            )
-        }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ControlButton(
+            icon = Icons.Default.PowerSettingsNew,
+            contentDescription = strings["controlPanel_power_contentDesc"],
+            onClick = onPowerOnOff,
+            Modifier.size(16.dp, 60.dp),
+        )
+        ControlButton(
+            icon = AppIcons.PlayPause,
+            contentDescription = strings["controlPanel_start_contentDesc"],
+            onClick = onStartPause,
+            Modifier.size(16.dp, 60.dp),
+        )
     }
 }
 
 @Composable
 private fun RightButtons(
+    onPreWashClick: () -> Unit,
     onTempUp: () -> Unit,
     onTempDown: () -> Unit,
     onRpmUp: () -> Unit,
     onRpmDown: () -> Unit
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            Modifier.height(80.dp).offset(y = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ControlButton(
-                icon = Icons.Default.ArrowDropUp,
-                contentDescription = strings["controlPanel_increase_contentDesc"],
-                onClick = onTempUp,
-                Modifier.size(16.dp, 24.dp),
-            )
-            Spacer(Modifier.height(12.dp))
-            ControlButton(
-                icon = Icons.Default.ArrowDropDown,
-                contentDescription = strings["controlPanel_decrease_contentDesc"],
-                onClick = onTempDown,
-                Modifier.size(16.dp, 24.dp),
-            )
-            Icon(
-                Icons.Default.DeviceThermostat,
-                contentDescription = strings["temperature_content_desc"],
-                tint = modifiedColor(alpha = ContentAlpha.medium)
-            )
-        }
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        ControlButton(
+            icon = AppIcons.PreWash,
+            contentDescription = strings["controlPanel_preWash_contentDesc"],
+            onClick = onPreWashClick,
+            modifier = Modifier.size(40.dp, 16.dp)
+        )
 
-        Column(
-            Modifier.height(80.dp).offset(y = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ControlButton(
-                icon = Icons.Default.ArrowDropUp,
-                contentDescription = strings["controlPanel_increase_contentDesc"],
-                onClick = onRpmUp,
-                Modifier.size(16.dp, 24.dp),
-            )
-            Spacer(Modifier.height(12.dp))
-            ControlButton(
-                icon = Icons.Default.ArrowDropDown,
-                contentDescription = strings["controlPanel_decrease_contentDesc"],
-                onClick = onRpmDown,
-                Modifier.size(16.dp, 24.dp),
-            )
-            Icon(
-                AppIcons.Spin,
-                contentDescription = strings["spinSpeed_content_desc"],
-                tint = modifiedColor(alpha = ContentAlpha.medium)
-            )
+            Column(
+                Modifier.height(80.dp).offset(y = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ControlButton(
+                    icon = Icons.Default.ArrowDropUp,
+                    contentDescription = strings["controlPanel_increase_contentDesc"],
+                    onClick = onTempUp,
+                    Modifier.size(16.dp, 24.dp),
+                )
+                Spacer(Modifier.height(12.dp))
+                ControlButton(
+                    icon = Icons.Default.ArrowDropDown,
+                    contentDescription = strings["controlPanel_decrease_contentDesc"],
+                    onClick = onTempDown,
+                    Modifier.size(16.dp, 24.dp),
+                )
+                Icon(
+                    Icons.Default.DeviceThermostat,
+                    contentDescription = strings["temperature_contentDesc"],
+                    tint = modifiedColor(alpha = ContentAlpha.medium)
+                )
+            }
+
+            Column(
+                Modifier.height(80.dp).offset(y = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ControlButton(
+                    icon = Icons.Default.ArrowDropUp,
+                    contentDescription = strings["controlPanel_increase_contentDesc"],
+                    onClick = onRpmUp,
+                    Modifier.size(16.dp, 24.dp),
+                )
+                Spacer(Modifier.height(12.dp))
+                ControlButton(
+                    icon = Icons.Default.ArrowDropDown,
+                    contentDescription = strings["controlPanel_decrease_contentDesc"],
+                    onClick = onRpmDown,
+                    Modifier.size(16.dp, 24.dp),
+                )
+                Icon(
+                    AppIcons.Spin,
+                    contentDescription = strings["spinSpeed_contentDesc"],
+                    tint = modifiedColor(alpha = ContentAlpha.medium)
+                )
+            }
         }
     }
 }
@@ -218,6 +229,21 @@ private fun ControlButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    ControlButton(
+        icon = rememberVectorPainter(icon),
+        contentDescription = contentDescription,
+        onClick = onClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ControlButton(
+    icon: Painter,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick,
         modifier,
@@ -233,6 +259,7 @@ data class ControlPanelUi(
     val onSelectNextCycle: (reverse: Boolean) -> Unit,
     val onPowerOnOff: () -> Unit,
     val onStartPause: () -> Unit,
+    val onPreWashClick: () -> Unit,
     val onTempUp: () -> Unit,
     val onTempDown: () -> Unit,
     val onRpmUp: () -> Unit,
@@ -248,6 +275,7 @@ data class ControlPanelUi(
             onSelectNextCycle = {},
             onPowerOnOff = {},
             onStartPause = {},
+            onPreWashClick = {},
             onTempUp = {},
             onTempDown = {},
             onRpmUp = {},

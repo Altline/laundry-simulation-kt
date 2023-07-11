@@ -7,7 +7,6 @@ import io.nacular.measured.units.*
 @DslMarker
 annotation class WashCycleDsl
 
-@WashCycleDsl
 abstract class WashCycleBase : LaundryWashCycle {
 
     override val selectedTemperatureSetting: Measure<Temperature>?

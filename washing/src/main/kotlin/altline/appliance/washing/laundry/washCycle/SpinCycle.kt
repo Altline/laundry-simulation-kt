@@ -9,8 +9,8 @@ import io.nacular.measured.units.Time.Companion.seconds
 
 class SpinCycle : WashCycleBase() {
     override val temperatureSettings: List<Measure<Temperature>> = emptyList()
-    override val spinSpeedSettings: List<Measure<Spin>> = listOf(600, 800, 1000, 1200, 1400, 1600)
-        .map { it * rpm }.toList()
+    override val spinSpeedSettings: List<Measure<Spin>> =
+        listOf(600, 800, 1000, 1200, 1400, 1600).map { it * rpm }.toList()
 
     init {
         selectedTemperatureSettingIndex = null

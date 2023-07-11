@@ -13,10 +13,7 @@ import altline.appliance.washing.laundry.PreWashSlottedDispenser
 import altline.appliance.washing.laundry.SimpleSlottedDispenser
 import altline.appliance.washing.laundry.SlottedDispenser
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
-import altline.appliance.washing.laundry.washCycle.CottonCycle
-import altline.appliance.washing.laundry.washCycle.LaundryWashCycle
-import altline.appliance.washing.laundry.washCycle.RinseCycle
-import altline.appliance.washing.laundry.washCycle.SpinCycle
+import altline.appliance.washing.laundry.washCycle.*
 import io.nacular.measured.units.*
 import kotlin.math.roundToInt
 
@@ -29,6 +26,7 @@ class WasherMapper(
         onSelectNextCycle: (reverse: Boolean) -> Unit,
         onPowerOnOff: () -> Unit,
         onStartPause: () -> Unit,
+        onPreWashClick: () -> Unit,
         onTempUp: () -> Unit,
         onTempDown: () -> Unit,
         onRpmUp: () -> Unit,
@@ -45,6 +43,7 @@ class WasherMapper(
                 onSelectNextCycle = onSelectNextCycle,
                 onPowerOnOff = onPowerOnOff,
                 onStartPause = onStartPause,
+                onPreWashClick = onPreWashClick,
                 onTempUp = onTempUp,
                 onTempDown = onTempDown,
                 onRpmUp = onRpmUp,
@@ -55,7 +54,8 @@ class WasherMapper(
                     timer = washer.remainingTime?.clockFormat(showSeconds = false)
                         ?: shownWashCycle.duration.clockFormat(showSeconds = false),
                     temperature = shownWashCycle.selectedTemperatureSetting?.optionalDecimal() ?: "-",
-                    spinSpeed = "${shownWashCycle.selectedSpinSpeedSetting?.`in`(rpm)?.roundToInt() ?: "-"}"
+                    spinSpeed = "${shownWashCycle.selectedSpinSpeedSetting?.`in`(rpm)?.roundToInt() ?: "-"}",
+                    preWash = (shownWashCycle as? PreWashCapable)?.preWash ?: false
                 )
             } else null,
             drumUi = DrumUi(

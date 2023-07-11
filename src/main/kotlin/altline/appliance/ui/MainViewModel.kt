@@ -21,6 +21,7 @@ import altline.appliance.ui.mapper.WasherMapper
 import altline.appliance.util.wrapAround
 import altline.appliance.washing.CommonDetergents
 import altline.appliance.washing.laundry.SlottedDispenser
+import altline.appliance.washing.laundry.washCycle.PreWashCapable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -106,6 +107,7 @@ class MainViewModel(
             onSelectNextCycle = this::selectNextCycle,
             onPowerOnOff = this::togglePower,
             onStartPause = this::toggleCycleRun,
+            onPreWashClick = this::togglePreWash,
             onTempUp = this::increaseTemperature,
             onTempDown = this::decreaseTemperature,
             onRpmUp = this::increaseSpinSpeed,
@@ -226,6 +228,22 @@ class MainViewModel(
         )
         washer.toggleCycleRun()
         updateWasherData()
+    }
+
+    private fun togglePreWash() {
+        val success = washer.togglePreWash()
+        updateWasherData()
+        soundPlayer.playClip(
+            if (washer.poweredOn) {
+                if (success) {
+                    when ((washer.selectedCycle as? PreWashCapable)?.preWash) {
+                        true -> SoundClip.OptionHigh
+                        false -> SoundClip.OptionLow
+                        null -> SoundClip.OptionDenied
+                    }
+                } else SoundClip.OptionDenied
+            } else SoundClip.LargeButtonPress
+        )
     }
 
     private fun increaseTemperature() {

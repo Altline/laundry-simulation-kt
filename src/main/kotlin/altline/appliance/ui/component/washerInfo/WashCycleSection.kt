@@ -45,8 +45,9 @@ fun WashCycleSection(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            for (stage in data.stages) {
+            data.stages.forEachIndexed { index, stage ->
                 CycleStage(stage)
+                if (index != data.stages.lastIndex) Divider()
             }
         }
     }

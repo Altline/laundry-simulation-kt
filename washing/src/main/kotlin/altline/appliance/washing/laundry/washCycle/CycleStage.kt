@@ -21,6 +21,12 @@ class CycleStage {
         }
     }
 
+    fun preWashFillPhase(fillToAmount: Measure<Volume>): FillPhase {
+        return fillPhase {
+            preWashFillSection(fillToAmount)
+        }
+    }
+
     fun detergentFillPhase(fillToAmount: Measure<Volume>): FillPhase {
         return fillPhase {
             detergentFillSection(fillToAmount)

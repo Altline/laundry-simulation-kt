@@ -60,14 +60,14 @@ open class BasicController(
     final override var selectedCycle: LaundryWashCycle = washCycles.first()
         set(value) {
             if (value in washCycles) {
+                field = value
                 selectedCycleStatus =
                     if (value == activeCycle) activeCycleStatus!!
-                    else value.getStages().map { it.toStatusObject() }
-                field = value
+                    else getCycleStatus(value)
             } else log.warn("The given wash cycle does not exist for the current washer ($value).")
         }
 
-    final override var selectedCycleStatus: List<StageStatus> = selectedCycle.getStages().map { it.toStatusObject() }
+    final override var selectedCycleStatus: List<StageStatus> = getCycleStatus(selectedCycle)
         private set
 
     private var activeCycleStatus: List<StageStatus>? = null
@@ -99,12 +99,25 @@ open class BasicController(
      * Some operations get ignored while an exclusive operation is running. */
     private var exclusiveOperationRunning = false
 
+    private fun getCycleStatus(washCycle: LaundryWashCycle): List<StageStatus> {
+        return washCycle.getStages().map { it.toStatusObject() }
+    }
+
     override fun powerOn() {
         if (!poweredOn && powerInlet.isConnected) electricalDevice.start()
     }
 
     override fun powerOff() {
         if (poweredOn && !cycleRunning && !exclusiveOperationRunning) electricalDevice.stop()
+    }
+
+    override fun togglePreWash(): Boolean {
+        if (!poweredOn || cycleRunning) return false
+        val cycle = selectedCycle
+        if (cycle !is PreWashCapable) return false
+        cycle.preWash = !cycle.preWash
+        selectedCycleStatus = getCycleStatus(selectedCycle)
+        return true
     }
 
     override fun increaseTemperature(): Boolean {
