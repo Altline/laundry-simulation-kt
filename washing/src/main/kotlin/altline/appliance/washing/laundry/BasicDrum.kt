@@ -12,6 +12,7 @@ import altline.appliance.spin.SpinDirection
 import altline.appliance.substance.*
 import altline.appliance.substance.transit.Reservoir
 import altline.appliance.washing.cleaningPower
+import altline.appliance.washing.stainHardness
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
@@ -108,6 +109,7 @@ class BasicDrum(
     }
 
     private fun calcCleaningPower(body: Body): Double {
+        val hardnessCoefficient = 1 - body.stainSubstance.stainHardness
         return if (body is Soakable) {
             if (body.soakedSubstance.isEmpty()) return 0.0
 
@@ -116,14 +118,14 @@ class BasicDrum(
                     .coerceIn(0.0, 1.0)
             val temperatureCoefficient = (body.soakedSubstance.temperature!! / (100 * celsius))
                 .coerceIn(0.0, 1.0)
-            body.soakedSubstance.cleaningPower * soakCoefficient * temperatureCoefficient
+            body.soakedSubstance.cleaningPower * soakCoefficient * temperatureCoefficient * hardnessCoefficient
 
         } else {
             if (storedSubstance.isEmpty()) return 0.0
 
             val temperatureCoefficient = (storedSubstance.temperature!! / (100 * celsius))
                 .coerceIn(0.0, 1.0)
-            storedSubstance.cleaningPower * temperatureCoefficient
+            storedSubstance.cleaningPower * temperatureCoefficient * hardnessCoefficient
         }
     }
 
