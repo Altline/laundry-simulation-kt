@@ -7,6 +7,8 @@ import altline.appliance.measure.divSameUnit
 import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.SubstancePicker
 import altline.appliance.ui.component.SubstanceTile
+import altline.appliance.ui.resources.AppIcons
+import altline.appliance.ui.resources.appicons.Softener
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.SubstanceColors
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
@@ -126,6 +129,11 @@ private fun Slot(data: DispenserSlotUi, height: Dp) {
     val width = ((data.capacity `in` milliliters) / height.value * 100).dp
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            imageVector = data.icon,
+            contentDescription = data.iconContentDescription
+        )
+
         IconButton(onClick = { data.onAdditiveAdd(0.1 * data.capacity) }) {
             Icon(
                 Icons.Default.Add,
@@ -277,6 +285,8 @@ data class DispenserSlotUi(
     val capacity: Measure<Volume>,
     val additiveAmount: Measure<Volume>,
     val additiveColor: Color?,
+    val icon: ImageVector,
+    val iconContentDescription: String,
     val onAdditiveAdd: (Measure<Volume>) -> Unit,
     val onAdditiveRemove: (Measure<Volume>) -> Unit
 ) {
@@ -286,6 +296,8 @@ data class DispenserSlotUi(
             capacity = 100 * milliliters,
             additiveAmount = 40 * milliliters,
             additiveColor = SubstanceColors.BasicDetergent,
+            icon = AppIcons.Softener,
+            iconContentDescription = "Softener",
             onAdditiveAdd = {},
             onAdditiveRemove = {}
         )

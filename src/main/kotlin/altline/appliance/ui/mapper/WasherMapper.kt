@@ -5,6 +5,10 @@ import altline.appliance.measure.Volume
 import altline.appliance.spin.SpinDirection
 import altline.appliance.substance.SubstanceType
 import altline.appliance.ui.component.washer.*
+import altline.appliance.ui.resources.AppIcons
+import altline.appliance.ui.resources.appicons.Detergent
+import altline.appliance.ui.resources.appicons.PreWash
+import altline.appliance.ui.resources.appicons.Softener
 import altline.appliance.ui.resources.get
 import altline.appliance.ui.resources.strings
 import altline.appliance.ui.util.clockFormat
@@ -14,6 +18,7 @@ import altline.appliance.washing.laundry.SimpleSlottedDispenser
 import altline.appliance.washing.laundry.SlottedDispenser
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
 import altline.appliance.washing.laundry.washCycle.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import io.nacular.measured.units.*
 import kotlin.math.roundToInt
 
@@ -87,11 +92,15 @@ class WasherMapper(
                 preWashSlot = null,
                 mainSlot = mapDispenserSlot(
                     tray.mainDetergentSlot,
+                    icon = AppIcons.Detergent,
+                    iconContentDescription = strings["detergent_contentDesc"],
                     onAdditiveAdd = onAdditiveAdd,
                     onAdditiveRemove = onAdditiveRemove
                 ),
                 softenerSlot = mapDispenserSlot(
                     tray.mainSoftenerSlot,
+                    icon = AppIcons.Softener,
+                    iconContentDescription = strings["softener_contentDesc"],
                     onAdditiveAdd = onAdditiveAdd,
                     onAdditiveRemove = onAdditiveRemove
                 ),
@@ -103,16 +112,22 @@ class WasherMapper(
             is PreWashSlottedDispenser.Tray -> DispenserTrayUi(
                 preWashSlot = mapDispenserSlot(
                     tray.preWashDetergentSlot,
+                    icon = AppIcons.PreWash,
+                    iconContentDescription = strings["preWash_contentDesc"],
                     onAdditiveAdd = onAdditiveAdd,
                     onAdditiveRemove = onAdditiveRemove
                 ),
                 mainSlot = mapDispenserSlot(
                     tray.mainDetergentSlot,
+                    icon = AppIcons.Detergent,
+                    iconContentDescription = strings["detergent_contentDesc"],
                     onAdditiveAdd = onAdditiveAdd,
                     onAdditiveRemove = onAdditiveRemove
                 ),
                 softenerSlot = mapDispenserSlot(
                     tray.mainSoftenerSlot,
+                    icon = AppIcons.Softener,
+                    iconContentDescription = strings["softener_contentDesc"],
                     onAdditiveAdd = onAdditiveAdd,
                     onAdditiveRemove = onAdditiveRemove
                 ),
@@ -127,6 +142,8 @@ class WasherMapper(
 
     private fun mapDispenserSlot(
         slot: SlottedDispenser.Tray.Slot,
+        icon: ImageVector,
+        iconContentDescription: String,
         onAdditiveAdd: (SlottedDispenser.Tray.Slot, Measure<Volume>) -> Unit,
         onAdditiveRemove: (SlottedDispenser.Tray.Slot, Measure<Volume>) -> Unit
     ): DispenserSlotUi {
@@ -134,6 +151,8 @@ class WasherMapper(
             capacity = slot.capacity,
             additiveAmount = slot.additive.amount,
             additiveColor = colorMapper.mapSubstanceToColor(slot.additive),
+            icon = icon,
+            iconContentDescription = iconContentDescription,
             onAdditiveAdd = { onAdditiveAdd(slot, it) },
             onAdditiveRemove = { onAdditiveRemove(slot, it) }
         )
