@@ -9,10 +9,10 @@ import altline.appliance.ui.resources.strings
 import altline.appliance.ui.util.clockFormat
 import altline.appliance.ui.util.optionalDecimal
 import altline.appliance.washing.laundry.StandardLaundryWasherBase
-import altline.appliance.washing.laundry.washCycle.CentrifugeParams
 import altline.appliance.washing.laundry.washCycle.PhaseStatus
 import altline.appliance.washing.laundry.washCycle.SectionStatus
-import altline.appliance.washing.laundry.washCycle.WashParams
+import altline.appliance.washing.laundry.washCycle.SpinParams
+import altline.appliance.washing.laundry.washCycle.TumbleParams
 import altline.appliance.washing.laundry.washCycle.phase.DrainPhase
 import altline.appliance.washing.laundry.washCycle.phase.FillPhase
 import altline.appliance.washing.laundry.washCycle.phase.SpinPhase
@@ -93,7 +93,7 @@ class WasherInfoMapper(
                     PhaseSectionUi(
                         name = "${strings["cyclePhaseSection"]} ${indexInPhase + 1}",
                         timer = mapToTimer(sectionStatus.runningTime, section.duration),
-                        params = mapWashParams(section.params),
+                        params = mapTumbleParams(section.params),
                         active = sectionStatus.active
                     )
                 }
@@ -107,11 +107,11 @@ class WasherInfoMapper(
                     )
                 }
 
-                is DrainPhase.Section.WashDrain -> {
+                is DrainPhase.Section.TumbleDrain -> {
                     PhaseSectionUi(
                         name = strings["cyclePhaseSection_washDrain"],
                         timer = mapToTimer(sectionStatus.runningTime, section.duration),
-                        params = mapWashParams(section.spinParams),
+                        params = mapTumbleParams(section.tumbleParams),
                         active = sectionStatus.active
                     )
                 }
@@ -122,7 +122,7 @@ class WasherInfoMapper(
                         PhaseSectionUi(
                             name = "${strings["cyclePhaseSection"]} ${indexInPhase + 1}",
                             timer = mapToTimer(sectionStatus.runningTime, section.duration),
-                            params = mapCentrifugeParams(section.params),
+                            params = mapSpinParams(section.params),
                             active = sectionStatus.active
                         )
                     }
@@ -148,22 +148,22 @@ class WasherInfoMapper(
         else NOT_EXECUTED
     }
 
-    private fun mapWashParams(washParams: WashParams): List<SectionParamUi> {
+    private fun mapTumbleParams(tumbleParams: TumbleParams): List<SectionParamUi> {
         return listOf(
             SectionParamUi(
                 name = strings["washParams_spinPeriod"],
-                value = washParams.spinPeriod.optionalDecimal()
+                value = tumbleParams.spinPeriod.optionalDecimal()
             ),
             SectionParamUi(
                 name = strings["washParams_restPeriod"],
-                value = washParams.restPeriod.optionalDecimal()
+                value = tumbleParams.restPeriod.optionalDecimal()
             ),
             SectionParamUi(
                 name = strings["washParams_spinSpeed"],
-                value = washParams.spinSpeed.optionalDecimal()
+                value = tumbleParams.spinSpeed.optionalDecimal()
             )
         ).run {
-            washParams.temperature?.let {
+            tumbleParams.temperature?.let {
                 plus(
                     SectionParamUi(
                         name = strings["washParams_temperature"],
@@ -174,15 +174,15 @@ class WasherInfoMapper(
         }
     }
 
-    private fun mapCentrifugeParams(centrifugeParams: CentrifugeParams): List<SectionParamUi> {
+    private fun mapSpinParams(spinParams: SpinParams): List<SectionParamUi> {
         return listOf(
             SectionParamUi(
                 name = strings["washParams_spinSpeed"],
-                value = centrifugeParams.spinSpeed.optionalDecimal()
+                value = spinParams.spinSpeed.optionalDecimal()
             ),
             SectionParamUi(
                 name = strings["washParams_duration"],
-                value = centrifugeParams.duration.optionalDecimal()
+                value = spinParams.duration.optionalDecimal()
             )
         )
     }

@@ -244,18 +244,18 @@ open class BasicController(
             is FillPhase.DetergentFillSection -> fillThroughDetergent(section.fillToAmount)
             is FillPhase.SoftenerFillSection -> fillThroughSoftener(section.fillToAmount)
             is DrainPhase.Section.FocusedDrain -> drainUntilEmpty()
-            is DrainPhase.Section.WashDrain -> washDrain(section.spinParams.withRemainingDuration(runningTime))
-            is WashPhase.Section -> wash(section.params.withRemainingDuration(runningTime))
-            is SpinPhase.Section -> centrifuge(section.params.withRemainingDuration(runningTime))
+            is DrainPhase.Section.TumbleDrain -> tumbleDrain(section.tumbleParams.withRemainingDuration(runningTime))
+            is WashPhase.Section -> tumble(section.params.withRemainingDuration(runningTime))
+            is SpinPhase.Section -> spin(section.params.withRemainingDuration(runningTime))
         }
         delay(section.endDelay)
     }
 
-    private fun WashParams.withRemainingDuration(runningTime: Measure<Time>): WashParams {
+    private fun TumbleParams.withRemainingDuration(runningTime: Measure<Time>): TumbleParams {
         return copy(duration = duration - runningTime)
     }
 
-    private fun CentrifugeParams.withRemainingDuration(runningTime: Measure<Time>): CentrifugeParams {
+    private fun SpinParams.withRemainingDuration(runningTime: Measure<Time>): SpinParams {
         return copy(duration = duration - runningTime)
     }
 
@@ -296,9 +296,8 @@ open class BasicController(
         pump.stop()
     }
 
-    private suspend fun wash(params: WashParams) {
+    private suspend fun tumble(params: TumbleParams) {
         with(params) {
-
             val cycleCount = (duration / (spinPeriod + restPeriod)).roundToInt()
             repeat(cycleCount) { i ->
                 val setTemperature = activeCycle?.selectedTemperatureSetting
@@ -319,13 +318,13 @@ open class BasicController(
         }
     }
 
-    private suspend fun washDrain(params: WashParams) {
+    private suspend fun tumbleDrain(params: TumbleParams) {
         startDrain()
-        wash(params)
+        tumble(params)
         stopDrain()
     }
 
-    private suspend fun centrifuge(params: CentrifugeParams) {
+    private suspend fun spin(params: SpinParams) {
         if (params.spinSpeed == 0 * rpm) return
         startDrain()
         drumMotor.speedSetting = params.spinSpeed

@@ -4,7 +4,7 @@ import altline.appliance.measure.Spin
 import altline.appliance.measure.Temperature
 import io.nacular.measured.units.*
 
-data class WashParams(
+data class TumbleParams(
     val duration: Measure<Time>,
     val spinPeriod: Measure<Time>,
     val restPeriod: Measure<Time>,

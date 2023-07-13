@@ -53,7 +53,7 @@ class CycleStage {
         spinSpeed: Measure<Spin>
     ): DrainPhase {
         return DrainPhase(
-            WashParams(duration, spinPeriod, restPeriod, spinSpeed)
+            TumbleParams(duration, spinPeriod, restPeriod, spinSpeed)
         ).also {
             phases += it
         }

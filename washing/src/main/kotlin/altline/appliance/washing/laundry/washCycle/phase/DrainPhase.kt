@@ -2,15 +2,15 @@ package altline.appliance.washing.laundry.washCycle.phase
 
 import altline.appliance.measure.sumOf
 import altline.appliance.washing.laundry.StandardFullFlowDrainTime
-import altline.appliance.washing.laundry.washCycle.WashParams
+import altline.appliance.washing.laundry.washCycle.TumbleParams
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
-class DrainPhase(spinParams: WashParams) : CyclePhase {
+class DrainPhase(tumbleParams: TumbleParams) : CyclePhase {
 
     override val sections = listOf(
         Section.FocusedDrain,
-        Section.WashDrain(spinParams)
+        Section.TumbleDrain(tumbleParams)
     )
 
     override val duration: Measure<Time>
@@ -21,6 +21,6 @@ class DrainPhase(spinParams: WashParams) : CyclePhase {
         final override val duration: Measure<Time> = duration + endDelay
 
         object FocusedDrain : Section(StandardFullFlowDrainTime)
-        data class WashDrain(val spinParams: WashParams) : Section(spinParams.duration)
+        data class TumbleDrain(val tumbleParams: TumbleParams) : Section(tumbleParams.duration)
     }
 }

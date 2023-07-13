@@ -3,8 +3,8 @@ package altline.appliance.washing.laundry.washCycle.phase
 import altline.appliance.measure.Spin
 import altline.appliance.measure.Temperature
 import altline.appliance.measure.sumOf
+import altline.appliance.washing.laundry.washCycle.TumbleParams
 import altline.appliance.washing.laundry.washCycle.WashCycleDsl
-import altline.appliance.washing.laundry.washCycle.WashParams
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
 
@@ -25,7 +25,7 @@ class WashPhase : CyclePhase {
         temperature: Measure<Temperature>? = null
     ): Section {
         return Section(
-            params = WashParams(duration, spinPeriod, restPeriod, spinSpeed, temperature),
+            params = TumbleParams(duration, spinPeriod, restPeriod, spinSpeed, temperature),
             adjustableTemperature = temperature == null
         ).also {
             sections += it
@@ -33,7 +33,7 @@ class WashPhase : CyclePhase {
     }
 
     data class Section(
-        val params: WashParams,
+        val params: TumbleParams,
         val adjustableTemperature: Boolean
     ) : PhaseSection {
         override val endDelay = 1 * seconds

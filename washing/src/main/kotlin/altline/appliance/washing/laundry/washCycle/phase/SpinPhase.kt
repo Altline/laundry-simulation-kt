@@ -4,7 +4,7 @@ import altline.appliance.measure.Spin
 import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.measure.isNegligible
 import altline.appliance.measure.sumOf
-import altline.appliance.washing.laundry.washCycle.CentrifugeParams
+import altline.appliance.washing.laundry.washCycle.SpinParams
 import altline.appliance.washing.laundry.washCycle.WashCycleDsl
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
@@ -27,7 +27,7 @@ class SpinPhase : CyclePhase {
         endDelay: Measure<Time> = 0 * seconds
     ): Section {
         return Section(
-            params = CentrifugeParams(duration, spinSpeed ?: (0 * rpm)),
+            params = SpinParams(duration, spinSpeed ?: (0 * rpm)),
             adjustableSpeed = spinSpeed == null,
             endDelay = endDelay
         ).also {
@@ -36,7 +36,7 @@ class SpinPhase : CyclePhase {
     }
 
     data class Section(
-        val params: CentrifugeParams,
+        val params: SpinParams,
         val adjustableSpeed: Boolean,
         override val endDelay: Measure<Time>
     ) : PhaseSection {
