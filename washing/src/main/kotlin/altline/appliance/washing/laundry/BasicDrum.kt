@@ -8,6 +8,7 @@ import altline.appliance.measure.Spin.Companion.rpm
 import altline.appliance.measure.Temperature.Companion.celsius
 import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.liters
+import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.spin.SpinDirection
 import altline.appliance.substance.*
 import altline.appliance.substance.transit.Reservoir
@@ -121,11 +122,13 @@ class BasicDrum(
             body.soakedSubstance.cleaningPower * soakCoefficient * temperatureCoefficient * hardnessCoefficient
 
         } else {
-            if (storedSubstance.isEmpty()) return 0.0
+            if (excessLiquid.isEmpty()) return 0.0
 
-            val temperatureCoefficient = (storedSubstance.temperature!! / (100 * celsius))
+            val liquidAmountCoefficient = (excessLiquidAmount / load.volume.coerceAtLeast(1 * milliliters))
                 .coerceIn(0.0, 1.0)
-            storedSubstance.cleaningPower * temperatureCoefficient * hardnessCoefficient
+            val temperatureCoefficient = (excessLiquid.temperature!! / (100 * celsius))
+                .coerceIn(0.0, 1.0)
+            excessLiquid.cleaningPower * liquidAmountCoefficient * temperatureCoefficient * hardnessCoefficient
         }
     }
 
