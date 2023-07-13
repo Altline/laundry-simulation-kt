@@ -107,6 +107,10 @@ class BasicDrum(
         val stainAmountToClear = calcGrowth(body.stainSubstance.amount, effectiveCleaningPower, seconds)
         val clearedStain = body.clearStain(stainAmountToClear)
         storedSubstance.add(clearedStain)
+
+        val stainSourceAmount = body.volume * storedSubstance.stainHardness * spinEffectiveness
+        val stain = storedSubstance.extract(stainSourceAmount).extractAllEvaporating()
+        body.stain(stain)
     }
 
     private fun calcCleaningPower(body: Body): Double {
