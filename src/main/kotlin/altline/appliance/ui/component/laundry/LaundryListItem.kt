@@ -57,7 +57,8 @@ fun LaundryListItem(data: LaundryListItemUi) {
                     icon = AppIcons.Stain,
                     contentDescription = strings["stainPercentage"],
                     text = formatPercentage(data.stainRatio),
-                    tint = Color(0xff7a5928)
+                    tint = Color(0xff7a5928),
+                    modifier = Modifier.widthIn(min = 100.dp)
                 )
                 if (data.soakRatio != null) {
                     Spacer(Modifier.width(16.dp))
@@ -129,14 +130,20 @@ private fun IconStat(
     icon: ImageVector,
     contentDescription: String,
     text: String,
-    tint: Color
+    tint: Color,
+    modifier: Modifier = Modifier
 ) {
-    Icon(
-        imageVector = icon,
-        contentDescription = contentDescription,
-        tint = tint
-    )
-    Text(text)
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = tint
+        )
+        Text(text)
+    }
 }
 
 data class LaundryListItemUi(
