@@ -3,7 +3,6 @@ package altline.appliance.fabric
 import altline.appliance.measure.Volume
 import io.nacular.measured.units.*
 
-class Shirt(
-    size: Size,
+class Bedsheet(
     volume: Measure<Volume>
-) : Clothing(size, volume)
+) : Fabric(volume)

@@ -1,7 +1,7 @@
 package altline.appliance.ui.mapper
 
 import altline.appliance.common.Body
-import altline.appliance.fabric.Clothing
+import altline.appliance.fabric.clothing.Clothing
 import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.measure.sumOf
 import altline.appliance.substance.Soakable
@@ -49,7 +49,11 @@ class LaundryMapper(
         val soakRatio = if (body is Soakable) body.soakRatio else null
         return LaundryListItemUi(
             id = body.id,
-            title = "$name, $size",
+            title = buildString {
+                append("$name, ")
+                if (size.isNotBlank()) append(size)
+                else append(body.volume)
+            },
             stainRatio = body.stainRatio,
             soakRatio = soakRatio,
             freshness = mapFreshness(body),
