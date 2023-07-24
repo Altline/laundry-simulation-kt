@@ -108,8 +108,11 @@ class BasicDrum(
         val clearedStain = body.clearStain(stainAmountToClear)
         storedSubstance.add(clearedStain)
 
-        val stainSourceAmount = body.volume * storedSubstance.stainHardness * spinEffectiveness
-        val stain = storedSubstance.extract(stainSourceAmount).extractAllEvaporating()
+        val stainSourceAmount = body.volume * storedSubstance.stainHardness * spinEffectiveness * seconds
+        val stain = storedSubstance.extract(stainSourceAmount).also {
+            val evaporating = it.extractAllEvaporating()
+            storedSubstance.add(evaporating)
+        }
         body.stain(stain)
     }
 
