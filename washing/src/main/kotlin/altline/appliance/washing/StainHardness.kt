@@ -20,6 +20,9 @@ val Substance.stainHardness: Double
 /** The factor of a stain's resistance to being washed, where 0 means no resistance and 1 means complete unwashability. */
 val SubstanceType.stainHardness: Double
     get() = when (this) {
+        CommonSubstanceTypes.MUD -> 0.4
         CommonSubstanceTypes.COFFEE -> 0.6
+        CommonSubstanceTypes.KETCHUP -> 0.2
+        CommonSubstanceTypes.CRUDE_OIL -> 0.9
         else -> 0.0
     }

@@ -28,7 +28,10 @@ val Colors.onSurfaceTinted: Color
 
 object SubstanceColors {
     val Water = Color(0xffdffbff)
+    val Mud = Color(0xff532f00)
     val Coffee = Color(0xff513c21)
+    val Ketchup = Color(0xffa32a11)
+    val CrudeOil = Color(0xff060400)
 
     val UltimateDetergent = Color(0xff00ffc7)
     val StrongDetergent = Color(0xff60ffdc)

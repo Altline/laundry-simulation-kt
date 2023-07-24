@@ -33,7 +33,10 @@ class ColorMapper {
     fun mapSubstanceTypeToColor(substanceType: SubstanceType): Color {
         return when (substanceType) {
             CommonSubstanceTypes.WATER -> SubstanceColors.Water
+            CommonSubstanceTypes.MUD -> SubstanceColors.Mud
             CommonSubstanceTypes.COFFEE -> SubstanceColors.Coffee
+            CommonSubstanceTypes.KETCHUP -> SubstanceColors.Ketchup
+            CommonSubstanceTypes.CRUDE_OIL -> SubstanceColors.CrudeOil
 
             CommonDetergents.ULTIMATE_DETERGENT -> SubstanceColors.UltimateDetergent
             CommonDetergents.STRONG_DETERGENT -> SubstanceColors.StrongDetergent

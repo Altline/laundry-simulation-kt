@@ -10,5 +10,8 @@ enum class CommonSubstanceTypes(
     override val evaporates: Boolean = false
 ) : SubstanceType {
     WATER(SubstanceConsistency.ThinLiquid, evaporates = true),
-    COFFEE(SubstanceConsistency.ThinLiquid)
+    MUD(SubstanceConsistency.ThickLiquid),
+    COFFEE(SubstanceConsistency.ThinLiquid),
+    KETCHUP(SubstanceConsistency.ThickLiquid),
+    CRUDE_OIL(SubstanceConsistency.ThickLiquid)
 }

@@ -1,9 +1,11 @@
 package altline.appliance.ui.mapper
 
 import altline.appliance.common.Body
-import altline.appliance.fabric.Clothing
+import altline.appliance.fabric.Bedsheet
 import altline.appliance.fabric.Fabric
-import altline.appliance.fabric.Shirt
+import altline.appliance.fabric.Rag
+import altline.appliance.fabric.Towel
+import altline.appliance.fabric.clothing.*
 import altline.appliance.measure.sumOf
 import altline.appliance.substance.CommonSubstanceTypes
 import altline.appliance.substance.SubstanceType
@@ -19,7 +21,10 @@ class StringMapper {
     fun mapSubstanceTypeName(substanceType: SubstanceType): String {
         return when (substanceType) {
             CommonSubstanceTypes.WATER -> strings["substanceType_water"]
+            CommonSubstanceTypes.MUD -> strings["substanceType_mud"]
             CommonSubstanceTypes.COFFEE -> strings["substanceType_coffee"]
+            CommonSubstanceTypes.KETCHUP -> strings["substanceType_ketchup"]
+            CommonSubstanceTypes.CRUDE_OIL -> strings["substanceType_crudeOil"]
 
             CommonDetergents.ULTIMATE_DETERGENT -> "${strings["power_ultimate"]} ${strings["substanceType_detergent_partial"]}"
             CommonDetergents.STRONG_DETERGENT -> "${strings["power_strong"]} ${strings["substanceType_detergent_partial"]}"
@@ -43,7 +48,13 @@ class StringMapper {
 
     fun mapLaundryName(body: Body): String {
         return when (body) {
+            is Sock -> strings["laundryName_sock"]
             is Shirt -> strings["laundryName_shirt"]
+            is Pants -> strings["laundryName_pants"]
+            is Dress -> strings["laundryName_dress"]
+            is Rag -> strings["laundryName_rag"]
+            is Towel -> strings["laundryName_towel"]
+            is Bedsheet -> strings["laundryName_bedsheet"]
             is Clothing -> strings["laundryName_clothing"]
             is Fabric -> strings["laundryName_fabric"]
             else -> strings["laundryName_body"]
