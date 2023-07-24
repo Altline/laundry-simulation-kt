@@ -17,6 +17,12 @@ class CottonCycle : WashCycleBase(), PreWashCapable {
 
     override var preWash: Boolean = false
 
+    override val selectedTemperatureSetting: Measure<Temperature>
+        get() = super.selectedTemperatureSetting ?: (0 * celsius)
+
+    override val selectedSpinSpeedSetting: Measure<Spin>
+        get() = super.selectedSpinSpeedSetting ?: (0 * rpm)
+
     init {
         selectedTemperatureSettingIndex = 0
         selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
@@ -72,6 +78,7 @@ class CottonCycle : WashCycleBase(), PreWashCapable {
                     )
                     section(
                         duration = 1 * minutes,
+                        spinSpeed = selectedSpinSpeedSetting,
                         endDelay = 32 * seconds
                     )
                 }

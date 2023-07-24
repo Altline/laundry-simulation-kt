@@ -18,6 +18,9 @@ class RinseCycle : WashCycleBase() {
         selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
     }
 
+    override val selectedSpinSpeedSetting: Measure<Spin>
+        get() = super.selectedSpinSpeedSetting ?: (0 * rpm)
+
     override fun getStages(): List<CycleStage> {
         return buildCycle {
             stage {

@@ -12,6 +12,9 @@ class SpinCycle : WashCycleBase() {
     override val spinSpeedSettings: List<Measure<Spin>> =
         listOf(600, 800, 1000, 1200, 1400, 1600).map { it * rpm }.toList()
 
+    override val selectedSpinSpeedSetting: Measure<Spin>
+        get() = super.selectedSpinSpeedSetting ?: (0 * rpm)
+
     init {
         selectedTemperatureSettingIndex = null
         selectedSpinSpeedSettingIndex = spinSpeedSettings.lastIndex
@@ -27,6 +30,7 @@ class SpinCycle : WashCycleBase() {
                     )
                     section(
                         duration = 1 * minutes,
+                        spinSpeed = selectedSpinSpeedSetting,
                         endDelay = 32 * seconds
                     )
                 }

@@ -143,25 +143,36 @@ open class BasicController(
     }
 
     override fun increaseSpinSpeed(): Boolean {
-        if (!poweredOn || selectedCycle != activeCycle) return false
+        if (!poweredOn || (cycleRunning && selectedCycle != activeCycle)) return false
 
         with(selectedCycle) {
             if (selectedSpinSpeedSettingIndex == spinSpeedSettings.lastIndex)
                 return false
             selectedSpinSpeedSettingIndex = selectedSpinSpeedSettingIndex?.plus(1)
+            selectedSpinSpeedSetting?.let { updateCycleSpinSpeed(it) }
         }
         return true
     }
 
     override fun decreaseSpinSpeed(): Boolean {
-        if (!poweredOn || selectedCycle != activeCycle) return false
+        if (!poweredOn || (cycleRunning && selectedCycle != activeCycle)) return false
 
         with(selectedCycle) {
             if (selectedSpinSpeedSettingIndex == 0)
                 return false
             selectedSpinSpeedSettingIndex = selectedSpinSpeedSettingIndex?.minus(1)
+            selectedSpinSpeedSetting?.let { updateCycleSpinSpeed(it) }
         }
         return true
+    }
+
+    private fun updateCycleSpinSpeed(spinSpeed: Measure<Spin>) {
+        selectedCycleStatus.flatMap { stageStatus ->
+            stageStatus.phases.map { it.phase }
+                .filterIsInstance<SpinPhase>()
+        }.forEach { spinPhase ->
+            spinPhase.sections.forEach { it.params = it.params.copy(spinSpeed = spinSpeed)}
+        }
     }
 
     override fun startCycle(coroutineScope: CoroutineScope) {
