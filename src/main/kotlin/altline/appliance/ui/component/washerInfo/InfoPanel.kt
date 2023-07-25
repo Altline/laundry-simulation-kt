@@ -14,7 +14,7 @@ fun InfoPanel(
     Column(modifier.fillMaxHeight()) {
         WashCycleSection(
             data.cycleSectionUi,
-            Modifier.weight(1f, fill = false)
+            Modifier.weight(1f)
         )
         Divider()
         if (data.washerStateSectionUi != null) {
