@@ -69,14 +69,14 @@ class BasicDrum(
 
     override fun pushFlow(flowable: MutableSubstance, timeFrame: Measure<Time>, flowId: Long): Measure<Volume> {
         return super.pushFlow(flowable, timeFrame, flowId).also {
-            soakLaundry()
+            soakLaundry(timeFrame)
         }
     }
 
-    private fun soakLaundry() {
+    private fun soakLaundry(timeFrame: Measure<Time>) {
         load.forEach { piece ->
             if (piece is Soakable) {
-                val soakAmount = 0.01 * (piece.volume - piece.soakedSubstance.amount)
+                val soakAmount = 0.005 * (piece.volume - piece.soakedSubstance.amount) * (timeFrame `in` seconds)
                 piece.soak(storedSubstance.extract(soakAmount))
             }
         }
