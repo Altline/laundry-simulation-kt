@@ -3,6 +3,7 @@ package altline.appliance.ui
 import altline.appliance.audio.SoundClip
 import altline.appliance.common.Body
 import altline.appliance.common.RefreshPeriod
+import altline.appliance.common.SpeedModifier
 import altline.appliance.data.World
 import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.liters
@@ -116,7 +117,16 @@ class MainViewModel(
     }
 
     private fun getInfoPanel(): InfoPanelUi {
-        return washerInfoMapper.mapToInfoPanel(washer)
+        return washerInfoMapper.mapToInfoPanel(
+            washer = washer,
+            speedSettings = listOf(1f, 10f, 20f, 50f),
+            selectedSpeed = SpeedModifier,
+            onSpeedClick = this::selectSpeed
+        )
+    }
+
+    private fun selectSpeed(speedModifier: Float) {
+        SpeedModifier = speedModifier
     }
 
     private fun selectLaundryItem(item: Body) {

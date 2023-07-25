@@ -20,18 +20,26 @@ fun InfoPanel(
         if (data.washerStateSectionUi != null) {
             WasherStateSection(data.washerStateSectionUi)
         }
+        Divider()
+        SimulationControlPanel(data.simulationControlPanelUi)
     }
 }
 
 data class InfoPanelUi(
     val cycleSectionUi: WashCycleSectionUi,
-    val washerStateSectionUi: WasherStateSectionUi?
+    val washerStateSectionUi: WasherStateSectionUi?,
+    val simulationControlPanelUi: SimulationControlPanelUi
 ) {
     companion object {
         @Composable
         fun preview() = InfoPanelUi(
             cycleSectionUi = WashCycleSectionUi.preview(),
-            washerStateSectionUi = WasherStateSectionUi.preview()
+            washerStateSectionUi = WasherStateSectionUi.preview(),
+            simulationControlPanelUi = SimulationControlPanelUi(
+                speedSettings = listOf(1f, 2f, 10f, 20f),
+                selectedSpeed = 1f,
+                onSpeedClick = {}
+            )
         )
     }
 }

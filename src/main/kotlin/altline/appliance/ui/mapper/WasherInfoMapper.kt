@@ -25,10 +25,20 @@ class WasherInfoMapper(
     private val stringMapper: StringMapper
 ) {
 
-    fun mapToInfoPanel(washer: StandardLaundryWasherBase): InfoPanelUi {
+    fun mapToInfoPanel(
+        washer: StandardLaundryWasherBase,
+        speedSettings: List<Float>,
+        selectedSpeed: Float,
+        onSpeedClick: (Float) -> Unit
+    ): InfoPanelUi {
         return InfoPanelUi(
             cycleSectionUi = mapToParamsSection(washer),
-            washerStateSectionUi = mapToWasherStateSection(washer)
+            washerStateSectionUi = mapToWasherStateSection(washer),
+            simulationControlPanelUi = SimulationControlPanelUi(
+                speedSettings = speedSettings,
+                selectedSpeed = selectedSpeed,
+                onSpeedClick = onSpeedClick
+            )
         )
     }
 

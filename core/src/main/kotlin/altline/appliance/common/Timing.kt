@@ -12,6 +12,6 @@ var RefreshRate
         RefreshPeriod = value.toPeriod()
     }
 
-var SpeedModifier = 1f
+var SpeedModifier: Float = 1f
 
 val TimeFactor get() = RefreshPeriod * SpeedModifier
