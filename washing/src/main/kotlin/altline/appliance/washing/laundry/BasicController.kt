@@ -1,6 +1,7 @@
 package altline.appliance.washing.laundry
 
 import altline.appliance.common.SpeedModifier
+import altline.appliance.common.delaySpeedAware
 import altline.appliance.electricity.BasicElectricalDevice
 import altline.appliance.electricity.transit.ElectricalDrainPort
 import altline.appliance.measure.*
@@ -259,7 +260,7 @@ open class BasicController(
             is WashPhase.Section -> tumble(section.params.withRemainingDuration(runningTime))
             is SpinPhase.Section -> spin(section.params.withRemainingDuration(runningTime))
         }
-        delay(section.endDelay)
+        delaySpeedAware(section.endDelay)
     }
 
     private fun TumbleParams.withRemainingDuration(runningTime: Measure<Time>): TumbleParams {
@@ -322,7 +323,7 @@ open class BasicController(
 
                 val direction = if (i % 2 == 0) SpinDirection.Positive else SpinDirection.Negative
                 spin(direction, spinSpeed, spinPeriod)
-                delay(restPeriod / SpeedModifier)
+                delaySpeedAware(restPeriod)
             }
 
             if (drum.heater.running) drum.heater.stop()
@@ -364,7 +365,7 @@ open class BasicController(
         drumMotor.speedSetting = speed
         drumMotor.spinDirection = direction
         drumMotor.start()
-        delay(duration / SpeedModifier)
+        delaySpeedAware(duration)
         drumMotor.stop()
     }
 
