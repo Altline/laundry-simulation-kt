@@ -128,6 +128,7 @@ open class BasicController(
             if (selectedTemperatureSettingIndex == temperatureSettings.lastIndex)
                 return false
             selectedTemperatureSettingIndex = selectedTemperatureSettingIndex?.plus(1)
+            selectedTemperatureSetting?.let { updateTemperature(it) }
         }
         return true
     }
@@ -139,8 +140,20 @@ open class BasicController(
             if (selectedTemperatureSettingIndex == 0)
                 return false
             selectedTemperatureSettingIndex = selectedTemperatureSettingIndex?.minus(1)
+            selectedTemperatureSetting?.let { updateTemperature(it) }
         }
         return true
+    }
+
+    private fun updateTemperature(temperature: Measure<Temperature>) {
+        selectedCycleStatus.flatMap { stageStatus ->
+            stageStatus.phases.map { it.phase }
+                .filterIsInstance<WashPhase>()
+        }.forEach { washPhase ->
+            washPhase.sections
+                .filter { it.params.temperature != null }
+                .forEach { it.params = it.params.copy(temperature = temperature) }
+        }
     }
 
     override fun increaseSpinSpeed(): Boolean {
@@ -172,7 +185,7 @@ open class BasicController(
             stageStatus.phases.map { it.phase }
                 .filterIsInstance<SpinPhase>()
         }.forEach { spinPhase ->
-            spinPhase.sections.forEach { it.params = it.params.copy(spinSpeed = spinSpeed)}
+            spinPhase.sections.forEach { it.params = it.params.copy(spinSpeed = spinSpeed) }
         }
     }
 
@@ -206,7 +219,7 @@ open class BasicController(
                 sectionQueue.remove()
             }
 
-            delay(2 * seconds)
+            delay(1 * seconds)
             unlockDoor()
 
             activeCycle = null
@@ -309,25 +322,22 @@ open class BasicController(
     }
 
     private suspend fun tumble(params: TumbleParams) {
-        with(params) {
-            val cycleCount = (duration / (spinPeriod + restPeriod)).roundToInt()
-            repeat(cycleCount) { i ->
-                val setTemperature = activeCycle?.selectedTemperatureSetting
-                val currentTemperature = drum.excessLiquid.temperature
-                if (setTemperature != null && currentTemperature != null) {
-                    thermostat.triggerSetting = setTemperature
-                    thermostat.check(currentTemperature)
-                } else if (drum.heater.running) {
-                    drum.heater.stop()
-                }
-
-                val direction = if (i % 2 == 0) SpinDirection.Positive else SpinDirection.Negative
-                spin(direction, spinSpeed, spinPeriod)
-                delaySpeedAware(restPeriod)
+        val cycleCount = (params.duration / (params.spinPeriod + params.restPeriod)).roundToInt()
+        repeat(cycleCount) { i ->
+            val currentTemperature = drum.excessLiquid.temperature
+            if (params.temperature != null && currentTemperature != null) {
+                thermostat.triggerSetting = params.temperature
+                thermostat.check(currentTemperature)
+            } else if (drum.heater.running) {
+                drum.heater.stop()
             }
 
-            if (drum.heater.running) drum.heater.stop()
+            val direction = if (i % 2 == 0) SpinDirection.Positive else SpinDirection.Negative
+            spin(direction, params.spinSpeed, params.spinPeriod)
+            delaySpeedAware(params.restPeriod)
         }
+
+        if (drum.heater.running) drum.heater.stop()
     }
 
     private suspend fun tumbleDrain(params: TumbleParams) {

@@ -25,16 +25,14 @@ class WashPhase : CyclePhase {
         temperature: Measure<Temperature>? = null
     ): Section {
         return Section(
-            params = TumbleParams(duration, spinPeriod, restPeriod, spinSpeed, temperature),
-            adjustableTemperature = temperature == null
+            TumbleParams(duration, spinPeriod, restPeriod, spinSpeed, temperature)
         ).also {
             sections += it
         }
     }
 
     data class Section(
-        val params: TumbleParams,
-        val adjustableTemperature: Boolean
+        var params: TumbleParams
     ) : PhaseSection {
         override val endDelay = 1 * seconds
 
