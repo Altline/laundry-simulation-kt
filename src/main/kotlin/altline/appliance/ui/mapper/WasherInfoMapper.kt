@@ -1,6 +1,7 @@
 package altline.appliance.ui.mapper
 
 import altline.appliance.measure.Volume.Companion.liters
+import altline.appliance.measure.isNotNegligible
 import altline.appliance.substance.Substance
 import altline.appliance.ui.component.washerInfo.*
 import altline.appliance.ui.component.washerInfo.CyclePhaseUi.ActiveState.*
@@ -72,7 +73,7 @@ class WasherInfoMapper(
                 name = stringMapper.mapPhaseName(phase),
                 timer = mapToTimer(phaseStatus.runningTime, phase.duration),
                 sections = mapSections(phaseStatus.sections, phaseStatus),
-                active = mapToPhaseActiveState(phases, phaseStatus),
+                active = mapToPhaseActiveState(phaseStatus),
                 disabled = (phase as? SpinPhase)?.disabled == true
             )
         }
@@ -149,13 +150,12 @@ class WasherInfoMapper(
         else "${runningTime.clockFormat()} / $durationString"
     }
 
-    private fun mapToPhaseActiveState(allPhases: List<PhaseStatus>, phase: PhaseStatus): CyclePhaseUi.ActiveState {
-        if (phase.active) return ACTIVE
-
-        val phaseIndex = allPhases.indexOf(phase)
-        val indexOfActive = allPhases.indexOfFirst { it.active }
-        return if (phaseIndex < indexOfActive) EXECUTED
-        else NOT_EXECUTED
+    private fun mapToPhaseActiveState(phase: PhaseStatus): CyclePhaseUi.ActiveState {
+        return when {
+            phase.active -> ACTIVE
+            phase.runningTime.isNotNegligible() -> EXECUTED
+            else -> NOT_EXECUTED
+        }
     }
 
     private fun mapTumbleParams(tumbleParams: TumbleParams): List<SectionParamUi> {
