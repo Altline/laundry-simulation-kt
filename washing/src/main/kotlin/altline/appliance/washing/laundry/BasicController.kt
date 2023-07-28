@@ -1,6 +1,5 @@
 package altline.appliance.washing.laundry
 
-import altline.appliance.common.SpeedModifier
 import altline.appliance.common.delaySpeedAware
 import altline.appliance.electricity.BasicElectricalDevice
 import altline.appliance.electricity.transit.ElectricalDrainPort
@@ -353,8 +352,7 @@ open class BasicController(
         drumMotor.spinDirection = SpinDirection.Positive
         drumMotor.start()
 
-        val period = (1 * seconds) / SpeedModifier
-        repeatPeriodically(period, times = (params.duration `in` seconds).toInt()) {
+        repeatPeriodicallySpeedAware(1 * seconds, times = (params.duration `in` seconds).toInt()) {
             val selectedSpeed = activeCycle!!.selectedSpinSpeedSetting!!
             when {
                 selectedSpeed == 0 * rpm -> {
@@ -391,7 +389,7 @@ open class BasicController(
         measureRate: Measure<Frequency> = config.waterMeasureRate,
         condition: (liquidVolume: Measure<Volume>) -> Boolean
     ) {
-        repeatPeriodically(measureRate) {
+        repeatPeriodicallySpeedAware(measureRate) {
             if (condition(drum.excessLiquidAmount)) return
         }
     }

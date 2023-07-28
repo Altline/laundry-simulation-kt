@@ -1,5 +1,6 @@
 package altline.appliance.measure
 
+import altline.appliance.common.delaySpeedAware
 import altline.appliance.measure.Energy.Companion.joules
 import altline.appliance.measure.Frequency.Companion.hertz
 import altline.appliance.measure.Spin.Companion.rpm
@@ -64,6 +65,10 @@ suspend fun delay(time: Measure<Time>) = kotlinx.coroutines.delay((time `in` mil
 suspend inline fun repeatPeriodically(frequency: Measure<Frequency>, times: Int = -1, action: (Long) -> Unit) =
     repeatPeriodically(frequency.toPeriod(), times, action)
 
+@JvmName("repeatPeriodicallySpeedAware1")
+suspend inline fun repeatPeriodicallySpeedAware(frequency: Measure<Frequency>, times: Int = -1, action: (Long) -> Unit) =
+    repeatPeriodicallySpeedAware(frequency.toPeriod(), times, action)
+
 suspend inline fun repeatPeriodically(period: Measure<Time>, times: Int = -1, action: (Long) -> Unit) {
     if (times < 0) {
         var count = 0L
@@ -75,6 +80,21 @@ suspend inline fun repeatPeriodically(period: Measure<Time>, times: Int = -1, ac
         repeat(times) {
             action(it.toLong())
             delay(period)
+        }
+    }
+}
+
+suspend inline fun repeatPeriodicallySpeedAware(period: Measure<Time>, times: Int = -1, action: (Long) -> Unit) {
+    if (times < 0) {
+        var count = 0L
+        while (true) {
+            action(count++)
+            delaySpeedAware(period)
+        }
+    } else {
+        repeat(times) {
+            action(it.toLong())
+            delaySpeedAware(period)
         }
     }
 }
