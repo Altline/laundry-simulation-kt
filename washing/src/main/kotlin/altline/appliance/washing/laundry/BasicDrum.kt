@@ -75,7 +75,7 @@ class BasicDrum(
 
     private fun soakLaundry(timeFrame: Measure<Time>) {
         load.forEach { piece ->
-            if (piece is Soakable) {
+            if (piece is SoakableBody) {
                 val soakAmount = 0.005 * (piece.volume - piece.soakedSubstance.amount) * (timeFrame `in` seconds)
                 piece.soak(storedSubstance.extract(soakAmount))
             }
@@ -92,7 +92,7 @@ class BasicDrum(
     private fun wash(body: Body, spinSpeed: Measure<Spin>, seconds: Double) {
         val spinEffectiveness = spinSpeed / config.centrifugeThreshold
 
-        if (body is Soakable) {
+        if (body is SoakableBody) {
             if (body.soakRatio < 1) {
                 body.soak(storedSubstance)
             }
@@ -118,7 +118,7 @@ class BasicDrum(
 
     private fun calcCleaningPower(body: Body): Double {
         val hardnessCoefficient = 1 - body.stainSubstance.stainHardness
-        return if (body is Soakable) {
+        return if (body is SoakableBody) {
             if (body.soakedSubstance.isEmpty()) return 0.0
 
             val soakCoefficient =
@@ -140,7 +140,7 @@ class BasicDrum(
     }
 
     private fun dry(body: Body, spinSpeed: Measure<Spin>, seconds: Double) {
-        if (body !is Soakable) return
+        if (body !is SoakableBody) return
 
         val dryingRate = (spinSpeed `in` rpm) / 600000
         val amountToDry = calcGrowth(body.soakedSubstance.amount, dryingRate, seconds)

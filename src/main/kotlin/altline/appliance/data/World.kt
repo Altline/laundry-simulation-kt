@@ -13,50 +13,62 @@ import altline.appliance.measure.Volume
 import altline.appliance.measure.Volume.Companion.liters
 import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.measure.kilowatts
+import altline.appliance.measure.repeatPeriodicallySpeedAware
 import altline.appliance.substance.CommonSubstanceTypes
 import altline.appliance.substance.MutableSubstance
+import altline.appliance.substance.SoakableBody
 import altline.appliance.substance.transit.Reservoir
 import altline.appliance.washing.laundry.HouseholdLaundryWasher
 import altline.appliance.washing.laundry.HouseholdLaundryWasherFactory
 import altline.appliance.washing.laundry.HouseholdLaundryWasherScanner
 import io.nacular.measured.units.*
 import io.nacular.measured.units.Time.Companion.seconds
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 class World {
 
     val ambientTemperature = DefaultAmbientTemperature
 
-    val washer: HouseholdLaundryWasher
+    val washer: HouseholdLaundryWasher = createWasher()
     val laundry: Set<Body> = createLaundry()
 
     init {
-        val powerSource = InfiniteElectricalSource(10 * kilowatts)
-
-        val waterSource = Reservoir(
-            capacity = 1000000 * liters,
-            outflowThreshold = 0 * liters,
-            shouldSpontaneouslyPush = true,
-            inputFlowRate = 0 * liters / seconds,
-            outputFlowRate = 100 * liters / seconds,
-            initialSubstance = MutableSubstance(CommonSubstanceTypes.WATER, 1000000 * liters, 20 * celsius)
-        )
-        val fluidDrain = Reservoir(
-            capacity = 1000000 * liters,
-            outflowThreshold = 0 * liters,
-            shouldSpontaneouslyPush = false,
-            inputFlowRate = 100 * liters / seconds,
-            outputFlowRate = 0 * liters / seconds
-        )
-
-        washer = HouseholdLaundryWasherFactory().createHouseholdLaundryWasher()
-
-        washer.fluidIntake.inputs[0] connectTo waterSource.outputs[0]
-        washer.fluidOutlet.outputs[0] connectTo fluidDrain.inputs[0]
-
-        powerSource.outputs[0] connectTo washer.powerInlet
-
-        washer.scanner = HouseholdLaundryWasherScanner()
+        GlobalScope.launch {
+            repeatPeriodicallySpeedAware(10 * seconds) {
+                laundry.filterNot { it in washer.load }
+                    .filterIsInstance<SoakableBody>()
+                    .forEach { it.dry(0.0001 * it.volume) }
+            }
+        }
     }
+}
+
+private fun createWasher(): HouseholdLaundryWasher {
+    val powerSource = InfiniteElectricalSource(10 * kilowatts)
+    val waterSource = Reservoir(
+        capacity = 1000000 * liters,
+        outflowThreshold = 0 * liters,
+        shouldSpontaneouslyPush = true,
+        inputFlowRate = 0 * liters / seconds,
+        outputFlowRate = 100 * liters / seconds,
+        initialSubstance = MutableSubstance(CommonSubstanceTypes.WATER, 1000000 * liters, 20 * celsius)
+    )
+    val fluidDrain = Reservoir(
+        capacity = 1000000 * liters,
+        outflowThreshold = 0 * liters,
+        shouldSpontaneouslyPush = false,
+        inputFlowRate = 100 * liters / seconds,
+        outputFlowRate = 0 * liters / seconds
+    )
+    val washer = HouseholdLaundryWasherFactory().createHouseholdLaundryWasher()
+    washer.fluidIntake.inputs[0] connectTo waterSource.outputs[0]
+    washer.fluidOutlet.outputs[0] connectTo fluidDrain.inputs[0]
+    powerSource.outputs[0] connectTo washer.powerInlet
+    washer.scanner = HouseholdLaundryWasherScanner()
+    return washer
 }
 
 private fun createLaundry(): Set<Body> {
@@ -117,7 +129,7 @@ private fun createLaundry(): Set<Body> {
                 CommonSubstanceTypes.KETCHUP,
                 CommonSubstanceTypes.CRUDE_OIL
             )
-            val amountPercentages = listOf(0.3, 0.6, 0.9)
+            val amountPercentages = listOf(0.1, 0.15, 0.25)
 
             val substanceType = substanceTypes[index % substanceTypes.size]
             val amountPercentage = amountPercentages[index % amountPercentages.size]

@@ -1,9 +1,8 @@
 package altline.appliance.fabric
 
-import altline.appliance.common.Body
 import altline.appliance.measure.Volume
 import altline.appliance.substance.MutableSubstance
-import altline.appliance.substance.Soakable
+import altline.appliance.substance.SoakableBody
 import altline.appliance.substance.Substance
 import altline.appliance.substance.TemperatureEqualizer
 import io.nacular.measured.units.*
@@ -11,7 +10,7 @@ import java.util.*
 
 abstract class Fabric(
     override val volume: Measure<Volume>
-) : Body, Soakable {
+) : SoakableBody {
 
     override val id: UUID = UUID.randomUUID()
 

@@ -4,7 +4,7 @@ import altline.appliance.common.Body
 import altline.appliance.fabric.clothing.Clothing
 import altline.appliance.measure.Volume.Companion.milliliters
 import altline.appliance.measure.sumOf
-import altline.appliance.substance.Soakable
+import altline.appliance.substance.SoakableBody
 import altline.appliance.ui.component.laundry.LaundryListItemUi
 import altline.appliance.ui.component.laundry.LaundryPanelUi
 import altline.appliance.washing.laundry.fresheningPotential
@@ -46,7 +46,7 @@ class LaundryMapper(
     ): LaundryListItemUi {
         val name = stringMapper.mapLaundryName(body)
         val size = if (body is Clothing) stringMapper.mapClothingSize(body.size) else ""
-        val soakRatio = if (body is Soakable) body.soakRatio else null
+        val soakRatio = if (body is SoakableBody) body.soakRatio else null
         return LaundryListItemUi(
             id = body.id,
             title = buildString {
@@ -66,7 +66,7 @@ class LaundryMapper(
     private fun mapFreshness(body: Body): Double {
         val freshnessInfluencers = buildSet {
             addAll(body.stainSubstance.parts)
-            if (body is Soakable) {
+            if (body is SoakableBody) {
                 addAll(body.soakedSubstance.parts)
             }
         }.filterNot { it.type.evaporates }
