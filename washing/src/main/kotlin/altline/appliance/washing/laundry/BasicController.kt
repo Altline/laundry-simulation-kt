@@ -184,7 +184,9 @@ open class BasicController(
             stageStatus.phases.map { it.phase }
                 .filterIsInstance<SpinPhase>()
         }.forEach { spinPhase ->
-            spinPhase.sections.forEach { it.params = it.params.copy(spinSpeed = spinSpeed) }
+            spinPhase.sections
+                .filter { it.adjustableSpeed }
+                .forEach { it.params = it.params.copy(spinSpeed = spinSpeed) }
         }
     }
 

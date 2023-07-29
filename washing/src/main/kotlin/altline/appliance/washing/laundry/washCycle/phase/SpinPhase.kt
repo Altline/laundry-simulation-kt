@@ -24,10 +24,12 @@ class SpinPhase : CyclePhase {
     fun section(
         duration: Measure<Time>,
         spinSpeed: Measure<Spin>,
+        adjustableSpeed: Boolean = false,
         endDelay: Measure<Time> = 0 * seconds
     ): Section {
         return Section(
             params = SpinParams(duration, spinSpeed),
+            adjustableSpeed = adjustableSpeed,
             endDelay = endDelay
         ).also {
             sections += it
@@ -36,6 +38,7 @@ class SpinPhase : CyclePhase {
 
     data class Section(
         var params: SpinParams,
+        val adjustableSpeed: Boolean,
         override val endDelay: Measure<Time>
     ) : PhaseSection {
         override val duration: Measure<Time>

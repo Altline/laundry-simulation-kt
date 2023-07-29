@@ -69,10 +69,11 @@ class CycleStage {
     fun spinPhase(
         duration: Measure<Time>,
         spinSpeed: Measure<Spin>,
+        adjustableSpeed: Boolean = false,
         endDelay: Measure<Time>
     ): SpinPhase {
         return spinPhase {
-            section(duration, spinSpeed, endDelay)
+            section(duration, spinSpeed, adjustableSpeed, endDelay)
         }
     }
 }
