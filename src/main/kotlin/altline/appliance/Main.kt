@@ -4,8 +4,11 @@ import altline.appliance.audio.Audio
 import altline.appliance.di.coreModule
 import altline.appliance.ui.MainScreen
 import altline.appliance.ui.MainViewModel
+import altline.appliance.ui.resources.get
+import altline.appliance.ui.resources.strings
 import altline.appliance.ui.theme.AppTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -25,6 +28,8 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
+        title = strings["windowTitle"],
+        icon = painterResource("images/Icon.png"),
         state = WindowState(
             size = DpSize(1200.dp, 800.dp)
         )
