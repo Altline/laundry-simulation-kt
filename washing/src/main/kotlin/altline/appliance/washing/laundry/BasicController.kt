@@ -272,7 +272,7 @@ open class BasicController(
             is DrainPhase.Section.FocusedDrain -> drainUntilEmpty()
             is DrainPhase.Section.TumbleDrain -> tumbleDrain(section.tumbleParams.withRemainingDuration(runningTime))
             is WashPhase.Section -> tumble(section.params.withRemainingDuration(runningTime))
-            is SpinPhase.Section -> spin(section.params.withRemainingDuration(runningTime))
+            is SpinPhase.Section -> spin(section.params.withRemainingDuration(runningTime), section.adjustableSpeed)
         }
         delaySpeedAware(section.endDelay)
     }
@@ -347,7 +347,7 @@ open class BasicController(
         stopDrain()
     }
 
-    private suspend fun spin(params: SpinParams) {
+    private suspend fun spin(params: SpinParams, adjustableSpeed: Boolean) {
         if (params.spinSpeed == 0 * rpm) return
         startDrain()
         drumMotor.speedSetting = params.spinSpeed
@@ -363,7 +363,7 @@ open class BasicController(
                     return
                 }
 
-                selectedSpeed != drumMotor.speedSetting -> drumMotor.speedSetting = selectedSpeed
+                adjustableSpeed && selectedSpeed != drumMotor.speedSetting -> drumMotor.speedSetting = selectedSpeed
             }
         }
 
