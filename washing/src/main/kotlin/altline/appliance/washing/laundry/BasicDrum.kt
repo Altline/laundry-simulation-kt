@@ -150,7 +150,7 @@ class BasicDrum(
 
         val dryingRate = (spinSpeed `in` rpm) / 600000
         val amountToDry = calcGrowth(body.soakedSubstance.amount, dryingRate, seconds)
-        val driedSubstance = body.dry(amountToDry)
+        val driedSubstance = body.dry(amountToDry, stainNonEvaporatingParts = false)
         storedSubstance.add(driedSubstance)
     }
 }

@@ -40,7 +40,7 @@ class World {
             repeatPeriodicallySpeedAware(10 * seconds) {
                 laundry.filterNot { it in washer.load }
                     .filterIsInstance<SoakableBody>()
-                    .forEach { it.dry(0.0001 * it.volume) }
+                    .forEach { it.dry(0.0001 * it.volume, stainNonEvaporatingParts = true) }
             }
         }
     }

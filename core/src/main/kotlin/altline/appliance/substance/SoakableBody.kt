@@ -10,5 +10,5 @@ interface SoakableBody: Body {
 
     fun soak(substance: MutableSubstance)
     fun resoakWith(substance: MutableSubstance, amount: Measure<Volume>)
-    fun dry(amount: Measure<Volume>): MutableSubstance
+    fun dry(amount: Measure<Volume>, stainNonEvaporatingParts: Boolean): MutableSubstance
 }

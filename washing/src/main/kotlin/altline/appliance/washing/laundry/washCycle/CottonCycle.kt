@@ -43,7 +43,7 @@ class CottonCycle : WashCycleBase(), PreWashCapable {
             preWashFillPhase(10  * liters)
             washPhase {
                 section(
-                    duration = 10 * minutes,
+                    duration = 15 * minutes,
                     spinPeriod = 30 * seconds,
                     restPeriod = 15 * seconds,
                     spinSpeed = 50 * rpm
@@ -97,17 +97,11 @@ class CottonCycle : WashCycleBase(), PreWashCapable {
                 restPeriod = 5 * seconds,
                 spinSpeed = 60 * rpm
             )
-            spinPhase {
-                section(
-                    duration = 1 * minutes,
-                    spinSpeed = 400 * rpm
-                )
-                section(
-                    duration = 1 * minutes,
-                    spinSpeed = 600 * rpm,
-                    endDelay = 32 * seconds
-                )
-            }
+            spinPhase(
+                duration = 2 * minutes,
+                spinSpeed = 600 *rpm,
+                endDelay = 32 * seconds
+            )
         }
     }
 
@@ -128,17 +122,11 @@ class CottonCycle : WashCycleBase(), PreWashCapable {
                 restPeriod = 5 * seconds,
                 spinSpeed = 60 * rpm
             )
-            spinPhase {
-                section(
-                    duration = 1 * minutes,
-                    spinSpeed = 400 * rpm
-                )
-                section(
-                    duration = 1 * minutes,
-                    spinSpeed = 600 * rpm,
-                    endDelay = 32 * seconds
-                )
-            }
+            spinPhase(
+                duration = 2 * minutes,
+                spinSpeed = 600 *rpm,
+                endDelay = 32 * seconds
+            )
         }
     }
 

@@ -42,7 +42,7 @@ class RinseCycle : WashCycleBase() {
                 spinPhase {
                     section(
                         duration = 1 * minutes,
-                        spinSpeed = 500 * rpm
+                        spinSpeed = 400 * rpm
                     )
                     section(
                         duration = 8 * minutes,

@@ -80,7 +80,7 @@ class LaundryMapper(
         }
 
         return run {
-            fresheningPotential * (body.stainSubstance.amount / (0.5 * milliliters)) / (body.volume / (100 * milliliters))
+            fresheningPotential * (body.stainSubstance.amount / (0.1 * milliliters)) / (body.volume / (100 * milliliters))
         }.coerceAtMost(1.0)
     }
 }

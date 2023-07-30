@@ -52,10 +52,15 @@ abstract class Fabric(
         _soakedSubstance.remixWith(substance, amount)
     }
 
-    override fun dry(amount: Measure<Volume>): MutableSubstance {
+    override fun dry(amount: Measure<Volume>, stainNonEvaporatingParts: Boolean): MutableSubstance {
         val extracted = _soakedSubstance.extract(amount)
-        val evaporating = extracted.extractAllEvaporating()
-        stain(extracted)
-        return evaporating
+        return if (stainNonEvaporatingParts) {
+            val evaporating = extracted.extractAllEvaporating()
+            stain(extracted)
+            evaporating
+        } else {
+            extracted
+        }
+
     }
 }
