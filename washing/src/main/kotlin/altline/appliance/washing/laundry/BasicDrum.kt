@@ -108,7 +108,8 @@ class BasicDrum(
         val clearedStain = body.clearStain(stainAmountToClear)
         storedSubstance.add(clearedStain)
 
-        val stainSourceAmount = body.volume * storedSubstance.stainHardness * spinEffectiveness * seconds
+        val stainFactor = storedSubstance.stainHardness * spinEffectiveness
+        val stainSourceAmount = calcGrowth(body.volume, stainFactor, seconds)
         val stain = storedSubstance.extract(stainSourceAmount).also {
             val evaporating = it.extractAllEvaporating()
             storedSubstance.add(evaporating)
@@ -117,7 +118,12 @@ class BasicDrum(
     }
 
     private fun calcCleaningPower(body: Body): Double {
+        val intrinsicCleaningPower = buildSet {
+            addAll(body.stainSubstance.parts)
+            if (body is SoakableBody) addAll(body.soakedSubstance.parts)
+        }.cleaningPower
         val hardnessCoefficient = 1 - body.stainSubstance.stainHardness
+
         return if (body is SoakableBody) {
             if (body.soakedSubstance.isEmpty()) return 0.0
 
@@ -126,7 +132,7 @@ class BasicDrum(
                     .coerceIn(0.0, 1.0)
             val temperatureCoefficient = (body.soakedSubstance.temperature!! / (100 * celsius))
                 .coerceIn(0.0, 1.0)
-            body.soakedSubstance.cleaningPower * soakCoefficient * temperatureCoefficient * hardnessCoefficient
+            intrinsicCleaningPower * soakCoefficient * temperatureCoefficient * hardnessCoefficient
 
         } else {
             if (excessLiquid.isEmpty()) return 0.0
@@ -135,7 +141,7 @@ class BasicDrum(
                 .coerceIn(0.0, 1.0)
             val temperatureCoefficient = (excessLiquid.temperature!! / (100 * celsius))
                 .coerceIn(0.0, 1.0)
-            excessLiquid.cleaningPower * liquidAmountCoefficient * temperatureCoefficient * hardnessCoefficient
+            intrinsicCleaningPower * liquidAmountCoefficient * temperatureCoefficient * hardnessCoefficient
         }
     }
 

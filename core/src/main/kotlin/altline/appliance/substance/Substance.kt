@@ -9,7 +9,9 @@ import java.util.*
 
 interface Substance : Flowable<Volume> {
     /**
-     * The set of parts that make up this substance. This is only the snapshot of the state at the time of calling.
+     * The set of parts that make up this substance.
+     * This set is a [Collections.synchronizedSet], however, some Kotlin-provided iteration functions override and
+     * skip this synchronization, so it should likely be done manually if those functions need to be called.
      */
     val parts: Set<Part>
 
@@ -51,7 +53,7 @@ class MutableSubstance(
         mutableSetOf(*parts.filterEmpty().asMutableParts().toTypedArray())
     )
     override val parts: Set<Substance.Part>
-        get() = _parts.toSet()
+        get() = synchronized(this) { _parts }
 
     /**
      * Setting of this value is thread-safe.

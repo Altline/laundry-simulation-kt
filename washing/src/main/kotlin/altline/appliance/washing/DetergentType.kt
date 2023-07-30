@@ -20,11 +20,11 @@ enum class CommonDetergents(
 ) : DetergentType {
 
     ULTIMATE_DETERGENT(convertDiluted(1.0)),
-    STRONG_DETERGENT(convertDiluted(0.08)),
-    BASIC_DETERGENT(convertDiluted(0.05)),
-    MILD_DETERGENT(convertDiluted(0.015)),
-    WEAK_DETERGENT(convertDiluted(0.004)),
-    BARELY_DETERGENT(convertDiluted(0.001)),
+    STRONG_DETERGENT(convertDiluted(0.01)),
+    BASIC_DETERGENT(convertDiluted(0.006)),
+    MILD_DETERGENT(convertDiluted(0.003)),
+    WEAK_DETERGENT(convertDiluted(0.0015)),
+    BARELY_DETERGENT(convertDiluted(0.0006)),
     USELESS_DETERGENT(convertDiluted(0.0));
 
     override val evaporates: Boolean = false
