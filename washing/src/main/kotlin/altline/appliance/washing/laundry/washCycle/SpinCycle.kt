@@ -25,12 +25,13 @@ class SpinCycle : WashCycleBase() {
             stage {
                 spinPhase {
                     section(
-                        duration = 0.1 * minutes,
+                        duration = 1 * minutes,
                         spinSpeed = 500 * rpm
                     )
                     section(
-                        duration = 1 * minutes,
+                        duration = 8 * minutes,
                         spinSpeed = selectedSpinSpeedSetting,
+                        adjustableSpeed = true,
                         endDelay = 32 * seconds
                     )
                 }

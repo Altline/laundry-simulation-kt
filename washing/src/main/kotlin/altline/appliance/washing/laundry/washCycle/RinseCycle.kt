@@ -27,23 +27,30 @@ class RinseCycle : WashCycleBase() {
                 detergentFillPhase(15 * liters)
                 washPhase {
                     section(
-                        duration = 10 * minutes,
-                        spinPeriod = 5 * seconds,
-                        restPeriod = 5 * seconds,
+                        duration = 8 * minutes,
+                        spinPeriod = 15 * seconds,
+                        restPeriod = 7 * seconds,
                         spinSpeed = 60 * rpm
                     )
                 }
                 drainPhase(
-                    duration = 1.5 * minutes,
-                    spinPeriod = 5 * seconds,
+                    duration = 2 * minutes,
+                    spinPeriod = 10 * seconds,
                     restPeriod = 5 * seconds,
                     spinSpeed = 60 * rpm
                 )
-                spinPhase(
-                    duration = 1 * minutes,
-                    spinSpeed = 0 * rpm,
-                    endDelay = 32 * seconds
-                )
+                spinPhase {
+                    section(
+                        duration = 1 * minutes,
+                        spinSpeed = 500 * rpm
+                    )
+                    section(
+                        duration = 8 * minutes,
+                        spinSpeed = selectedSpinSpeedSetting,
+                        adjustableSpeed = true,
+                        endDelay = 32 * seconds
+                    )
+                }
             }
         }
     }

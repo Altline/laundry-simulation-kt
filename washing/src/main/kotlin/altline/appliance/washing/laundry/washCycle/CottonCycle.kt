@@ -30,58 +30,146 @@ class CottonCycle : WashCycleBase(), PreWashCapable {
 
     override fun getStages(): List<CycleStage> {
         return buildCycle {
-            if (preWash) {
-                stage {
-                    preWashFillPhase(1 * liters)
-                    washPhase {
-                        section(
-                            duration = 0.2 * minutes,
-                            spinPeriod = 5 * seconds,
-                            restPeriod = 5 * seconds,
-                            spinSpeed = 50 * rpm
-                        )
-                    }
-                    drainPhase(
-                        duration = 0.1 * minutes,
-                        spinPeriod = 5 * seconds,
-                        restPeriod = 5 * seconds,
-                        spinSpeed = 60 * rpm
-                    )
-                }
+            if (preWash) preWashStage()
+            mainWashStage()
+            rinseStage()
+            rinseStage()
+            softenerStage()
+        }
+    }
+
+    private fun StageBuilder.preWashStage() {
+        stage {
+            preWashFillPhase(10  * liters)
+            washPhase {
+                section(
+                    duration = 10 * minutes,
+                    spinPeriod = 30 * seconds,
+                    restPeriod = 15 * seconds,
+                    spinSpeed = 50 * rpm
+                )
             }
-            stage {
-                detergentFillPhase(1 * liters)
-                washPhase {
-                    section(
-                        duration = 0.2 * minutes,
-                        spinPeriod = 5 * seconds,
-                        restPeriod = 5 * seconds,
-                        spinSpeed = 50 * rpm
-                    )
-                    section(
-                        duration = 0.2 * minutes,
-                        spinPeriod = 5 * seconds,
-                        restPeriod = 5 * seconds,
-                        spinSpeed = 50 * rpm
-                    )
-                }
-                drainPhase(
-                    duration = 0.1 * minutes,
-                    spinPeriod = 5 * seconds,
-                    restPeriod = 5 * seconds,
+            drainPhase(
+                duration = 1 * minutes,
+                spinPeriod = 8 * seconds,
+                restPeriod = 4 * seconds,
+                spinSpeed = 60 * rpm
+            )
+        }
+    }
+
+    private fun StageBuilder.mainWashStage() {
+        stage {
+            detergentFillPhase(14 * liters)
+            washPhase {
+                section(
+                    duration = 15 * minutes,
+                    spinPeriod = 60 * seconds,
+                    restPeriod = 30 * seconds,
+                    spinSpeed = 40 * rpm,
+                    temperature = selectedTemperatureSetting
+                )
+                section(
+                    duration = 60 * minutes,
+                    spinPeriod = 15 * seconds,
+                    restPeriod = 7 * seconds,
+                    spinSpeed = 60 * rpm,
+                    temperature = selectedTemperatureSetting
+                )
+                section(
+                    duration = 10 * minutes,
+                    spinPeriod = 60 * seconds,
+                    restPeriod = 30 * seconds,
+                    spinSpeed = 78 * rpm,
+                    temperature = selectedTemperatureSetting
+                )
+                section(
+                    duration = 30 * minutes,
+                    spinPeriod = 15 * seconds,
+                    restPeriod = 7 * seconds,
+                    spinSpeed = 60 * rpm,
+                    temperature = selectedTemperatureSetting
+                )
+            }
+            drainPhase(
+                duration = 1 * minutes,
+                spinPeriod = 10 * seconds,
+                restPeriod = 5 * seconds,
+                spinSpeed = 60 * rpm
+            )
+            spinPhase {
+                section(
+                    duration = 1 * minutes,
+                    spinSpeed = 400 * rpm
+                )
+                section(
+                    duration = 1 * minutes,
+                    spinSpeed = 600 * rpm,
+                    endDelay = 32 * seconds
+                )
+            }
+        }
+    }
+
+    private fun StageBuilder.rinseStage() {
+        stage {
+            detergentFillPhase(15 * liters)
+            washPhase {
+                section(
+                    duration = 7 * minutes,
+                    spinPeriod = 15 * seconds,
+                    restPeriod = 7 * seconds,
                     spinSpeed = 60 * rpm
                 )
-                spinPhase {
-                    section(
-                        duration = 0.1 * minutes,
-                        spinSpeed = 500 * rpm
-                    )
-                    section(
-                        duration = 1 * minutes,
-                        spinSpeed = selectedSpinSpeedSetting,
-                        endDelay = 32 * seconds
-                    )
-                }
+            }
+            drainPhase(
+                duration = 1 * minutes,
+                spinPeriod = 10 * seconds,
+                restPeriod = 5 * seconds,
+                spinSpeed = 60 * rpm
+            )
+            spinPhase {
+                section(
+                    duration = 1 * minutes,
+                    spinSpeed = 400 * rpm
+                )
+                section(
+                    duration = 1 * minutes,
+                    spinSpeed = 600 * rpm,
+                    endDelay = 32 * seconds
+                )
+            }
+        }
+    }
+
+    private fun StageBuilder.softenerStage() {
+        stage {
+            softenerFillPhase(16 * liters)
+            washPhase {
+                section(
+                    duration = 8 * minutes,
+                    spinPeriod = 15 * seconds,
+                    restPeriod = 7 * seconds,
+                    spinSpeed = 60 * rpm
+                )
+            }
+            drainPhase(
+                duration = 2 * minutes,
+                spinPeriod = 10 * seconds,
+                restPeriod = 5 * seconds,
+                spinSpeed = 60 * rpm
+            )
+            spinPhase {
+                section(
+                    duration = 1 * minutes,
+                    spinSpeed = 400 * rpm
+                )
+                section(
+                    duration = 8 * minutes,
+                    spinSpeed = selectedSpinSpeedSetting,
+                    adjustableSpeed = true,
+                    endDelay = 32 * seconds
+                )
             }
         }
     }
