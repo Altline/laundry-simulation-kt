@@ -27,14 +27,14 @@ val SubstanceType.cleaningPower: Double
         is DetergentType -> cleaningPower
 
         CommonFabricSofteners.USELESS_SOFTENER -> 0.0
-        CommonFabricSofteners.BARELY_SOFTENER -> convertDiluted(0.00005)
-        CommonFabricSofteners.WEAK_SOFTENER -> convertDiluted(0.0001)
-        CommonFabricSofteners.MILD_SOFTENER -> convertDiluted(0.00015)
-        CommonFabricSofteners.BASIC_SOFTENER -> convertDiluted(0.0002)
-        CommonFabricSofteners.STRONG_SOFTENER -> convertDiluted(0.00025)
-        CommonFabricSofteners.ULTIMATE_SOFTENER -> convertDiluted(0.0003)
+        CommonFabricSofteners.BARELY_SOFTENER -> convertDiluted(0.0005)
+        CommonFabricSofteners.WEAK_SOFTENER -> convertDiluted(0.0008)
+        CommonFabricSofteners.MILD_SOFTENER -> convertDiluted(0.001)
+        CommonFabricSofteners.BASIC_SOFTENER -> convertDiluted(0.002)
+        CommonFabricSofteners.STRONG_SOFTENER -> convertDiluted(0.003)
+        CommonFabricSofteners.ULTIMATE_SOFTENER -> convertDiluted(0.005)
 
-        CommonSubstanceTypes.WATER -> 0.0001
+        CommonSubstanceTypes.WATER -> 0.0005
         else -> 0.0
     }
 
@@ -42,5 +42,5 @@ private fun convertDiluted(desiredValue: Double) = calcNominal(
     desiredValue,
     solventValue = CommonSubstanceTypes.WATER.cleaningPower,
     solventAmount = 15.0 * liters,
-    soluteAmount = 50.0 * milliliters
+    soluteAmount = 100.0 * milliliters
 )

@@ -31,7 +31,7 @@ class StringMapper {
             CommonDetergents.BASIC_DETERGENT -> "${strings["power_basic"]} ${strings["substanceType_detergent_partial"]}"
             CommonDetergents.MILD_DETERGENT -> "${strings["power_mild"]} ${strings["substanceType_detergent_partial"]}"
             CommonDetergents.WEAK_DETERGENT -> "${strings["power_weak"]} ${strings["substanceType_detergent_partial"]}"
-            CommonDetergents.BARELY_DETERGENT -> "${strings["power_basic"]} ${strings["substanceType_detergent_partial"]}"
+            CommonDetergents.BARELY_DETERGENT -> "${strings["power_barely"]} ${strings["substanceType_detergent_partial"]}"
             CommonDetergents.USELESS_DETERGENT -> "${strings["power_useless"]} ${strings["substanceType_detergent_partial"]}"
 
             CommonFabricSofteners.ULTIMATE_SOFTENER -> "${strings["power_ultimate"]} ${strings["substanceType_softener_partial"]}"
@@ -39,7 +39,7 @@ class StringMapper {
             CommonFabricSofteners.BASIC_SOFTENER -> "${strings["power_basic"]} ${strings["substanceType_softener_partial"]}"
             CommonFabricSofteners.MILD_SOFTENER -> "${strings["power_mild"]} ${strings["substanceType_softener_partial"]}"
             CommonFabricSofteners.WEAK_SOFTENER -> "${strings["power_weak"]} ${strings["substanceType_softener_partial"]}"
-            CommonFabricSofteners.BARELY_SOFTENER -> "${strings["power_basic"]} ${strings["substanceType_softener_partial"]}"
+            CommonFabricSofteners.BARELY_SOFTENER -> "${strings["power_barely"]} ${strings["substanceType_softener_partial"]}"
             CommonFabricSofteners.USELESS_SOFTENER -> "${strings["power_useless"]} ${strings["substanceType_softener_partial"]}"
 
             else -> ""
@@ -101,6 +101,7 @@ class StringMapper {
         return buildString {
             append(
                 when (section) {
+                    is FillPhase.PreWashFillSection -> strings["cyclePhase_fill_prewash"]
                     is FillPhase.DetergentFillSection -> strings["cyclePhase_fill_detergent"]
                     is FillPhase.SoftenerFillSection -> strings["cyclePhase_fill_softener"]
                     else -> ""

@@ -9,7 +9,8 @@ import altline.appliance.substance.calcNominal
 import io.nacular.measured.units.*
 
 interface DetergentType : SubstanceType {
-    /** The part of a basic stain substance able to be removed in one second of washing. */
+    /** The part of a basic stain substance able to be removed in one second of washing in ideal conditions, without
+     * stain resistance. */
     val cleaningPower: Double
 }
 
@@ -19,11 +20,11 @@ enum class CommonDetergents(
 ) : DetergentType {
 
     ULTIMATE_DETERGENT(convertDiluted(1.0)),
-    STRONG_DETERGENT(convertDiluted(0.002)),
-    BASIC_DETERGENT(convertDiluted(0.001)),
-    MILD_DETERGENT(convertDiluted(0.0005)),
-    WEAK_DETERGENT(convertDiluted(0.0003)),
-    BARELY_DETERGENT(convertDiluted(0.0002)),
+    STRONG_DETERGENT(convertDiluted(0.08)),
+    BASIC_DETERGENT(convertDiluted(0.05)),
+    MILD_DETERGENT(convertDiluted(0.015)),
+    WEAK_DETERGENT(convertDiluted(0.004)),
+    BARELY_DETERGENT(convertDiluted(0.001)),
     USELESS_DETERGENT(convertDiluted(0.0));
 
     override val evaporates: Boolean = false

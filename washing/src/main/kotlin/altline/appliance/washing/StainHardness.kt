@@ -23,6 +23,6 @@ val SubstanceType.stainHardness: Double
         CommonSubstanceTypes.MUD -> 0.4
         CommonSubstanceTypes.COFFEE -> 0.6
         CommonSubstanceTypes.KETCHUP -> 0.2
-        CommonSubstanceTypes.CRUDE_OIL -> 0.9
+        CommonSubstanceTypes.CRUDE_OIL -> 0.8
         else -> 0.0
     }
