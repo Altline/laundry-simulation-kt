@@ -6,7 +6,7 @@ import altline.appliance.transit.Flowable
 import io.nacular.measured.units.*
 import kotlin.math.pow
 
-/** Calculates a nominal value of one part from the desired value of the mix */
+/** Calculates a nominal value of one part from the desired value of the mix. */
 fun calcNominal(
     desiredValue: Double,
     solventValue: Double,

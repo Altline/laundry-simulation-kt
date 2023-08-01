@@ -6,7 +6,7 @@ class Volume(suffix: String, ratio: Double = 1.0): Units(suffix, ratio) {
     operator fun div(other: Volume) = ratio / other.ratio
 
     companion object {
-        val liters = Volume("L")
-        val milliliters = Volume("mL", 0.001)
+        val liters = Volume("l")
+        val milliliters = Volume("ml", 0.001)
     }
 }

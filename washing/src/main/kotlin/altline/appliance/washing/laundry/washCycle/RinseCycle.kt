@@ -24,7 +24,7 @@ class RinseCycle : WashCycleBase() {
     override fun getStages(): List<CycleStage> {
         return buildCycle {
             stage {
-                detergentFillPhase(15 * liters)
+                softenerFillPhase(15 * liters)
                 washPhase {
                     section(
                         duration = 8 * minutes,

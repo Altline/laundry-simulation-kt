@@ -88,6 +88,7 @@ open class BasicController(
 
     final override val cycleRemainingTime: Measure<Time>?
         get() = activeCycle?.duration?.minus(cycleRunningTime ?: (0 * seconds))
+            ?.coerceAtLeast(0 * seconds)
 
     /** Queue of the remaining sections of the currently active wash cycle. */
     private val sectionQueue: Queue<SectionInstance> = LinkedList()
@@ -220,7 +221,7 @@ open class BasicController(
                 sectionQueue.remove()
             }
 
-            delay(1 * seconds)
+            delay(1.5 * seconds)
             unlockDoor()
 
             activeCycle = null
