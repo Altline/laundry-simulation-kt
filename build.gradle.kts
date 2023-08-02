@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "altline.appliance"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 allprojects {
     repositories {
@@ -42,6 +42,9 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "appliance-simulation"
             packageVersion = "1.0.0"
+        }
+        buildTypes.release.proguard {
+            configurationFiles.from(project.file("proguard-rules.pro"))
         }
     }
 }
