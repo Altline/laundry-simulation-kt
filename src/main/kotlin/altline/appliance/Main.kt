@@ -29,7 +29,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = strings["windowTitle"],
-        icon = painterResource("images/Icon.png"),
+        icon = painterResource("images/AppIcon.png"),
         state = WindowState(
             size = DpSize(1200.dp, 800.dp)
         )
